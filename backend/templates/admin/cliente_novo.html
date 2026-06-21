@@ -1,0 +1,480 @@
+{% extends "admin/base_admin.html" %}
+
+{% set csrf_token = csrf_token if csrf_token is defined else "" %}
+
+{% set active_nav = "dashboard" %}
+{% set page_title = "Novo Cliente" %}
+{% set page_subtitle = "Preencha os dados para registrar um novo cliente na base operacional." %}
+{% set primary_action_href = "" %}
+{% set primary_action_label = "" %}
+{% set secondary_action_href = "" %}
+{% set secondary_action_label = "" %}
+
+{% block title %}ProfileDNA — Novo Cliente{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <style>
+    .pd-cliente-novo-card {
+      max-width: 780px;
+      margin: 0 auto;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 12px 36px rgba(17, 24, 39, 0.06);
+      padding: 36px;
+    }
+
+    .pd-cliente-novo-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: color .18s ease;
+    }
+
+    .pd-cliente-novo-back:hover {
+      color: #111827;
+    }
+
+    .pd-cliente-novo-heading {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #111827;
+    }
+
+    .pd-cliente-novo-desc {
+      margin: 0 0 28px;
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .pd-cliente-novo-section-title {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+      margin-top: 8px;
+    }
+
+    .pd-cliente-novo-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .pd-cliente-novo-field {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .pd-cliente-novo-field--full {
+      grid-column: 1 / -1;
+    }
+
+    .pd-cliente-novo-input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: rgba(255, 255, 255, 0.9);
+      color: #111827;
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .pd-cliente-novo-input:focus {
+      border-color: rgba(251, 146, 60, 0.55);
+      box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.12);
+    }
+
+    .pd-cliente-novo-input::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .pd-cliente-novo-field-hint {
+      font-size: 11px;
+      font-weight: 600;
+      color: #ef4444;
+      margin-top: 2px;
+      display: none;
+    }
+
+    .pd-cliente-novo-field-hint--visible {
+      display: block;
+    }
+
+    .pd-cliente-novo-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .pd-cliente-novo-check input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: #f97316;
+    }
+
+    .pd-cliente-novo-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(229, 231, 235, 0.7);
+      flex-wrap: wrap;
+    }
+
+    .pd-cliente-novo-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 28px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ef4444 100%);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(249, 115, 22, 0.22);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .pd-cliente-novo-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 32px rgba(249, 115, 22, 0.28);
+    }
+
+    .pd-cliente-novo-cancel {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 14px;
+      border: 1px solid #dbe1ea;
+      background: rgba(255, 255, 255, 0.8);
+      color: #6b7280;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: border-color .18s ease, color .18s ease;
+    }
+
+    .pd-cliente-novo-cancel:hover {
+      border-color: #94a3b8;
+      color: #111827;
+    }
+
+    @media (max-width: 680px) {
+      .pd-cliente-novo-card {
+        padding: 24px 20px;
+      }
+
+      .pd-cliente-novo-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-cliente-novo-field--full {
+        grid-column: 1;
+      }
+
+      .pd-cliente-novo-section-title {
+        grid-column: 1;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block admin_content %}
+  <div class="pd-cliente-novo-card">
+    <a href="/admin/dashboard" class="pd-cliente-novo-back">← Voltar ao painel</a>
+
+    <h2 class="pd-cliente-novo-heading">Cadastrar novo cliente</h2>
+    <p class="pd-cliente-novo-desc">Registre uma nova empresa para rodadas, convites e análises comportamentais.</p>
+
+    <form method="post" action="/admin/clientes">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+      <div class="pd-cliente-novo-form-grid">
+
+        <!-- ── Dados da empresa ── -->
+        <div class="pd-cliente-novo-section-title">Dados da empresa</div>
+
+        <label class="pd-cliente-novo-field pd-cliente-novo-field--full">
+          <span>Nome do cliente *</span>
+          <input
+            type="text"
+            name="nome"
+            required
+            placeholder="Ex: Empresa ABC"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field">
+          <span>Razão social *</span>
+          <input
+            type="text"
+            name="razao_social"
+            required
+            placeholder="Ex: Empresa ABC Indústria e Comércio Ltda"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field">
+          <span>CNPJ *</span>
+          <input
+            type="text"
+            id="campo-cnpj"
+            name="cnpj"
+            required
+            maxlength="18"
+            placeholder="00.000.000/0000-00"
+            class="pd-cliente-novo-input"
+            autocomplete="off"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field">
+          <span>Telefone corporativo *</span>
+          <input
+            type="text"
+            id="campo-telefone"
+            name="telefone"
+            required
+            maxlength="15"
+            placeholder="(00) 00000-0000"
+            class="pd-cliente-novo-input"
+            autocomplete="tel"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field">
+          <span>Setor de mercado</span>
+          <input
+            type="text"
+            name="setor_mercado"
+            placeholder="Ex: Tecnologia, Saúde, Varejo"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <!-- ── Endereço ── -->
+        <div class="pd-cliente-novo-section-title">Endereço</div>
+
+        <label class="pd-cliente-novo-field">
+          <span>CEP *</span>
+          <input
+            type="text"
+            id="campo-cep"
+            name="cep"
+            required
+            maxlength="9"
+            placeholder="00000-000"
+            class="pd-cliente-novo-input"
+            autocomplete="postal-code"
+          />
+          <span id="cep-erro" class="pd-cliente-novo-field-hint"></span>
+        </label>
+
+        <label class="pd-cliente-novo-field">
+          <span>Número</span>
+          <input
+            type="text"
+            id="campo-numero"
+            name="numero"
+            placeholder="Ex: 123"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field pd-cliente-novo-field--full">
+          <span>Logradouro *</span>
+          <input
+            type="text"
+            id="campo-logradouro"
+            name="logradouro"
+            required
+            placeholder="Ex: Rua das Flores, Av. Paulista"
+            class="pd-cliente-novo-input"
+            autocomplete="street-address"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field pd-cliente-novo-field--full">
+          <span>Complemento</span>
+          <input
+            type="text"
+            name="complemento"
+            placeholder="Ex: Sala 4, Bloco B, Andar 3"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <!-- ── Responsável ── -->
+        <div class="pd-cliente-novo-section-title">Responsável</div>
+
+        <label class="pd-cliente-novo-field">
+          <span>Nome do responsável *</span>
+          <input
+            type="text"
+            name="responsavel"
+            required
+            placeholder="Ex: Maria Silva"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field">
+          <span>Setor do responsável</span>
+          <input
+            type="text"
+            name="setor_responsavel"
+            placeholder="Ex: RH, ADM, Diretoria"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <label class="pd-cliente-novo-field pd-cliente-novo-field--full">
+          <span>E-mail do responsável *</span>
+          <input
+            type="email"
+            name="email_responsavel"
+            required
+            placeholder="Ex: contato@empresa.com"
+            class="pd-cliente-novo-input"
+          />
+        </label>
+
+        <div class="pd-cliente-novo-field pd-cliente-novo-field--full">
+          <label class="pd-cliente-novo-check">
+            <input type="checkbox" name="ativo" value="true" checked />
+            <span>Cliente ativo</span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="pd-cliente-novo-actions">
+        <button type="submit" class="pd-cliente-novo-submit">Criar cliente</button>
+        <a href="/admin/dashboard" class="pd-cliente-novo-cancel">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  (function () {
+
+    /* ── CNPJ mask: ##.###.###/####-## ── */
+    var cnpjEl = document.getElementById('campo-cnpj');
+    if (cnpjEl) {
+      cnpjEl.addEventListener('input', function () {
+        var v = this.value.replace(/\D/g, '').slice(0, 14);
+        v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        v = v.replace(/(\d{4})(\d)/, '$1-$2');
+        this.value = v;
+      });
+    }
+
+    /* ── Telefone mask: (##) #####-#### ── */
+    var telEl = document.getElementById('campo-telefone');
+    if (telEl) {
+      telEl.addEventListener('input', function () {
+        var v = this.value.replace(/\D/g, '').slice(0, 11);
+        if (v.length === 0) { this.value = ''; return; }
+        if (v.length <= 2) {
+          this.value = '(' + v;
+        } else if (v.length <= 7) {
+          this.value = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+        } else {
+          this.value = '(' + v.slice(0, 2) + ') ' + v.slice(2, 7) + '-' + v.slice(7);
+        }
+      });
+    }
+
+    /* ── CEP mask: #####-### ── */
+    var cepEl  = document.getElementById('campo-cep');
+    var erroEl = document.getElementById('cep-erro');
+    var logEl  = document.getElementById('campo-logradouro');
+
+    if (cepEl) {
+      cepEl.addEventListener('input', function () {
+        var digits = this.value.replace(/\D/g, '').slice(0, 8);
+        this.value = digits.length > 5 ? digits.slice(0, 5) + '-' + digits.slice(5) : digits;
+
+        if (erroEl) { erroEl.textContent = ''; erroEl.classList.remove('pd-cliente-novo-field-hint--visible'); }
+
+        if (digits.length === 8) {
+          _consultarCep(digits);
+        }
+      });
+    }
+
+    /* ── ViaCEP autocomplete ── */
+    function _consultarCep(cep) {
+      fetch('https://viacep.com.br/ws/' + cep + '/json/')
+        .then(function (r) {
+          if (!r.ok) throw new Error('network');
+          return r.json();
+        })
+        .then(function (data) {
+          if (data.erro) {
+            _showCepErro('CEP não encontrado. Preencha o endereço manualmente.');
+            return;
+          }
+          if (erroEl) { erroEl.textContent = ''; erroEl.classList.remove('pd-cliente-novo-field-hint--visible'); }
+          if (logEl && !logEl.value.trim()) {
+            var partes = [data.logradouro, data.bairro, data.localidade + (data.uf ? '/' + data.uf : '')];
+            logEl.value = partes.filter(Boolean).join(', ');
+          }
+        })
+        .catch(function () {
+          _showCepErro('Não foi possível localizar o endereço automaticamente. Por favor, preencha os dados manualmente.');
+        });
+    }
+
+    function _showCepErro(msg) {
+      if (!erroEl) return;
+      erroEl.textContent = msg;
+      erroEl.classList.add('pd-cliente-novo-field-hint--visible');
+    }
+
+  })();
+  </script>
+{% endblock %}

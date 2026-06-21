@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+  <div style="max-width:640px; margin:0 auto; padding:24px;">
+    <h1 style="margin-top:0;">Iniciar teste</h1>
+
+    {% if error %}
+      <div style="padding:12px; border:1px solid #f3c2c2; background:#fff5f5; border-radius:10px; margin-bottom:12px;">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="post" action="/t/{{ token }}" style="display:grid; gap:10px; padding:12px; border:1px solid #ddd; border-radius:10px;">
+      <label style="display:grid; gap:6px;">
+        <span>Nome</span>
+        <input name="nome" required style="padding:10px; border:1px solid #ddd; border-radius:8px;" />
+      </label>
+
+      <label style="display:grid; gap:6px;">
+        <span>Sobrenome (opcional)</span>
+        <input name="sobrenome" style="padding:10px; border:1px solid #ddd; border-radius:8px;" />
+      </label>
+
+      <label style="display:grid; gap:6px;">
+        <span>Email (opcional)</span>
+        <input name="email" type="email" style="padding:10px; border:1px solid #ddd; border-radius:8px;" />
+      </label>
+
+      <button type="submit" style="padding:10px 14px; border-radius:8px; border:1px solid #ddd; cursor:pointer; width: fit-content;">
+        Começar
+      </button>
+    </form>
+  </div>
+{% endblock %}

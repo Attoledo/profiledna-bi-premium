@@ -1,0 +1,26 @@
+<section class="premium-section">
+  <div class="premium-kicker">Visualização</div>
+  <h2 class="premium-h2">Painel visual das competências</h2>
+  <p class="premium-text">
+    Abaixo, os indicadores oficiais são apresentados de forma visual, preservando scores e níveis já consolidados pelo sistema.
+  </p>
+
+  {% for painel in paineis_area %}
+    <div class="premium-panel">
+      <div class="premium-panel-title">{{ painel.get("area_label", painel.get("area", "Área")) }}</div>
+
+      {% for item in painel.get("items", []) %}
+        <div class="premium-card">
+          <div class="premium-card-title">
+            {{ item.get("name", "Dimensão") }}
+            <span class="premium-badge">{{ item.get("band", "Nível não disponível") }}</span>
+          </div>
+          <div class="premium-text">Score {{ item.get("score", 0) }}/10</div>
+          <div class="premium-bar-track">
+            <span class="premium-bar-fill" style="width: {{ (item.get("score", 0)|int * 10) }}%;"></span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</section>

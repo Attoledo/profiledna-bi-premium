@@ -1,0 +1,23 @@
+# secrets
+runtime/.env
+runtime/.env.*
+*.pem
+*.key
+
+# data / volumes
+volumes/
+backups/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# local
+.DS_Store
+.vscode/
+compose/*.bak_*
+*.bak_*
+*.bak.*
+_cleanup_archive/

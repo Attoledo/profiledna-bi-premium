@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: profiledna
+      POSTGRES_USER: profiledna
+      POSTGRES_PASSWORD: profiledna
+    volumes:
+      - ../volumes/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U profiledna -d profiledna"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api_v2:
+    depends_on:
+      - db
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.v2
+    env_file:
+      - ../runtime/.env
+    ports:
+      - "127.0.0.1:18081:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8000/health >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - ../volumes/reports:/app/volumes/reports
+      - ../runtime:/srv/profiledna/runtime:ro

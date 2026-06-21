@@ -1,0 +1,222 @@
+{
+  "A": {
+    "title": "Atitude Analítica",
+    "fields": {
+      "low": "Tende a decidir com base em experiência/intuição, com menor aprofundamento em dados e critérios. Pode haver variação de qualidade entre entregas.",
+      "mid": "Equilibra análise e ação; costuma checar o essencial antes de decidir.",
+      "high": "Prioriza lógica, evidências e critérios claros; reduz risco de erro e aumenta consistência.",
+      "excess": "Pode demorar para decidir (overanalysis) ou exigir evidência demais para avançar.",
+      "actions": "(1) usar checklist de decisão (3 critérios + impacto + risco); (2) definir \"limite de análise\" (tempo ou nº de dados).",
+      "metric": "Decisões tomadas no prazo acordado + redução de retrabalho/erros em entregas."
+    }
+  },
+  "B": {
+    "title": "Organização",
+    "fields": {
+      "low": "Tende a operar de forma reativa; risco de prazos apertados e perda de controle de demandas.",
+      "mid": "Organiza o básico, com boa previsibilidade na maioria das rotinas.",
+      "high": "Estrutura tarefas, prioriza e cria cadência; aumenta previsibilidade e gestão de capacidade.",
+      "excess": "Rigidez, burocracia ou dificuldade com mudanças rápidas.",
+      "actions": "(1) planejar semana com 3 prioridades e 5 tarefas-chave; (2) revisar backlog 2x/semana.",
+      "metric": "% entregas no prazo + volume de urgências/\"apagar incêndio\"."
+    }
+  },
+  "C": {
+    "title": "Controle",
+    "fields": {
+      "low": "Acompanha pouco, delega sem checagem e pode perder visibilidade de qualidade/andamento.",
+      "mid": "Acompanha pontos críticos e ajusta quando necessário.",
+      "high": "Monitora, padroniza e garante qualidade; reduz riscos e aumenta conformidade.",
+      "excess": "Microgestão; pode reduzir autonomia do time.",
+      "actions": "(1) trocar \"cobrança\" por checkpoints (marcos + critérios de pronto); (2) usar indicadores simples (prazo/qualidade).",
+      "metric": "Número de retrabalhos + satisfação do time com autonomia (pulse rápido)."
+    }
+  },
+  "D": {
+    "title": "Liderança",
+    "fields": {
+      "low": "Tende a evitar conduzir e influenciar; pode preferir execução individual.",
+      "mid": "Lidera quando necessário, com boa capacidade de orientar.",
+      "high": "Assume direção, mobiliza e sustenta decisões; favorece alinhamento e entrega.",
+      "excess": "Pode soar controlador ou pouco aberto a contribuições.",
+      "actions": "(1) praticar \"direção + escuta\": definir objetivo e pedir 2 alternativas do time; (2) delegar com clareza (o quê/por quê/como medir).",
+      "metric": "Clareza de metas (OKR/entregáveis) + melhoria em alinhamento (redução de retrabalho por desalinhamento)."
+    }
+  },
+  "E": {
+    "title": "Necessidade de se Comunicar",
+    "fields": {
+      "low": "Comunica o essencial; risco de falta de contexto para stakeholders.",
+      "mid": "Comunica bem quando necessário.",
+      "high": "Atualiza, explica e influencia; reduz ruídos e aumenta alinhamento.",
+      "excess": "Comunicação demais (ruído), prolixidade, microatualizações.",
+      "actions": "(1) padronizar comunicação (status semanal 3 bullets); (2) antes de falar, definir objetivo: informar/alinhar/decidir.",
+      "metric": "Redução de retrabalho por falta de alinhamento + satisfação do stakeholder."
+    }
+  },
+  "F": {
+    "title": "Decisão de Risco",
+    "fields": {
+      "low": "Prefere segurança; pode evitar escolhas difíceis e atrasar decisões.",
+      "mid": "Avalia risco e avança com prudência.",
+      "high": "Assume riscos calculados e decide mesmo com incerteza; acelera execução em cenários ambíguos.",
+      "excess": "Pode subestimar impactos ou avançar sem mitigação.",
+      "actions": "(1) registrar riscos e contramedidas (top 3); (2) usar \"teste pequeno\" antes de escalar.",
+      "metric": "Tempo de decisão + taxa de incidentes/impactos após mudanças."
+    }
+  },
+  "G": {
+    "title": "Ritmo de Execução",
+    "fields": {
+      "low": "Ritmo mais estável; pode demorar para iniciar/fechar.",
+      "mid": "Bom ritmo com consistência.",
+      "high": "Rapidez e senso de urgência; acelera entregas.",
+      "excess": "Atropelar etapas; aumentar erros.",
+      "actions": "(1) check de qualidade antes de entregar; (2) dividir entregas em marcos semanais.",
+      "metric": "Lead time de entrega + taxa de retrabalho."
+    }
+  },
+  "H": {
+    "title": "Esforço no Trabalho (Disciplina/Entrega)",
+    "fields": {
+      "low": "Preserva energia; pode reduzir ritmo sob pressão prolongada.",
+      "mid": "Mantém consistência na maior parte do tempo.",
+      "high": "Alto comprometimento e dedicação; tende a \"fazer acontecer\".",
+      "excess": "Sobrecarga, burnout, dificuldade em dizer \"não\".",
+      "actions": "(1) priorizar com base em impacto; (2) negociar prazos/escopo antes de aceitar tudo.",
+      "metric": "Horas extras recorrentes + estabilidade de performance (sem quedas por exaustão)."
+    }
+  },
+  "I": {
+    "title": "Relação com Autoridade",
+    "fields": {
+      "low": "Questiona hierarquia; prefere autonomia total.",
+      "mid": "Equilibra autonomia e alinhamento.",
+      "high": "Respeita estrutura, busca alinhamento e conformidade; bom em ambientes regulados.",
+      "excess": "Dependência de validação; baixa iniciativa em ambiguidade.",
+      "actions": "(1) alinhar \"limites de autonomia\" com gestor; (2) levar proposta + riscos + recomendação (não só problema).",
+      "metric": "Número de decisões tomadas com autonomia + qualidade do alinhamento (menos retrabalho por \"voltar atrás\")."
+    }
+  },
+  "J": {
+    "title": "Apego às Técnicas (Processos/Metodologia)",
+    "fields": {
+      "low": "Prefere flexibilidade; pode ignorar padrões e gerar inconsistência.",
+      "mid": "Usa processos quando agregam valor, sem engessar.",
+      "high": "Segue métodos e boas práticas; melhora qualidade, conformidade e previsibilidade.",
+      "excess": "Excesso de formalidade; baixa adaptação ao contexto.",
+      "actions": "(1) simplificar processos: \"mínimo necessário\" para qualidade; (2) acordar padrões com o time e revisar trimestralmente.",
+      "metric": "Conformidade a processos críticos + redução de erros repetitivos."
+    }
+  },
+  "K": {
+    "title": "Obstinação (Persistência/Firmeza)",
+    "fields": {
+      "low": "Flexível; pode desistir cedo diante de barreiras.",
+      "mid": "Persistência equilibrada.",
+      "high": "Firme e resiliente; sustenta decisões e atravessa dificuldade.",
+      "excess": "Teimosia; baixa abertura a feedback e mudança.",
+      "actions": "(1) revisão quinzenal \"manter/mudar/parar\"; (2) pedir 1 contraponto obrigatório antes de decisões grandes.",
+      "metric": "Número de ajustes bem-sucedidos (mudanças de rota) + percepção de abertura (feedback)."
+    }
+  },
+  "L": {
+    "title": "Detalhismo",
+    "fields": {
+      "low": "Foca no macro; risco de falhas em requisitos, qualidade ou acabamento.",
+      "mid": "Equilibra visão geral e checagens pontuais.",
+      "high": "Atenção forte a detalhes; aumenta qualidade e reduz erros.",
+      "excess": "Perfeccionismo e lentidão; dificuldade em \"entregar versão 1\".",
+      "actions": "(1) definir critérios de \"bom o suficiente\" (DoD); (2) separar etapas: rascunho → revisão → entrega.",
+      "metric": "Taxa de bugs/erros + tempo médio de entrega."
+    }
+  },
+  "M": {
+    "title": "Confrontação Pessoal (Assertividade/Conflito)",
+    "fields": {
+      "low": "Evita confronto; pode \"engolir\" problemas e gerar acúmulo.",
+      "mid": "Aborda divergências com equilíbrio.",
+      "high": "Confronta e cobra; tende a resolver rápido temas críticos.",
+      "excess": "Pode soar agressivo ou gerar resistência.",
+      "actions": "(1) usar modelo Fato–Impacto–Pedido; (2) alinhar expectativas antes de cobrar (o que, quando, padrão).",
+      "metric": "Redução de problemas recorrentes + percepção de segurança psicológica no time (pulse)."
+    }
+  },
+  "N": {
+    "title": "Repressão Emocional (Autocontrole/Expressão)",
+    "fields": {
+      "low": "Expressa emoções com facilidade; pode reagir no calor do momento.",
+      "mid": "Regula bem e escolhe quando expor; comunicação equilibrada.",
+      "high": "Mantém compostura e controle; útil em crise e ambientes de pressão.",
+      "excess": "Pode parecer frio, distante ou pouco transparente.",
+      "actions": "(1) verbalizar intenção (\"meu objetivo é…\"); (2) pedir feedback sobre clareza e abertura.",
+      "metric": "Qualidade de conversas difíceis (feedback do gestor/pares) + incidentes de conflito."
+    }
+  },
+  "O": {
+    "title": "Gosto pela Inovação",
+    "fields": {
+      "low": "Prefere estabilidade e métodos testados; reduz risco, aumenta previsibilidade.",
+      "mid": "Inova com critério, quando faz sentido.",
+      "high": "Busca novidade e melhoria; aumenta adaptação e criatividade.",
+      "excess": "Mudança constante; perda de padrão e consistência.",
+      "actions": "(1) pipeline de melhorias (ideia → teste → padronizar); (2) definir \"áreas estáveis\" vs \"áreas de experimento\".",
+      "metric": "Melhorias implementadas com ganho real + estabilidade de processos críticos."
+    }
+  },
+  "P": {
+    "title": "Envolvimento Afetivo (Empatia/Vínculo)",
+    "fields": {
+      "low": "Relação mais técnica; pode ser percebido como distante.",
+      "mid": "Mantém bom vínculo sem perder objetividade.",
+      "high": "Cria conexão e cuidado; fortalece coesão e clima.",
+      "excess": "Dificuldade em decisões duras; tendência a evitar rupturas necessárias.",
+      "actions": "(1) separar \"pessoa\" e \"entrega\" no feedback; (2) praticar acordos claros de performance.",
+      "metric": "Clima do time + consistência de decisões de gestão (prazo/qualidade)."
+    }
+  },
+  "Q": {
+    "title": "Ambição (Resultados/Carreira)",
+    "fields": {
+      "low": "Metas moderadas; tende a evitar competição.",
+      "mid": "Busca crescimento com equilíbrio.",
+      "high": "Orientado a resultados e evolução; tende a assumir desafios.",
+      "excess": "Impaciência; foco excessivo em metas pode afetar relações.",
+      "actions": "(1) metas com qualidade + impacto; (2) calibrar \"velocidade x sustentabilidade\" com gestor.",
+      "metric": "Metas batidas com qualidade + feedback de colaboração/relacionamento."
+    }
+  },
+  "R": {
+    "title": "Autoexposição (Presença/Posicionamento)",
+    "fields": {
+      "low": "Prefere bastidores; tende a evitar visibilidade e palco.",
+      "mid": "Posiciona-se quando necessário.",
+      "high": "Tem presença, expõe ideias e defende pontos; favorece influência.",
+      "excess": "Pode parecer vaidade ou dominar espaço.",
+      "actions": "(1) regra 60/40: falar e ouvir; (2) comunicar por evidências e benefícios ao negócio.",
+      "metric": "Participação efetiva (decisões influenciadas) + feedback 360 de colaboração."
+    }
+  },
+  "S": {
+    "title": "Sociabilidade",
+    "fields": {
+      "low": "Prefere foco e menos interação; tende a ser reservado.",
+      "mid": "Socializa conforme o contexto.",
+      "high": "Cria redes, conecta áreas, facilita colaboração.",
+      "excess": "Dispersão, excesso de reuniões, perda de foco.",
+      "actions": "(1) reservar blocos de foco (no-meeting); (2) usar agenda objetiva (tema, decisão, dono, prazo).",
+      "metric": "Tempo em reuniões vs entrega + feedback de stakeholders sobre alinhamento."
+    }
+  },
+  "T": {
+    "title": "Inquietação Física (Energia/Movimento)",
+    "fields": {
+      "low": "Prefere ambientes calmos; pode cansar em alta volatilidade.",
+      "mid": "Adapta-se bem a diferentes ritmos.",
+      "high": "Alto nível de energia; lida bem com dinamismo e multitarefa.",
+      "excess": "Dispersão e dificuldade de manter foco profundo.",
+      "actions": "(1) técnica de foco (25/5 ou 50/10); (2) limitar WIP (máx. 2 tarefas simultâneas).",
+      "metric": "Tarefas concluídas vs iniciadas + tempo de foco diário."
+    }
+  }
+}

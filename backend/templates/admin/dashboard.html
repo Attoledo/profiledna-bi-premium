@@ -1,0 +1,874 @@
+{% extends "admin/base_admin.html" %}
+
+{% set clientes = clientes if clientes is defined and clientes else [] %}
+{% set q = q if q is defined and q else "" %}
+{% set total_clientes = total_clientes if total_clientes is defined else 0 %}
+{% set total_ativos = total_ativos if total_ativos is defined else 0 %}
+{% set csrf_token = csrf_token if csrf_token is defined else "" %}
+{% set setor_distribution = setor_distribution if setor_distribution is defined else [] %}
+{% set top5_frequency = top5_frequency if top5_frequency is defined else [] %}
+
+{% block title %}ProfileDNA — Dashboard Admin{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <script id="pd-chartjs-cdn" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block admin_content %}
+  <style>
+    .pd-dashboard-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 14px 20px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 4px 16px rgba(17, 24, 39, 0.04);
+      margin-bottom: 22px;
+    }
+
+    .pd-dashboard-filter-bar__label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+      white-space: nowrap;
+    }
+
+    .pd-dashboard-filter-bar__select {
+      min-height: 40px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(203, 213, 225, 0.7);
+      background: rgba(255, 255, 255, 0.8);
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+      min-width: 200px;
+      cursor: pointer;
+      transition: border-color .18s ease;
+    }
+
+    .pd-dashboard-filter-bar__select:focus {
+      border-color: rgba(251, 146, 60, 0.5);
+      box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.10);
+    }
+
+    .pd-dashboard-main-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ── Analytics column ── */
+    .pd-cockpit-analytics {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .pd-cockpit-kpi-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .pd-cockpit-kpi-card {
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 8px 24px rgba(17,24,39,0.06);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      min-width: 0;
+    }
+
+    .pd-cockpit-kpi-card--alert {
+      background: rgba(254,242,242,0.85);
+      border-color: rgba(252,165,165,0.5);
+    }
+
+    .pd-cockpit-kpi-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex: 0 0 auto;
+      background: rgba(249,115,22,0.10);
+      color: #f97316;
+    }
+
+    .pd-cockpit-kpi-card--alert .pd-cockpit-kpi-card__icon {
+      background: rgba(239,68,68,0.10);
+      color: #ef4444;
+    }
+
+    .pd-cockpit-kpi-card__body { min-width: 0; }
+
+    .pd-cockpit-kpi-card__label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .pd-cockpit-kpi-card__value {
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+      color: #111827;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .pd-cockpit-kpi-card--alert .pd-cockpit-kpi-card__value { color: #ef4444; }
+
+    .pd-cockpit-kpi-card__trend { font-size: 12px; font-weight: 700; color: #6b7280; }
+
+    .pd-cockpit-chart-card {
+      border-radius: 22px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 8px 24px rgba(17,24,39,0.06);
+      min-width: 0;
+    }
+
+    .pd-cockpit-chart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .pd-cockpit-chart-title { font-size: 14px; font-weight: 900; color: #111827; }
+
+    .pd-cockpit-chart-badge {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #f97316;
+      background: rgba(249,115,22,0.08);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(249,115,22,0.15);
+    }
+
+    .pd-cockpit-chart-wrap { position: relative; width: 100%; }
+
+    .pd-cockpit-pdca {
+      border-radius: 22px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 8px 24px rgba(17,24,39,0.06);
+    }
+
+    .pd-cockpit-pdca__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .pd-cockpit-pdca__title { font-size: 14px; font-weight: 900; color: #111827; }
+
+    .pd-cockpit-pdca__badge {
+      font-size: 11px;
+      font-weight: 900;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .pd-cockpit-pdca-items { display: flex; flex-direction: column; gap: 14px; }
+
+    .pd-cockpit-pdca-item { display: grid; gap: 6px; }
+
+    .pd-cockpit-pdca-item__meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pd-cockpit-pdca-item__label { font-size: 13px; font-weight: 800; color: #374151; }
+
+    .pd-cockpit-pdca-item__pct { font-size: 13px; font-weight: 900; color: #111827; white-space: nowrap; }
+
+    .pd-cockpit-pdca-item__bar-wrap {
+      height: 8px;
+      background: rgba(229,231,235,0.8);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .pd-cockpit-pdca-item__bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #fb923c, #f97316 50%, #ef4444);
+    }
+
+    /* ── DANA chat column ── */
+    .pd-cockpit-dana {
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 12px 36px rgba(17,24,39,0.07);
+      display: flex;
+      flex-direction: column;
+      min-height: 680px;
+      overflow: hidden;
+    }
+
+    .pd-cockpit-dana__header {
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(229,231,235,0.6);
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-title-block { display: flex; align-items: center; gap: 14px; }
+
+    .pd-dana-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: #111827;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-title { font-size: 14px; font-weight: 900; color: #111827; line-height: 1.2; }
+
+    .pd-dana-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #16a34a;
+    }
+
+    .pd-dana-status__dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22,163,74,0.15);
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-messages {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .pd-dana-msg {
+      max-width: 88%;
+      padding: 11px 15px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      font-weight: 500;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .pd-dana-msg--user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #fb923c, #f97316);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .pd-dana-msg--ai {
+      align-self: flex-start;
+      background: rgba(241,245,249,0.9);
+      color: #1e293b;
+      border-bottom-left-radius: 4px;
+      white-space: pre-line !important;
+    }
+
+    .pd-dana-msg--system {
+      align-self: center;
+      background: rgba(229,231,235,0.6);
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    .pd-dana-chips {
+      padding: 0 20px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(249,115,22,0.35);
+      background: rgba(255,247,237,0.85);
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease;
+      line-height: 1.3;
+    }
+
+    .pd-dana-chip:hover {
+      background: rgba(255,237,213,0.95);
+      border-color: rgba(249,115,22,0.55);
+    }
+
+    .pd-dana-input-row {
+      padding: 14px 20px;
+      border-top: 1px solid rgba(229,231,235,0.6);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-input {
+      flex: 1 1 auto;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(203,213,225,0.7);
+      background: rgba(255,255,255,0.9);
+      color: #111827;
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .pd-dana-input:focus {
+      border-color: rgba(249,115,22,0.5);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.10);
+    }
+
+    .pd-dana-input::placeholder { color: #94a3b8; }
+
+    .pd-dana-send-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #fb923c, #ef4444);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      box-shadow: 0 8px 18px rgba(249,115,22,0.22);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .pd-dana-send-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(249,115,22,0.28);
+    }
+
+    .pd-dana-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    @media (max-width: 900px) {
+      .pd-dashboard-main-grid { grid-template-columns: 1fr; }
+      .pd-cockpit-dana { min-height: 520px; }
+    }
+
+    @media (max-width: 680px) {
+      .pd-dashboard-filter-bar { gap: 12px; }
+      .pd-dashboard-filter-bar__select { min-width: 160px; }
+      .pd-cockpit-kpi-row { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <div class="pd-admin-page-head">
+    <div class="pd-admin-page-head__content">
+      <div class="pd-admin-page-head__eyebrow">Admin • Operação central</div>
+      <h1 class="pd-admin-page-head__title">Painel Admin</h1>
+      <p class="pd-admin-page-head__subtitle">
+        Gestão operacional de clientes, rodadas, setores, convites, participantes e BI analítico.
+      </p>
+    </div>
+  </div>
+
+  <div class="pd-dashboard-filter-bar">
+    <label class="pd-dashboard-filter-bar__label">
+      Cliente
+      <select id="filtro-cliente" class="pd-dashboard-filter-bar__select">
+        <option value="">Todos os Clientes</option>
+        {% for c in clientes %}
+          <option value="{{ c.id }}">{{ c.nome }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="pd-dashboard-filter-bar__label">
+      Setor
+      <select class="pd-dashboard-filter-bar__select">
+        <option value="">Todos os Setores</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="pd-dashboard-main-grid">
+
+    <!-- ── LEFT COLUMN: ANALYTICS ── -->
+    <div class="pd-cockpit-analytics">
+
+      <!-- Mini KPI Cards -->
+      <div class="pd-cockpit-kpi-row">
+        <div class="pd-cockpit-kpi-card">
+          <div class="pd-cockpit-kpi-card__icon">♡</div>
+          <div class="pd-cockpit-kpi-card__body">
+            <div class="pd-cockpit-kpi-card__label">Média de Engajamento</div>
+            <div class="pd-cockpit-kpi-card__value">8.4</div>
+            <div class="pd-cockpit-kpi-card__trend">de 10 pontos · global</div>
+          </div>
+        </div>
+        <div class="pd-cockpit-kpi-card pd-cockpit-kpi-card--alert">
+          <div class="pd-cockpit-kpi-card__icon">!</div>
+          <div class="pd-cockpit-kpi-card__body">
+            <div class="pd-cockpit-kpi-card__label">Turn-Over Estimado</div>
+            <div class="pd-cockpit-kpi-card__value">12%</div>
+            <div class="pd-cockpit-kpi-card__trend">índice de risco médio</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart 1: Doughnut — Distribuição por Setores -->
+      <div class="pd-cockpit-chart-card">
+        <div class="pd-cockpit-chart-head">
+          <span class="pd-cockpit-chart-title">Distribuição por Setores</span>
+          <span class="pd-cockpit-chart-badge">Live</span>
+        </div>
+        <div class="pd-cockpit-chart-wrap">
+          <canvas id="pd-chart-setores" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Horizontal Bar — TOP 5 Forças -->
+      <div class="pd-cockpit-chart-card">
+        <div class="pd-cockpit-chart-head">
+          <span class="pd-cockpit-chart-title">TOP 5 Forças Dominantes</span>
+          <span class="pd-cockpit-chart-badge">Ranking</span>
+        </div>
+        <div class="pd-cockpit-chart-wrap">
+          <canvas id="pd-chart-forcas" height="180"></canvas>
+        </div>
+      </div>
+
+      <!-- PDCA — Planos de Melhoria Contínua -->
+      <div class="pd-cockpit-pdca">
+        <div class="pd-cockpit-pdca__head">
+          <span class="pd-cockpit-pdca__title">Planos de Melhoria · PDCA</span>
+          <span class="pd-cockpit-pdca__badge">3 ativos</span>
+        </div>
+        <div class="pd-cockpit-pdca-items">
+          <div class="pd-cockpit-pdca-item">
+            <div class="pd-cockpit-pdca-item__meta">
+              <span class="pd-cockpit-pdca-item__label">TLMKT — Gaps de Resiliência</span>
+              <span class="pd-cockpit-pdca-item__pct">70%</span>
+            </div>
+            <div class="pd-cockpit-pdca-item__bar-wrap">
+              <div class="pd-cockpit-pdca-item__bar" style="width:70%"></div>
+            </div>
+          </div>
+          <div class="pd-cockpit-pdca-item">
+            <div class="pd-cockpit-pdca-item__meta">
+              <span class="pd-cockpit-pdca-item__label">Gestão — Atitude Analítica</span>
+              <span class="pd-cockpit-pdca-item__pct">45%</span>
+            </div>
+            <div class="pd-cockpit-pdca-item__bar-wrap">
+              <div class="pd-cockpit-pdca-item__bar" style="width:45%"></div>
+            </div>
+          </div>
+          <div class="pd-cockpit-pdca-item">
+            <div class="pd-cockpit-pdca-item__meta">
+              <span class="pd-cockpit-pdca-item__label">Operações — Comunicação Efetiva</span>
+              <span class="pd-cockpit-pdca-item__pct">88%</span>
+            </div>
+            <div class="pd-cockpit-pdca-item__bar-wrap">
+              <div class="pd-cockpit-pdca-item__bar" style="width:88%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.pd-cockpit-analytics -->
+
+    <!-- ── RIGHT COLUMN: DANA CHAT ── -->
+    <div class="pd-cockpit-dana">
+      <div class="pd-cockpit-dana__header">
+        <div class="pd-dana-title-block">
+          <span class="pd-dana-icon">✦</span>
+          <div>
+            <div class="pd-dana-title">DANA — Chief People Officer Global</div>
+            <div class="pd-dana-status">
+              <span class="pd-dana-status__dot"></span>
+              Ativa
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd-dana-messages" id="pd-dana-messages">
+        <div class="pd-dana-msg pd-dana-msg--ai" id="pd-dana-welcome-msg">
+          ✦ Olá! Aqui é a DANA. Estou com toda a base em tela — pronta para analisar tendências gerais, padrões comportamentais por setor e benchmarks consolidados. Em que posso apoiar sua estratégia hoje?
+        </div>
+      </div>
+
+      <div class="pd-dana-chips">
+        <button class="pd-dana-chip" data-q="DANA, quais são os 3 gaps coletivos do setor TLMKT?">Gaps TLMKT</button>
+        <button class="pd-dana-chip" data-q="Crie um PDCA focado no desenvolvimento de 'Atitude Analítica' no setor de Gestão.">PDCA · Atitude Analítica</button>
+        <button class="pd-dana-chip" data-q="Liste as 3 principais tendências comportamentais do cliente selecionado.">Tendências comportamentais</button>
+      </div>
+
+      <div class="pd-dana-input-row">
+        <input
+          type="text"
+          id="pd-dana-input"
+          class="pd-dana-input"
+          placeholder="Pergunte à DANA..."
+          autocomplete="off"
+        />
+        <button id="pd-dana-send" class="pd-dana-send-btn" title="Enviar">→</button>
+      </div>
+    </div><!-- /.pd-cockpit-dana -->
+
+  </div><!-- /.pd-dashboard-main-grid -->
+
+  <script>
+  (function () {
+    var msgBox  = document.getElementById('pd-dana-messages');
+    var inputEl = document.getElementById('pd-dana-input');
+    var sendBtn = document.getElementById('pd-dana-send');
+    var chips   = document.querySelectorAll('.pd-dana-chip');
+
+    function getClienteId() {
+      var sel = document.getElementById('filtro-cliente');
+      return sel ? sel.value : '';
+    }
+
+    function getClienteNome() {
+      var sel = document.getElementById('filtro-cliente');
+      if (!sel || !sel.value) return '';
+      return sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+    }
+
+    function appendMsg(text, role) {
+      var div = document.createElement('div');
+      div.className = 'pd-dana-msg pd-dana-msg--' + role;
+      div.textContent = text;
+      msgBox.appendChild(div);
+      msgBox.scrollTop = msgBox.scrollHeight;
+    }
+
+    function setLoading(on) {
+      if (sendBtn) { sendBtn.disabled = on; sendBtn.textContent = on ? '…' : '→'; }
+      if (inputEl) inputEl.disabled = on;
+    }
+
+    var _twGeneration = 0;
+
+    function typeWriter(text, el, onComplete) {
+      var gen = ++_twGeneration;
+      el.textContent = '';
+      var len = text.length;
+      if (len === 0) { if (onComplete) onComplete(); return; }
+      var charsPerTick = Math.max(1, Math.ceil(len / 140));
+      var i = 0;
+      function tick() {
+        if (_twGeneration !== gen) return;
+        i = Math.min(i + charsPerTick, len);
+        el.textContent = text.slice(0, i);
+        msgBox.scrollTop = msgBox.scrollHeight;
+        if (i < len) {
+          setTimeout(tick, 20);
+        } else {
+          if (onComplete) onComplete();
+        }
+      }
+      tick();
+    }
+
+    var _typewriting = false;
+
+    async function sendQuestion(q) {
+      q = (q || '').trim();
+      if (!q) return;
+      var cid = getClienteId();
+      appendMsg(q, 'user');
+      if (inputEl) inputEl.value = '';
+      setLoading(true);
+      _typewriting = false;
+      var chatUrl = cid
+        ? '/admin/ai/chat?cliente_id=' + encodeURIComponent(cid)
+        : '/admin/ai/chat';
+      var _reqBody = { question: q };
+      var _biCtx = _buildBiContextString();
+      if (_biCtx) _reqBody.bi_context = _biCtx;
+      try {
+        var res = await fetch(chatUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify(_reqBody)
+        });
+        if (!res.ok) {
+          var err = await res.json().catch(function () { return {}; });
+          appendMsg('Erro ' + res.status + ': ' + (err.detail || 'Tente novamente.'), 'system');
+        } else {
+          var data = await res.json();
+          var aiDiv = document.createElement('div');
+          aiDiv.className = 'pd-dana-msg pd-dana-msg--ai';
+          msgBox.appendChild(aiDiv);
+          msgBox.scrollTop = msgBox.scrollHeight;
+          _typewriting = true;
+          var _rawResp = data.response || '(sem resposta)';
+          var _cleanResp = _rawResp
+            .replace(/\*{1,3}/g, '')
+            .replace(/^#{1,6}\s*/gm, '')
+            .replace(/[ \t]{2,}/g, ' ')
+            .trim();
+          typeWriter(_cleanResp, aiDiv, function () {
+            _typewriting = false;
+            setLoading(false);
+          });
+        }
+      } catch (e) {
+        appendMsg('Erro de conexão. Verifique a rede e tente novamente.', 'system');
+      } finally {
+        if (!_typewriting) setLoading(false);
+      }
+    }
+
+    if (sendBtn) sendBtn.addEventListener('click', function () { sendQuestion(inputEl.value); });
+    if (inputEl) inputEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(inputEl.value); }
+    });
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () { sendQuestion(chip.getAttribute('data-q')); });
+    });
+
+    /* ── Real BI data injected from backend ── */
+    var _setoresRaw  = {{ setor_distribution | tojson }};
+    var _top5Raw     = {{ top5_frequency | tojson }};
+
+    function _buildBiContextString() {
+      var lines = [];
+      if (_setoresRaw && _setoresRaw.length > 0) {
+        var total = _setoresRaw.reduce(function (s, r) { return s + (parseInt(r.count) || 0); }, 0);
+        var parts = _setoresRaw
+          .slice()
+          .sort(function (a, b) { return (parseInt(b.count) || 0) - (parseInt(a.count) || 0); })
+          .map(function (r) {
+            var name = r.setor || r.label || r.name || 'Sem Setor';
+            var count = parseInt(r.count) || 0;
+            var pct = total > 0 ? Math.round(count / total * 1000) / 10 : 0;
+            return 'Setor ' + name + ' = ' + pct + '% (' + count + ' avaliações)';
+          });
+        lines.push('Distribuição por setor: ' + parts.join(', ') + '.');
+      }
+      if (_top5Raw && _top5Raw.length > 0) {
+        var top5Parts = _top5Raw.slice(0, 5).map(function (r, i) {
+          var label = r.dimension_label || r.label || r.dimension || '?';
+          var pct = parseFloat(r.pct) || 0;
+          return (i + 1) + '. ' + label + ' (' + pct.toFixed(1) + '%)';
+        });
+        lines.push('TOP 5 Forças Dominantes: ' + top5Parts.join(', ') + '.');
+      }
+      return lines.join(' ');
+    }
+
+    var PALETTE_CORAL = [
+      'rgba(251,146,60,0.85)',
+      'rgba(249,115,22,0.80)',
+      'rgba(239,68,68,0.75)',
+      'rgba(107,114,128,0.62)',
+      'rgba(203,213,225,0.80)'
+    ];
+
+    function initCharts() {
+      var C = window.Chart;
+      if (!C) return;
+
+      /* Chart 1 — Doughnut: Distribuição por Setores */
+      var ctxSetores = document.getElementById('pd-chart-setores');
+      if (ctxSetores) {
+        var setoresLabels = _setoresRaw.map(function (r) {
+          return r.setor || r.label || r.name || '?';
+        });
+        var setoresValues = _setoresRaw.map(function (r) {
+          return parseInt(r.count) || 0;
+        });
+        var setoresBg = PALETTE_CORAL.slice(0, setoresLabels.length);
+        while (setoresBg.length < setoresLabels.length) {
+          setoresBg.push('rgba(156,163,175,0.60)');
+        }
+        new C(ctxSetores, {
+          type: 'doughnut',
+          data: {
+            labels: setoresLabels,
+            datasets: [{
+              data: setoresValues,
+              backgroundColor: setoresBg,
+              borderColor: 'rgba(255,255,255,0.9)',
+              borderWidth: 3,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '62%',
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  font: { weight: '800', size: 12 },
+                  padding: 14,
+                  color: '#374151',
+                  usePointStyle: true,
+                  pointStyleWidth: 10
+                }
+              }
+            }
+          }
+        });
+      }
+
+      /* Chart 2 — Horizontal Bar: TOP 5 Forças Dominantes */
+      var ctxForcas = document.getElementById('pd-chart-forcas');
+      if (ctxForcas) {
+        var top5Slice   = _top5Raw.slice(0, 5);
+        var forcasLabels = top5Slice.map(function (r) {
+          return r.dimension_label || r.label || r.dimension || '?';
+        });
+        var forcasValues = top5Slice.map(function (r) {
+          return parseFloat(r.pct) || 0;
+        });
+        var forcasBg = PALETTE_CORAL.slice(0, forcasLabels.length);
+        new C(ctxForcas, {
+          type: 'bar',
+          data: {
+            labels: forcasLabels,
+            datasets: [{
+              label: 'Frequência',
+              data: forcasValues,
+              backgroundColor: forcasBg,
+              borderRadius: 6,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                  font: { weight: '700', size: 11 },
+                  color: '#6b7280',
+                  callback: function (v) { return v + '%'; }
+                },
+                grid: { color: 'rgba(229,231,235,0.6)' }
+              },
+              y: {
+                ticks: { font: { weight: '800', size: 12 }, color: '#374151' },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    var cdn = document.getElementById('pd-chartjs-cdn');
+    if (window.Chart) {
+      initCharts();
+    } else if (cdn) {
+      cdn.addEventListener('load', initCharts);
+    }
+
+    /* ── DANA chat reset on filter change ── */
+    var _MSG_ECOSYSTEM = '✦ Olá! Aqui é a DANA. Estou com toda a base em tela — pronta para analisar tendências gerais, padrões comportamentais por setor e benchmarks consolidados. Em que posso apoiar sua estratégia hoje?';
+
+    function _resetChat() {
+      _typewriting = false;
+      setLoading(false);
+      if (msgBox) msgBox.innerHTML = '';
+      var welcomeDiv = document.createElement('div');
+      welcomeDiv.className = 'pd-dana-msg pd-dana-msg--ai';
+      if (msgBox) msgBox.appendChild(welcomeDiv);
+      var cid = getClienteId();
+      var welcomeText;
+      if (cid) {
+        var nomeCliente = getClienteNome() || 'Cliente';
+        welcomeText = '✦ Olá! Estou com os dados de ' + nomeCliente + ' em tela. Posso analisar o perfil comportamental consolidado, gaps coletivos por setor e tendências de desenvolvimento. Como posso ajudar sua gestão?';
+      } else {
+        welcomeText = _MSG_ECOSYSTEM;
+      }
+      typeWriter(welcomeText, welcomeDiv, null);
+    }
+
+    document.querySelectorAll('.pd-dashboard-filter-bar__select').forEach(function (sel) {
+      sel.addEventListener('change', _resetChat);
+    });
+  })();
+  </script>
+{% endblock %}

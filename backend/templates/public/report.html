@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+{% set band_label_map = {"low":"Baixo","mid":"Médio","high":"Alto"} %}
+{% macro band_label(k) -%}
+  {{ band_label_map.get((k or "")|lower, (k or "")) }}
+{%- endmacro %}
+
+<h2>Relatório</h2>
+
+<p class="muted">Resumo (Top/Bottom) e interpretações por dimensão (SSOT).</p>
+
+<h3>Ranking</h3>
+<div class="grid">
+  <div class="card mini">
+    <h4>Top 3</h4>
+    <ul>
+      {% for l in ranking.top3 %}
+        <li><strong>{{ l }}</strong> — {{ (interpretations.get(l, {}).get("name") or "") }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card mini">
+    <h4>Top 5</h4>
+    <ul>
+      {% for l in ranking.top5 %}
+        <li><strong>{{ l }}</strong> — {{ (interpretations.get(l, {}).get("name") or "") }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card mini">
+    <h4>Bottom 3</h4>
+    <ul>
+      {% for l in ranking.bottom3 %}
+        <li><strong>{{ l }}</strong> — {{ (interpretations.get(l, {}).get("name") or "") }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<hr/>
+
+<h3>Dimensões (20)</h3>
+<p class="muted">Score (0–10) • Faixa (low/mid/high) • Texto</p>
+
+{% for letter, item in interpretations.items() %}
+  <div class="card">
+    <h4>{{ letter }} — {{ item.get("name","") }}</h4>
+    <p class="muted">
+      Score: <strong>{{ item.get("score","") }}</strong>
+      • Faixa: <strong>{{ band_label(item.get("band_key","")) }}</strong>
+      {% if item.get("area") %} • Área: {{ item.get("area") }}{% endif %}
+    </p>
+    {% if item.get("text") %}
+      <p>{{ item.get("text") }}</p>
+    {% endif %}
+  </div>
+{% endfor %}
+
+<div class="row space-between">
+  <a class="btn secondary" href="/">Início</a>
+</div>
+
+{% endblock %}

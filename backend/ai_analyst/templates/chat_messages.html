@@ -1,0 +1,176 @@
+{% if messages and messages|length > 0 %}
+  <div style="display:grid; gap:16px;">
+    {% for item in messages %}
+      {% set report_sections_used = item.get("report_sections_used", []) if item is mapping else [] %}
+      {% set docsia_documents_used = item.get("docsia_documents_used", []) if item is mapping else [] %}
+            
+      {% set base_parts = [] %}
+      {% if item.query_mode == "participante" %}
+        {% set _ = base_parts.append("contexto oficial do participante") %}
+      {% else %}
+        {% set _ = base_parts.append("contexto oficial do cliente") %}
+      {% endif %}
+      {% if report_sections_used %}
+        {% set _ = base_parts.append("relatório final consolidado") %}
+      {% endif %}
+            {% if docsia_documents_used %}
+        {% set _ = base_parts.append("base documental complementar") %}
+      {% endif %}
+      {% if not base_parts %}
+        {% set _ = base_parts.append("contexto oficial consolidado do sistema") %}
+      {% endif %}
+
+      <article
+        style="
+          border:1px solid #e5e7eb;
+          border-radius:16px;
+          background:#ffffff;
+          box-shadow:0 10px 30px rgba(17,24,39,0.05);
+          overflow:hidden;
+        "
+      >
+        <header
+          style="
+            padding:14px 16px;
+            border-bottom:1px solid #e5e7eb;
+            background:linear-gradient(180deg,#ffffff 0%,#fafafa 100%);
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            align-items:center;
+            justify-content:space-between;
+          "
+        >
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+            <span
+              style="
+                display:inline-flex;
+                align-items:center;
+                padding:6px 10px;
+                border-radius:999px;
+                background:#111827;
+                color:#fff;
+                font-size:12px;
+                font-weight:700;
+              "
+            >
+              DANA
+            </span>
+
+            <span
+              style="
+                display:inline-flex;
+                align-items:center;
+                padding:6px 10px;
+                border-radius:999px;
+                background:#f3f4f6;
+                color:#1f2937;
+                font-size:12px;
+                font-weight:600;
+              "
+            >
+              {% if item.query_mode == "participante" %}
+                Análise de participante
+              {% elif item.query_mode == "grupo" %}
+                Análise de grupo
+              {% elif item.query_mode == "comparativo" %}
+                Análise comparativa
+              {% else %}
+                Análise de cliente
+              {% endif %}
+            </span>
+          </div>
+
+          <div style="font-size:12px; color:#6b7280;">
+            {% if item.created_at %}
+              {{ item.created_at.strftime("%d/%m/%Y %H:%M:%S") if item.created_at.__class__.__name__ != 'str' else item.created_at }}
+            {% else %}
+              Sem timestamp
+            {% endif %}
+          </div>
+        </header>
+
+        <div style="padding:16px; display:grid; gap:14px;">
+          <section
+            style="
+              border:1px solid #e5e7eb;
+              border-radius:14px;
+              background:#fafafa;
+              padding:14px;
+            "
+          >
+            <div
+              style="
+                font-size:12px;
+                font-weight:700;
+                color:#6b7280;
+                text-transform:uppercase;
+                letter-spacing:0.04em;
+                margin-bottom:8px;
+              "
+            >
+              Pergunta
+            </div>
+            <div style="font-size:14px; color:#111827; white-space:pre-wrap;">
+              {{ item.question_sanitized or "-" }}
+            </div>
+          </section>
+
+          <section
+            style="
+              border:1px solid rgba(17,24,39,0.08);
+              border-radius:14px;
+              background:#ffffff;
+              padding:14px;
+            "
+          >
+            <div
+              style="
+                font-size:12px;
+                font-weight:700;
+                color:#6b7280;
+                text-transform:uppercase;
+                letter-spacing:0.04em;
+                margin-bottom:8px;
+              "
+            >
+              Resposta da DANA
+            </div>
+            <div style="font-size:14px; color:#111827; white-space:pre-wrap; line-height:1.55;">
+              {{ item.response_text or "-" }}
+            </div>
+          </section>
+
+          <section
+            style="
+              border:1px solid #e5e7eb;
+              border-radius:12px;
+              background:#fafafa;
+              padding:12px;
+            "
+          >
+            <div style="font-size:11px; color:#6b7280; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;">
+              Bases consideradas
+            </div>
+            <div style="font-size:14px; color:#111827; line-height:1.6;">
+              {{ base_parts|join(" • ") }}
+            </div>
+          </section>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div
+    style="
+      padding:18px;
+      border:1px dashed #d1d5db;
+      border-radius:14px;
+      background:#ffffff;
+      color:#6b7280;
+      font-size:14px;
+    "
+  >
+    Nenhuma interação da DANA encontrada para este cliente{% if attempt_id %} e participante selecionado{% endif %}.
+  </div>
+{% endif %}

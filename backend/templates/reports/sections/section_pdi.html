@@ -1,0 +1,229 @@
+<div class="card">
+  <h3>6. Competências-Chave para PDI</h3>
+
+  {% set pdi_competencias = pdi_competencias if pdi_competencias is defined and pdi_competencias else [] %}
+  {% set ranking = ranking if ranking is defined and ranking else {} %}
+  {% set interpretations = interpretations if interpretations is defined and interpretations else {} %}
+  {% set bottom3 = ranking.get("bottom3", []) %}
+  {% set top3 = ranking.get("top3", []) %}
+
+  {% if pdi_competencias %}
+    <p class="muted">
+      Esta seção traduz o resultado em competências-chave para PDI, organizadas entre
+      competências para potencializar e competências para desenvolver.
+    </p>
+
+    {% set ns = namespace(has_potencializar=false, has_desenvolver=false) %}
+    {% for item in pdi_competencias %}
+      {% set eixo = (item.get("eixo", "") or "")|lower %}
+      {% if eixo == "potencializar" %}
+        {% set ns.has_potencializar = true %}
+      {% endif %}
+      {% if eixo == "desenvolver" %}
+        {% set ns.has_desenvolver = true %}
+      {% endif %}
+    {% endfor %}
+
+    {% if ns.has_potencializar %}
+      <div class="card mini">
+        <h4>Competências para potencializar</h4>
+        <p class="muted">
+          Competências derivadas dos pontos fortes, com foco em consolidar forças já presentes
+          e transformá-las em padrão consciente de desempenho.
+        </p>
+      </div>
+
+      {% for item in pdi_competencias %}
+        {% set eixo = (item.get("eixo", "") or "")|lower %}
+        {% if eixo == "potencializar" %}
+          {% set titulo = item.get("titulo") or item.get("competencia") or "Competência" %}
+          {% set dimensao_nome = item.get("dimensao_nome") or "Dimensão" %}
+          {% set letter = item.get("letter") or "" %}
+          {% set area = item.get("area") or "Área não informada" %}
+          {% set descricao = item.get("descricao") or item.get("porque_relevante") or "Sem descrição detalhada disponível." %}
+          {% set acoes = item.get("acoes", []) %}
+          {% set comportamentos_alvo = item.get("comportamentos_alvo", []) %}
+          {% set rotina_pratica = item.get("rotina_pratica") or "" %}
+          {% set indicador_evolucao = item.get("indicador_evolucao") or "" %}
+
+          <div class="card mini">
+            <h4>{{ titulo }}</h4>
+
+            <p class="muted">
+              <strong>Eixo:</strong> potencializar
+              {% if letter or dimensao_nome %}
+                • <strong>Dimensão:</strong>
+                {% if letter %}{{ letter }} — {% endif %}{{ dimensao_nome }}
+              {% endif %}
+            </p>
+
+            <p class="muted">
+              <strong>Área:</strong> {{ area }}
+            </p>
+
+            <p>{{ descricao }}</p>
+
+            {% if acoes %}
+              <h5>Ações recomendadas</h5>
+              <ul>
+                {% for acao in acoes %}
+                  {% if acao %}
+                    <li>{{ acao }}</li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if comportamentos_alvo %}
+              <h5>Comportamentos-alvo</h5>
+              <ul>
+                {% for comportamento in comportamentos_alvo %}
+                  {% if comportamento %}
+                    <li>{{ comportamento }}</li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if rotina_pratica %}
+              <p><strong>Rotina prática:</strong> {{ rotina_pratica }}</p>
+            {% endif %}
+
+            {% if indicador_evolucao %}
+              <p><strong>Indicador de evolução:</strong> {{ indicador_evolucao }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if ns.has_desenvolver %}
+      <div class="card mini">
+        <h4>Competências para desenvolver</h4>
+        <p class="muted">
+          Competências derivadas dos pontos de atenção, com foco em evolução prática,
+          repetição deliberada e evidência observável de progresso.
+        </p>
+      </div>
+
+      {% for item in pdi_competencias %}
+        {% set eixo = (item.get("eixo", "") or "")|lower %}
+        {% if eixo == "desenvolver" %}
+          {% set titulo = item.get("titulo") or item.get("competencia") or "Competência" %}
+          {% set dimensao_nome = item.get("dimensao_nome") or "Dimensão" %}
+          {% set letter = item.get("letter") or "" %}
+          {% set area = item.get("area") or "Área não informada" %}
+          {% set descricao = item.get("descricao") or item.get("porque_relevante") or "Sem descrição detalhada disponível." %}
+          {% set acoes = item.get("acoes", []) %}
+          {% set comportamentos_alvo = item.get("comportamentos_alvo", []) %}
+          {% set rotina_pratica = item.get("rotina_pratica") or "" %}
+          {% set indicador_evolucao = item.get("indicador_evolucao") or "" %}
+
+          <div class="card mini">
+            <h4>{{ titulo }}</h4>
+
+            <p class="muted">
+              <strong>Eixo:</strong> desenvolver
+              {% if letter or dimensao_nome %}
+                • <strong>Dimensão:</strong>
+                {% if letter %}{{ letter }} — {% endif %}{{ dimensao_nome }}
+              {% endif %}
+            </p>
+
+            <p class="muted">
+              <strong>Área:</strong> {{ area }}
+            </p>
+
+            <p>{{ descricao }}</p>
+
+            {% if acoes %}
+              <h5>Ações recomendadas</h5>
+              <ul>
+                {% for acao in acoes %}
+                  {% if acao %}
+                    <li>{{ acao }}</li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if comportamentos_alvo %}
+              <h5>Comportamentos-alvo</h5>
+              <ul>
+                {% for comportamento in comportamentos_alvo %}
+                  {% if comportamento %}
+                    <li>{{ comportamento }}</li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if rotina_pratica %}
+              <p><strong>Rotina prática:</strong> {{ rotina_pratica }}</p>
+            {% endif %}
+
+            {% if indicador_evolucao %}
+              <p><strong>Indicador de evolução:</strong> {{ indicador_evolucao }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+  {% elif bottom3 %}
+    <p class="muted">
+      As competências abaixo representam prioridades iniciais para desenvolvimento individual.
+    </p>
+
+    {% for letter in bottom3 %}
+      {% set item = interpretations.get(letter, {}) %}
+      <div class="card mini">
+        <h4>{{ letter }} — {{ item.get("name", "") or "Dimensão" }}</h4>
+
+        <p class="muted">
+          {% if item.get("area") %}
+            <strong>Área:</strong> {{ item.get("area") }}
+          {% else %}
+            <strong>Área:</strong> não informada
+          {% endif %}
+        </p>
+
+        {% if item.get("text") %}
+          <p>{{ item.get("text") }}</p>
+        {% else %}
+          <p class="muted">Sem interpretação detalhada disponível.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+  {% elif top3 %}
+    <p class="muted">
+      As competências-chave para PDI serão exibidas aqui quando os dados analíticos completos
+      estiverem disponíveis.
+    </p>
+
+    {% for letter in top3[:3] %}
+      {% set item = interpretations.get(letter, {}) %}
+      <div class="card mini">
+        <h4>{{ letter }} — {{ item.get("name", "") or "Dimensão" }}</h4>
+
+        <p class="muted">
+          {% if item.get("area") %}
+            <strong>Área:</strong> {{ item.get("area") }}
+          {% else %}
+            <strong>Área:</strong> não informada
+          {% endif %}
+        </p>
+
+        {% if item.get("text") %}
+          <p>{{ item.get("text") }}</p>
+        {% else %}
+          <p class="muted">Sem interpretação detalhada disponível.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+  {% else %}
+    <p>As competências-chave para PDI serão exibidas aqui quando os dados estiverem disponíveis.</p>
+  {% endif %}
+</div>

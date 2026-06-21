@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>Relatório ProfileDNA</h2>
+  <p class="muted">
+    Relatório final estruturado conforme SSOT e Documento Programa.
+  </p>
+</div>
+
+{% include "reports/sections/section_identificacao.html" %}
+{% include "reports/sections/section_sintese_executiva.html" %}
+{% include "reports/sections/section_paineis_area.html" %}
+{% include "reports/sections/section_top5.html" %}
+{% include "reports/sections/section_bottom3.html" %}
+{% include "reports/sections/section_pdi.html" %}
+{% include "reports/sections/section_gestor_rh.html" %}
+{% include "reports/sections/section_dimensoes_20.html" %}
+{% include "reports/sections/section_nota_tecnica.html" %}
+{% endblock %}

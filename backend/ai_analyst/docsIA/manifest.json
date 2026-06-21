@@ -1,0 +1,1690 @@
+{
+  "manifest_version": "1.0.0",
+  "generated_at": "2026-04-19T10:27:10.283867+00:00",
+  "base_path": "backend/ai_analyst/docsIA",
+  "total_documents": 111,
+  "themes": [
+    "BIG_FIVE",
+    "DISC",
+    "MBTI",
+    "PDI",
+    "PERSONALIDADES_PERFIS",
+    "TESTES_COMPORTAMENTAIS"
+  ],
+  "documents": [
+    {
+      "document_id": "big_five__001",
+      "title": "1 Fundamentos Científicos do Big Five (Five-Factor Model)",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/1 Fundamentos Científicos do Big Five (Five-Factor Model).pdf",
+      "hash": "8101db69278b36965d7ab01decfd0ab8f75c809f0d9e27340f329500cb8fdd73",
+      "included_at": "2026-04-19T10:18:40.051885+00:00"
+    },
+    {
+      "document_id": "big_five__002",
+      "title": "10  Template Definitivo de Relatório Big Five para Uso em Sistema, Recrutamento e Desenvolvimento",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/10  Template Definitivo de Relatório Big Five para Uso em Sistema, Recrutamento e Desenvolvimento.pdf",
+      "hash": "80d157d0d7156d2d7c920ef25d3dc5c757beaf21759c4f3d2c2548119a4eaebe",
+      "included_at": "2026-04-19T10:18:44.805907+00:00"
+    },
+    {
+      "document_id": "big_five__003",
+      "title": "2 Estrutura dos Fatores e Facetas no Big Five",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/2 Estrutura dos Fatores e Facetas no Big Five.pdf",
+      "hash": "03a70ec6345faafb8974e01b7a0faffc1d2a285dd9ef92e815cdefbd5fb3127f",
+      "included_at": "2026-04-19T10:18:40.580887+00:00"
+    },
+    {
+      "document_id": "big_five__004",
+      "title": "3 Cálculo, Escalas e Interpretação Psicométrica no Big Five",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/3 Cálculo, Escalas e Interpretação Psicométrica no Big Five.pdf",
+      "hash": "c79aac24dfe375a09e7ecf7d80adf1da3b309d44d9bddde874c1c9cf9cf7a6b7",
+      "included_at": "2026-04-19T10:18:41.110890+00:00"
+    },
+    {
+      "document_id": "big_five__005",
+      "title": "4 Interpretação Integrada do Perfil Big Five (Leitura Multivariada)",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/4 Interpretação Integrada do Perfil Big Five (Leitura Multivariada).pdf",
+      "hash": "25994460b28d053a0017f95c99c80fc13063ccb54433852d10306da68cb03dfb",
+      "included_at": "2026-04-19T10:18:41.628892+00:00"
+    },
+    {
+      "document_id": "big_five__006",
+      "title": "5 Aplicações do Big Five no Trabalho (Recrutamento, Performance e Risco)",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/5 Aplicações do Big Five no Trabalho (Recrutamento, Performance e Risco).pdf",
+      "hash": "e4896329373f0f5b4f94221a7ebc07d2471651df2d5622eec5cc659aeaeccab0",
+      "included_at": "2026-04-19T10:18:42.166895+00:00"
+    },
+    {
+      "document_id": "big_five__007",
+      "title": "6 Construção de PDI (Plano de Desenvolvimento Individual) baseado no Big Five",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/6 Construção de PDI (Plano de Desenvolvimento Individual) baseado no Big Five.pdf",
+      "hash": "1e716fc96bd9c91100766044ad6fccaca7b479258326e13636bacf16abc48522",
+      "included_at": "2026-04-19T10:18:42.692897+00:00"
+    },
+    {
+      "document_id": "big_five__008",
+      "title": "7 Limites Científicos, Vieses, Validade e Ética no Uso do Big Five",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/7 Limites Científicos, Vieses, Validade e Ética no Uso do Big Five.pdf",
+      "hash": "40cd940b883787a8a8b8d53f8f6761397d05e311ae3ec3e5f652b2b3272a331a",
+      "included_at": "2026-04-19T10:18:43.212900+00:00"
+    },
+    {
+      "document_id": "big_five__009",
+      "title": "8  Como Construir um Teste Big Five (Estrutura Técnica, Itens e Validação)",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/8  Como Construir um Teste Big Five (Estrutura Técnica, Itens e Validação).pdf",
+      "hash": "6f5f230e6d29b2c1c41d2326cd525d6f6557aef1bd202f7ab1cad4c0ca0e92d8",
+      "included_at": "2026-04-19T10:18:43.723902+00:00"
+    },
+    {
+      "document_id": "big_five__010",
+      "title": "9 Estrutura de Relatório Big Five para Candidatos, Colaboradores e Desenvolvimento",
+      "theme": "BIG_FIVE",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "big_five"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/BIG_FIVE/9 Estrutura de Relatório Big Five para Candidatos, Colaboradores e Desenvolvimento.pdf",
+      "hash": "4e618cbf500388721806fa648631d13bad786fe17604e9274a58dae2f69f6dbd",
+      "included_at": "2026-04-19T10:18:44.250905+00:00"
+    },
+    {
+      "document_id": "disc__001",
+      "title": "1 Fundamentos do Modelo DISC",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/1 Fundamentos do Modelo DISC.pdf",
+      "hash": "8aa7b37a176b8cb36ba0158db9fdda25c5bf3e933a23db23e9d9a3eb7638620e",
+      "included_at": "2026-04-19T10:19:08.690021+00:00"
+    },
+    {
+      "document_id": "disc__002",
+      "title": "10 Arquitetura científica do DISC_ teoria, modelo e instrumentos",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/10 Arquitetura científica do DISC_ teoria, modelo e instrumentos.pdf",
+      "hash": "6c0d7617f65e595c130f987873ca276ed4dd772784472d498065bca85ab7509d",
+      "included_at": "2026-04-19T10:19:15.279052+00:00"
+    },
+    {
+      "document_id": "disc__003",
+      "title": "11 Como funcionam os cálculos no DISC_ pontuação, perfis e diferenças entre versões",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/11 Como funcionam os cálculos no DISC_ pontuação, perfis e diferenças entre versões.pdf",
+      "hash": "999533c5f8fd6380e5cabab9fd7d15004ac4be58ffd76c3c2b44f6ec58d42609",
+      "included_at": "2026-04-19T10:19:15.808054+00:00"
+    },
+    {
+      "document_id": "disc__004",
+      "title": "12 Psicometria do DISC_ confiabilidade, validade e o que realmente sustenta um instrumento",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/12 Psicometria do DISC_ confiabilidade, validade e o que realmente sustenta um instrumento.pdf",
+      "hash": "3fd21720d9b7fc80fa9a956fb399ac3fa21c68b95d07740f93a23b93042b354e",
+      "included_at": "2026-04-19T10:19:16.324057+00:00"
+    },
+    {
+      "document_id": "disc__005",
+      "title": "13 Inferências válidas e inválidas no uso do DISC",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/13 Inferências válidas e inválidas no uso do DISC.pdf",
+      "hash": "f0ec1b51af6e7bc9e3ac67ed6d8b8d249e40a8dd2d5ca547bfefb21f15aac729",
+      "included_at": "2026-04-19T10:19:16.893059+00:00"
+    },
+    {
+      "document_id": "disc__006",
+      "title": "14 Leitura técnica de resultados DISC_ intensidades, combinações e sinais de adaptação",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/14 Leitura técnica de resultados DISC_ intensidades, combinações e sinais de adaptação.pdf",
+      "hash": "255d49dedc6d3860e49d5119079e0cb1feac609bb1cb7a6279a581651620b208",
+      "included_at": "2026-04-19T10:19:17.455062+00:00"
+    },
+    {
+      "document_id": "disc__007",
+      "title": "15 Como fazer devolutiva DISC com linguagem técnica, ética e aplicável",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/15 Como fazer devolutiva DISC com linguagem técnica, ética e aplicável.pdf",
+      "hash": "6c5819fa2cd43bd5c609244a4daab3852d0d2111655a546d6f0db1ad9541589a",
+      "included_at": "2026-04-19T10:19:18.089065+00:00"
+    },
+    {
+      "document_id": "disc__008",
+      "title": "16 Como construir PDI (Plano de Desenvolvimento Individual) a partir do DISC",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/16 Como construir PDI (Plano de Desenvolvimento Individual) a partir do DISC.pdf",
+      "hash": "3e16c790040edec119a21e79cf4949cc81322d713c3c863a4fd66753a595a35f",
+      "included_at": "2026-04-19T10:19:18.676068+00:00"
+    },
+    {
+      "document_id": "disc__009",
+      "title": "17 Como criar questionários inspirados no DISC (sem confundir com teste validado)",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/17 Como criar questionários inspirados no DISC (sem confundir com teste validado).pdf",
+      "hash": "9644a04db50fa31b372ca28e189444579788685e2cb5efc21bb889d2c0e654f0",
+      "included_at": "2026-04-19T10:19:19.284070+00:00"
+    },
+    {
+      "document_id": "disc__010",
+      "title": "18 Uso do DISC em recrutamento_ aplicação correta, riscos e limites",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/18 Uso do DISC em recrutamento_ aplicação correta, riscos e limites.pdf",
+      "hash": "11cc2af79d06e619dce2a14d45ce88659645cf940ab8e4469b7a335b64866786",
+      "included_at": "2026-04-19T10:19:19.841073+00:00"
+    },
+    {
+      "document_id": "disc__011",
+      "title": "19 Matriz de decisão do agente para interpretar e usar DISC com segurança",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/19 Matriz de decisão do agente para interpretar e usar DISC com segurança.pdf",
+      "hash": "31204e4c3878e04e975ce04f5307f36e63dcdf1b228a4da47a13a024e6cf28dc",
+      "included_at": "2026-04-19T10:19:20.398076+00:00"
+    },
+    {
+      "document_id": "disc__012",
+      "title": "2 Interpretação dos Perfis DISC (Combinações e Dinâmicas)",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/2 Interpretação dos Perfis DISC (Combinações e Dinâmicas).pdf",
+      "hash": "76dfdb833621ee193dfdb0676de27e431d93ec4622c7d3303b5a5cd71effe835",
+      "included_at": "2026-04-19T10:19:10.341028+00:00"
+    },
+    {
+      "document_id": "disc__013",
+      "title": "3 Limitações científicas, validade e críticas ao DISC",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/3 Limitações científicas, validade e críticas ao DISC.pdf",
+      "hash": "27d0d31d3d19089beaf0e379fea23d80d351e477b2659f9f518aa1ca1ca73e45",
+      "included_at": "2026-04-19T10:19:10.866031+00:00"
+    },
+    {
+      "document_id": "disc__014",
+      "title": "4 Limitações científicas, validade e críticas ao DISC",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/4 Limitações científicas, validade e críticas ao DISC.pdf",
+      "hash": "944cf15c6569b04075964478fae9933acce9cb6094911a9097d5282b6df9694d",
+      "included_at": "2026-04-19T10:19:11.447034+00:00"
+    },
+    {
+      "document_id": "disc__015",
+      "title": "5 Boas práticas de uso ético e técnico do DISC em empresas e recrutamento",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/5 Boas práticas de uso ético e técnico do DISC em empresas e recrutamento.pdf",
+      "hash": "4968d1a775e69f79e3cb59235aae5aa680c491d45bf5e26f9bcc1e6623060ab7",
+      "included_at": "2026-04-19T10:19:11.972036+00:00"
+    },
+    {
+      "document_id": "disc__016",
+      "title": "6 Funcionamento prático do teste DISC (estrutura, aplicação e exemplos)",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/6 Funcionamento prático do teste DISC (estrutura, aplicação e exemplos).pdf",
+      "hash": "46e8b2e8dede4db17cb816f40ff4df9e9548814c99ffb2359bbbace142591449",
+      "included_at": "2026-04-19T10:19:13.120041+00:00"
+    },
+    {
+      "document_id": "disc__017",
+      "title": "7 Modelo prático de teste DISC (estrutura aplicável para recrutamento)",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/7 Modelo prático de teste DISC (estrutura aplicável para recrutamento).pdf",
+      "hash": "685ddb7a2ed5fc850830d726e5ee1099c57a983c22b19d927144d23d3f278626",
+      "included_at": "2026-04-19T10:19:13.697044+00:00"
+    },
+    {
+      "document_id": "disc__018",
+      "title": "8 Algoritmo de ranking e decisão automática com base em DISC + entrevista + score composto",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/8 Algoritmo de ranking e decisão automática com base em DISC + entrevista + score composto.pdf",
+      "hash": "749038518aff7c5e4bc4cccea69b11f4d6c86b4779d6adad6bfe4aab894786ef",
+      "included_at": "2026-04-19T10:19:14.227047+00:00"
+    },
+    {
+      "document_id": "disc__019",
+      "title": "9 Especificação operacional do sistema de avaliação (DISC + Score composto)",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/9 Especificação operacional do sistema de avaliação (DISC + Score composto).pdf",
+      "hash": "033ce32b202549f88b0e49bc00ef49f0b4050dc95c2cd1f0f05ea665437a6ea4",
+      "included_at": "2026-04-19T10:19:14.774049+00:00"
+    },
+    {
+      "document_id": "disc__020",
+      "title": "DISC-Texto do Artigo",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/DISC-Texto do Artigo.pdf",
+      "hash": "bf3e2d138d5721da98ba968afdc45643c4bd68cec0b9ac382eaa3f30f772f9df",
+      "included_at": "2026-04-19T10:19:21.516081+00:00"
+    },
+    {
+      "document_id": "disc__021",
+      "title": "Estudo Personalidades",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/Estudo Personalidades.pdf",
+      "hash": "2543277afe87e8f475e438505f2c7dc2dc57d06c16c4f82604717be40c30e43e",
+      "included_at": "2026-04-19T10:19:22.412085+00:00"
+    },
+    {
+      "document_id": "disc__022",
+      "title": "Everything-DiSC-",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/Everything-DiSC-.pdf",
+      "hash": "febfd39f1a659f7de3cf6c8d0a1e49c2c9f42f54b1ca6ba5b77ed8e7f6d9acef",
+      "included_at": "2026-04-19T10:19:24.097093+00:00"
+    },
+    {
+      "document_id": "disc__023",
+      "title": "Everything-DiSC-resources",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/Everything-DiSC-resources.pdf",
+      "hash": "36fd19fe42950bf29506421183b9487352b35b74292b369d8a39bbae552d913f",
+      "included_at": "2026-04-19T10:19:29.746120+00:00"
+    },
+    {
+      "document_id": "disc__024",
+      "title": "standards_psico",
+      "theme": "DISC",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "disc"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/DISC/standards_psico.pdf",
+      "hash": "78182353e8cd877535f6f3c8967da52d4d3af64725146c08606d38825941ac61",
+      "included_at": "2026-04-19T10:19:31.998130+00:00"
+    },
+    {
+      "document_id": "mbti__001",
+      "title": "1 MBTI (Myers-Briggs Type Indicator)_ Fundamentos, Estrutura e Base Teórica",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/1 MBTI (Myers-Briggs Type Indicator)_ Fundamentos, Estrutura e Base Teórica.pdf",
+      "hash": "95c6c02dca6b0159402dac63ee2cf2510b8284fb647011af25c1f0399818039e",
+      "included_at": "2026-04-19T10:19:50.971219+00:00"
+    },
+    {
+      "document_id": "mbti__002",
+      "title": "10 Boas práticas para o agente interpretar MBTI com responsabilidade, rigor e utilidade real",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/10 Boas práticas para o agente interpretar MBTI com responsabilidade, rigor e utilidade real.pdf",
+      "hash": "d6351a22f2dd0fbb63a0acc4ba077d11672bce1b08c489f755bdee12840a1123",
+      "included_at": "2026-04-19T10:19:55.766242+00:00"
+    },
+    {
+      "document_id": "mbti__003",
+      "title": "11 Estrutura completa dos 16 tipos MBTI (modelo técnico para interpretação automática)",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/11 Estrutura completa dos 16 tipos MBTI (modelo técnico para interpretação automática).pdf",
+      "hash": "c9ddf14583d2f08867b718d185fa4d72b190e25d4e69c7af56af5fd053969b36",
+      "included_at": "2026-04-19T10:19:56.274244+00:00"
+    },
+    {
+      "document_id": "mbti__004",
+      "title": "12 Motor de decisão do agente_ como combinar MBTI + entrevista + evidências + PDI em um sistema inteligente",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/12 Motor de decisão do agente_ como combinar MBTI + entrevista + evidências + PDI em um sistema inteligente.pdf",
+      "hash": "1d16b5e284dc060018d4a6569fb0014b3cdba97e6db35b17c160ec1dad104e95",
+      "included_at": "2026-04-19T10:19:56.811247+00:00"
+    },
+    {
+      "document_id": "mbti__005",
+      "title": "2 Estrutura Cognitiva do MBTI_ funções, hierarquia funcional e dinâmica do tipo",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/2 Estrutura Cognitiva do MBTI_ funções, hierarquia funcional e dinâmica do tipo.pdf",
+      "hash": "2075bf09518b9f2e8abdeadf20a9f0ee02611709b36d78829af77c464f9af0ce",
+      "included_at": "2026-04-19T10:19:51.510222+00:00"
+    },
+    {
+      "document_id": "mbti__006",
+      "title": "3 Como identificar a ordem das funções nos 16 tipos MBTI (regra estrutural e algoritmo de leitura)",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/3 Como identificar a ordem das funções nos 16 tipos MBTI (regra estrutural e algoritmo de leitura).pdf",
+      "hash": "4e0579e8137d1147f370548bc6ef06fd4b77023b0c74769ba91f85ec25f21b9a",
+      "included_at": "2026-04-19T10:19:52.074224+00:00"
+    },
+    {
+      "document_id": "mbti__007",
+      "title": "4 Interpretação comportamental das funções cognitivas do MBTI (tradução prática para comportamento real)",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/4 Interpretação comportamental das funções cognitivas do MBTI (tradução prática para comportamento real).pdf",
+      "hash": "ed7913e5b703498ae00276177ba36cfec05fb26cc56fe2a7b3334404c585f093",
+      "included_at": "2026-04-19T10:19:52.556227+00:00"
+    },
+    {
+      "document_id": "mbti__008",
+      "title": "5 Uso do MBTI em recrutamento, avaliação e tomada de decisão (aplicação, limites e boas práticas)",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/5 Uso do MBTI em recrutamento, avaliação e tomada de decisão (aplicação, limites e boas práticas).pdf",
+      "hash": "aada44c457425fcf8990482d12cb0475aa52e01c48f3719cdb7bd0e247f1e47b",
+      "included_at": "2026-04-19T10:19:53.118229+00:00"
+    },
+    {
+      "document_id": "mbti__009",
+      "title": "6 Como construir um teste MBTI-like (estrutura, perguntas, lógica de pontuação e interpretação)",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/6 Como construir um teste MBTI-like (estrutura, perguntas, lógica de pontuação e interpretação).pdf",
+      "hash": "f9a4d51877177f119c14cb4e4840bb16ea743eba4f55a3d2b488eded8a2b6075",
+      "included_at": "2026-04-19T10:19:53.611232+00:00"
+    },
+    {
+      "document_id": "mbti__010",
+      "title": "7 Modelo completo de relatório MBTI (estrutura, linguagem, interpretação e output final)",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/7 Modelo completo de relatório MBTI (estrutura, linguagem, interpretação e output final).pdf",
+      "hash": "a4292156ad144bbd22647b2bbbfcdeed5c3830592340d3ced329dcf924be860a",
+      "included_at": "2026-04-19T10:19:54.183234+00:00"
+    },
+    {
+      "document_id": "mbti__011",
+      "title": "8 Comparação entre MBTI, Big Five e DISC (diferenças de modelo, validade, uso e limites)",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/8 Comparação entre MBTI, Big Five e DISC (diferenças de modelo, validade, uso e limites).pdf",
+      "hash": "09d63bdb6588cafdb3001ec9fd36aa953efcd51943b228530b41a9b01a3469b4",
+      "included_at": "2026-04-19T10:19:54.708237+00:00"
+    },
+    {
+      "document_id": "mbti__012",
+      "title": "9 Críticas científicas ao MBTI_ validade, confiabilidade, dicotomias, efeito Forer e riscos de uso indevido",
+      "theme": "MBTI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "mbti"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/MBTI/9 Críticas científicas ao MBTI_ validade, confiabilidade, dicotomias, efeito Forer e riscos de uso indevido.pdf",
+      "hash": "75411f9fd04b4ca0b9ce40b6ccbea02f1af6681f8ddc1d342607fdef5f7bcc24",
+      "included_at": "2026-04-19T10:19:55.312240+00:00"
+    },
+    {
+      "document_id": "pdi__001",
+      "title": "1 PDI_ Plano de Desenvolvimento Individual como ponte entre diagnóstico e mudança comportamental",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/1 PDI_ Plano de Desenvolvimento Individual como ponte entre diagnóstico e mudança comportamental.pdf",
+      "hash": "792f32e7aaf0d61fa1b1a1c30a59777bc75f1284a768b8bb3431d1bfd71021e9",
+      "included_at": "2026-04-19T10:21:52.147777+00:00"
+    },
+    {
+      "document_id": "pdi__002",
+      "title": "10 Critérios de qualidade para o agente avaliar se um PDI está forte, fraco ou inconsistente",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/10 Critérios de qualidade para o agente avaliar se um PDI está forte, fraco ou inconsistente.pdf",
+      "hash": "345295c87b482288dae7b6139e99fe4a11006ccfe6537ea16ca4c57ffcac4965",
+      "included_at": "2026-04-19T10:21:56.828798+00:00"
+    },
+    {
+      "document_id": "pdi__003",
+      "title": "11 Prompt mestre do agente_ como ele deve pensar, responder e construir PDIs automaticamente",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/11 Prompt mestre do agente_ como ele deve pensar, responder e construir PDIs automaticamente.pdf",
+      "hash": "a66f061eb870eb7bc168fa768ebb5262aca00d87f7650965fe6bf4ecf3b35e35",
+      "included_at": "2026-04-19T10:21:57.322801+00:00"
+    },
+    {
+      "document_id": "pdi__004",
+      "title": "12 Regras de decisão do agente_ quando aprofundar, quando alertar limites e quando recusar inferências fracas",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/12 Regras de decisão do agente_ quando aprofundar, quando alertar limites e quando recusar inferências fracas.pdf",
+      "hash": "ef25fea6f057abf699b31c9dbb836d0074b23012b3ea734270d651f2bf76753f",
+      "included_at": "2026-04-19T10:21:57.920803+00:00"
+    },
+    {
+      "document_id": "pdi__005",
+      "title": "13 Limites éticos e técnicos do agente ao interpretar comportamento, personalidade e desenvolvimento",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/13 Limites éticos e técnicos do agente ao interpretar comportamento, personalidade e desenvolvimento.pdf",
+      "hash": "abd34142a828b76a5b74da61cfa28399efe8c7f72956694be0ff280ea5a45bc7",
+      "included_at": "2026-04-19T10:21:58.438806+00:00"
+    },
+    {
+      "document_id": "pdi__006",
+      "title": "14 Como o agente deve diferenciar desenvolvimento, avaliação, aconselhamento e decisão de gestão",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/14 Como o agente deve diferenciar desenvolvimento, avaliação, aconselhamento e decisão de gestão.pdf",
+      "hash": "c177e907519c19b30adfd3e046554dc1404435023d16e81adbebad1debe56770",
+      "included_at": "2026-04-19T10:21:58.917808+00:00"
+    },
+    {
+      "document_id": "pdi__007",
+      "title": "15 Estrutura final do módulo PDI para inserção na inteligência do agente",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/15 Estrutura final do módulo PDI para inserção na inteligência do agente.pdf",
+      "hash": "ef19873e0ec86a55ef6a2e8bfcb5c8e3844c20396408238914ed2d4ef3fdc333",
+      "included_at": "2026-04-19T10:21:59.489810+00:00"
+    },
+    {
+      "document_id": "pdi__008",
+      "title": "2 Estrutura técnica de um PDI de alta qualidade",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/2 Estrutura técnica de um PDI de alta qualidade.pdf",
+      "hash": "5a21988ee720bfed13e581b1d79eba296e2ca701717873d17ddf8cae1482522d",
+      "included_at": "2026-04-19T10:21:52.656779+00:00"
+    },
+    {
+      "document_id": "pdi__009",
+      "title": "3 Como transformar diagnóstico comportamental em meta de desenvolvimento bem formulada",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/3 Como transformar diagnóstico comportamental em meta de desenvolvimento bem formulada.pdf",
+      "hash": "14c547c7aa90bef4a62890023458d3179861d193dac6d91cd4af36d9677b10e7",
+      "included_at": "2026-04-19T10:21:53.182782+00:00"
+    },
+    {
+      "document_id": "pdi__010",
+      "title": "4 Como construir ações práticas e indicadores de evolução dentro do PDI",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/4 Como construir ações práticas e indicadores de evolução dentro do PDI.pdf",
+      "hash": "9627e26655e0686a54f0c7ef35ea247636d2ff36547cdae28eb30624afbe8b45",
+      "included_at": "2026-04-19T10:21:53.706784+00:00"
+    },
+    {
+      "document_id": "pdi__011",
+      "title": "5 Papel do gestor, do RH e do próprio indivíduo na sustentação do PDI",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/5 Papel do gestor, do RH e do próprio indivíduo na sustentação do PDI.pdf",
+      "hash": "eafd7ccbdf219ec1c08749e4233586a04f9db2c0f44a9a9a0bcf40381f062334",
+      "included_at": "2026-04-19T10:21:54.234787+00:00"
+    },
+    {
+      "document_id": "pdi__012",
+      "title": "6 Erros críticos e vieses na construção e execução de PDIs",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/6 Erros críticos e vieses na construção e execução de PDIs.pdf",
+      "hash": "42237a28632e25ad83f078974d52cc7cecd86986d5023e07975c8e558ad83666",
+      "included_at": "2026-04-19T10:21:54.744789+00:00"
+    },
+    {
+      "document_id": "pdi__013",
+      "title": "7 Modelo completo de PDI_ estrutura pronta para uso pelo agente",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/7 Modelo completo de PDI_ estrutura pronta para uso pelo agente.pdf",
+      "hash": "5b6d2d37d0bae2fb83540d02750c5dbf23f6a922f44ba6ec441b72dd9eb53d19",
+      "included_at": "2026-04-19T10:21:55.226791+00:00"
+    },
+    {
+      "document_id": "pdi__014",
+      "title": "8 Exemplos práticos de PDI por tipo de competência comportamental",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/8 Exemplos práticos de PDI por tipo de competência comportamental.pdf",
+      "hash": "62ec92d566634c799a4af1c7fe3185e480f07a73585e7004a2b1f22dae29d760",
+      "included_at": "2026-04-19T10:21:55.797794+00:00"
+    },
+    {
+      "document_id": "pdi__015",
+      "title": "9 Como o agente deve analisar um diagnóstico e gerar automaticamente um PDI coerente",
+      "theme": "PDI",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "pdi"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PDI/9 Como o agente deve analisar um diagnóstico e gerar automaticamente um PDI coerente.pdf",
+      "hash": "96fc50da7a842ddfbb0369cb832aade823e5738162d8ddae92cd5ad2775b0cc4",
+      "included_at": "2026-04-19T10:21:56.280796+00:00"
+    },
+    {
+      "document_id": "personalidades_perfis__001",
+      "title": "1 Personalidade e perfis_ fundamentos conceituais, modelos científicos e limites de interpretação",
+      "theme": "PERSONALIDADES_PERFIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "personalidades_perfis"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PERSONALIDADES_PERFIS/1 Personalidade e perfis_ fundamentos conceituais, modelos científicos e limites de interpretação.pdf",
+      "hash": "634184b988c78fa35a3b83f0f7c351da3de05d67570ce81e0b89bde362163b29",
+      "included_at": "2026-04-19T10:20:18.062346+00:00"
+    },
+    {
+      "document_id": "personalidades_perfis__002",
+      "title": "2 Traços versus tipos_ implicações práticas para avaliação, interpretação de perfis e recrutamento",
+      "theme": "PERSONALIDADES_PERFIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "personalidades_perfis"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PERSONALIDADES_PERFIS/2 Traços versus tipos_ implicações práticas para avaliação, interpretação de perfis e recrutamento.pdf",
+      "hash": "e0e10b11c45f85ce8dd230a6a0cb5fd031a34a39a2baed5c8518989a95d5212a",
+      "included_at": "2026-04-19T10:20:18.635348+00:00"
+    },
+    {
+      "document_id": "personalidades_perfis__003",
+      "title": "3 Estilo, comportamento e motivação_ o que muda, o que permanece e o que pode ser inferido",
+      "theme": "PERSONALIDADES_PERFIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "personalidades_perfis"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PERSONALIDADES_PERFIS/3 Estilo, comportamento e motivação_ o que muda, o que permanece e o que pode ser inferido.pdf",
+      "hash": "3f998b39b3451d96894ad2a709206aa406bd89fefa62e798330869c70e44cc04",
+      "included_at": "2026-04-19T10:20:19.206351+00:00"
+    },
+    {
+      "document_id": "personalidades_perfis__004",
+      "title": "4 Personalidade ocupacional_ ajuste pessoa-ambiente, interesses e adequação ao trabalho",
+      "theme": "PERSONALIDADES_PERFIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "personalidades_perfis"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PERSONALIDADES_PERFIS/4 Personalidade ocupacional_ ajuste pessoa-ambiente, interesses e adequação ao trabalho.pdf",
+      "hash": "0007b400cf97146a4e15dedc8baf71b3b225aaa5aa328993c6f557bd046bcd25",
+      "included_at": "2026-04-19T10:20:19.733353+00:00"
+    },
+    {
+      "document_id": "personalidades_perfis__005",
+      "title": "5 Limites de inferência e erros críticos na leitura de perfis",
+      "theme": "PERSONALIDADES_PERFIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "personalidades_perfis"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PERSONALIDADES_PERFIS/5 Limites de inferência e erros críticos na leitura de perfis.pdf",
+      "hash": "f292bbdae56c69d66797bbb39e0fd6354c4315fea217177124af9af1a36bf8ac",
+      "included_at": "2026-04-19T10:20:20.271356+00:00"
+    },
+    {
+      "document_id": "personalidades_perfis__006",
+      "title": "6 Principais modelos científicos de personalidade_ Big Five, HEXACO, Eysenck, Cattell e Holland",
+      "theme": "PERSONALIDADES_PERFIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "personalidades_perfis"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PERSONALIDADES_PERFIS/6 Principais modelos científicos de personalidade_ Big Five, HEXACO, Eysenck, Cattell e Holland.pdf",
+      "hash": "595e9ebe23c44524a8974ee01385532c0f56fa53e79da6cfd168a85a747e9bbe",
+      "included_at": "2026-04-19T10:20:20.804358+00:00"
+    },
+    {
+      "document_id": "personalidades_perfis__007",
+      "title": "7 Personalidade e comportamento no trabalho_ o que a ciência permite prever e o que ela não permite",
+      "theme": "PERSONALIDADES_PERFIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "personalidades_perfis"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/PERSONALIDADES_PERFIS/7 Personalidade e comportamento no trabalho_ o que a ciência permite prever e o que ela não permite.pdf",
+      "hash": "cae91388637ddce7d8b8e44f9dc9219b07472fda3b45f2f8c6c055fdae5b0bfc",
+      "included_at": "2026-04-19T10:20:21.322361+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__001",
+      "title": "1 O QUE SAO TESTE COMPORTAMENTAIS",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/1 O QUE SAO TESTE COMPORTAMENTAIS .pdf",
+      "hash": "47565fbb09efe22cb5e07fa97356345cde775158a34136a14d9c2078dd5c1edd",
+      "included_at": "2026-04-19T10:20:42.949461+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__002",
+      "title": "10 Big Five_ visão geral e funcionamento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/10 Big Five_ visão geral e funcionamento.pdf",
+      "hash": "a8aed4a803d3ff7ff96857c57f076f82b988864a463143e32733f8373e85f7d8",
+      "included_at": "2026-04-19T10:20:47.740483+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__003",
+      "title": "11 MBTI_ visão geral e funcionamento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/11 MBTI_ visão geral e funcionamento.pdf",
+      "hash": "dfacc41586c040d7e6f81ef33738b5e36827f043a362b246c41fb3479dab4d1b",
+      "included_at": "2026-04-19T10:20:48.263485+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__004",
+      "title": "12 Eneagrama_ visão geral e funcionamento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/12 Eneagrama_ visão geral e funcionamento.pdf",
+      "hash": "5381b7db4f30b06df08bcd47c23023492549c91f78d32c1829104cf3d89b74ef",
+      "included_at": "2026-04-19T10:20:48.860488+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__005",
+      "title": "13 Hogan_ visão geral e funcionamento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/13 Hogan_ visão geral e funcionamento.pdf",
+      "hash": "a4a8fc416fce536a8c11123a8b783d4f6b0d962f7d9e931b8cbcc65409e1a690",
+      "included_at": "2026-04-19T10:20:49.444490+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__006",
+      "title": "14 OPQ_ visão geral e funcionamento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/14 OPQ_ visão geral e funcionamento.pdf",
+      "hash": "7c946e30cf4c9801a3da4fb95cef7f82c647ef50d294b4c19205b6f21324b94a",
+      "included_at": "2026-04-19T10:20:49.967493+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__007",
+      "title": "15 16PF_ visão geral e funcionamento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/15 16PF_ visão geral e funcionamento.pdf",
+      "hash": "625bf38c5649b16256bed81569497fcde59e81e85f5ef8c338e1b2df6adb7791",
+      "included_at": "2026-04-19T10:20:50.498495+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__008",
+      "title": "16 DISC x Big Five",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/16 DISC x Big Five.pdf",
+      "hash": "6d9f8bd7ba9b801c78ad2aae5eb360d19848701cfe6ea0e96ca07bcb9d2e597e",
+      "included_at": "2026-04-19T10:20:51.019498+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__009",
+      "title": "17 DISC x MBTI",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/17 DISC x MBTI.pdf",
+      "hash": "73d28558307fdfcbab6138a778283821a3cd11b7dd24d374a3c672a9c06d40a6",
+      "included_at": "2026-04-19T10:20:51.617501+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__010",
+      "title": "18 Big Five x HEXACO",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/18 Big Five x HEXACO.pdf",
+      "hash": "d9c7ab6665f6bb0da296ece7c295a59e5de597c9f9ff19522a920005179fe2a5",
+      "included_at": "2026-04-19T10:20:52.141503+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__011",
+      "title": "19 Hogan x DISC",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/19 Hogan x DISC.pdf",
+      "hash": "4bf5651b2be265e1f3dec4bb0c07cba59bddda47bcca944876983b0b90909ef6",
+      "included_at": "2026-04-19T10:20:52.659505+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__012",
+      "title": "2 Diferença entre comportamento, personalidade, competência e motivação",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/2 Diferença entre comportamento, personalidade, competência e motivação.pdf",
+      "hash": "609de751cf7f96e53bc85180c9d11f642648dab69bc529b17a929f87f45b4f69",
+      "included_at": "2026-04-19T10:20:43.410463+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__013",
+      "title": "20 Teste comportamental x teste de personalidade",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/20 Teste comportamental x teste de personalidade.pdf",
+      "hash": "53bddb0ce82bd394720b1e713fe0b9e59936f5bddb4ba2b019dc0d9f78716c9e",
+      "included_at": "2026-04-19T10:20:53.190508+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__014",
+      "title": "21 Testes comportamentais x avaliação por competência",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/21 Testes comportamentais x avaliação por competência.pdf",
+      "hash": "d6c22f2c650251b432f56aeca468d37b8a8039df7a06779e6daafc71fe17bd4b",
+      "included_at": "2026-04-19T10:20:53.709510+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__015",
+      "title": "22 Como ler resultados de teste comportamental",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/22 Como ler resultados de teste comportamental.pdf",
+      "hash": "5090fb42b63f630bc5f058622129489b80e21ef114d7752833052e01cabcf176",
+      "included_at": "2026-04-19T10:20:54.228513+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__016",
+      "title": "23 Pontos fortes, limitações e riscos de excesso",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/23 Pontos fortes, limitações e riscos de excesso.pdf",
+      "hash": "005e756b11d9e036c0456d780d610c2d02d3627597fa3d9c58786e1d43623c41",
+      "included_at": "2026-04-19T10:20:54.756515+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__017",
+      "title": "24 Perfil natural x perfil adaptado",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/24 Perfil natural x perfil adaptado.pdf",
+      "hash": "b45fa2dcb89a11b765e97a1dce07207a1dd7e7dcfd4b369094907f599f60ea39",
+      "included_at": "2026-04-19T10:20:55.301517+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__018",
+      "title": "25 Como transformar resultado em hipóteses comportamentais",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/25 Como transformar resultado em hipóteses comportamentais.pdf",
+      "hash": "b6b02232a1f8458309ec2f0dfc2cd85a690b6aaafe59fb22bd9dc5d17d72d65a",
+      "included_at": "2026-04-19T10:20:55.815520+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__019",
+      "title": "26 Como explicar laudos de forma didática",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/26 Como explicar laudos de forma didática.pdf",
+      "hash": "759e2c98e246c82aa7583e94ac252912852e881e402e748df25c4644026277e2",
+      "included_at": "2026-04-19T10:20:57.319527+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__020",
+      "title": "27 Uso de testes comportamentais em recrutamento e seleção",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/27 Uso de testes comportamentais em recrutamento e seleção.pdf",
+      "hash": "e59f7785f1fce166a32882a1d0a8e65d3bb7992b1409d55f152bd098ed197229",
+      "included_at": "2026-04-19T10:20:57.843529+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__021",
+      "title": "28 Uso de testes comportamentais em liderança",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/28 Uso de testes comportamentais em liderança.pdf",
+      "hash": "503c2064b4a166013c4e350e5a98ed227df144479e8ee8029905949afaa31d58",
+      "included_at": "2026-04-19T10:20:58.371531+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__022",
+      "title": "29 Uso de testes comportamentais em desenvolvimento de pessoas",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/29 Uso de testes comportamentais em desenvolvimento de pessoas.pdf",
+      "hash": "673c04a5b5924a636d3a019dd165908559b1ba091191c484270121fd01dc302e",
+      "included_at": "2026-04-19T10:20:58.899534+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__023",
+      "title": "3 Para que servem os testes comportamentais nas empresas",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/3 Para que servem os testes comportamentais nas empresas.pdf",
+      "hash": "e695196eea4d1e46ed2c6205f36a476274925bd147b7c6d35b8a7c0fc5b2a2c1",
+      "included_at": "2026-04-19T10:20:43.992465+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__024",
+      "title": "30 Uso de testes comportamentais em formação de equipes",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/30 Uso de testes comportamentais em formação de equipes.pdf",
+      "hash": "cc32ed3c089f6fd2e3e40cfb4f603f8489534b2619d6b574f301e3912dec94f0",
+      "included_at": "2026-04-19T10:20:59.479537+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__025",
+      "title": "31 Uso de testes comportamentais em vendas e atendimento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/31 Uso de testes comportamentais em vendas e atendimento.pdf",
+      "hash": "611367d0ae79ad4f4f96964a5b47e6df6a8766f7f0fc41b1f5bfbd7b36ae27eb",
+      "included_at": "2026-04-19T10:21:00.069539+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__026",
+      "title": "32 Como transformar um teste comportamental em plano de desenvolvimento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/32 Como transformar um teste comportamental em plano de desenvolvimento.pdf",
+      "hash": "53f10dfdaca61ec25970c514dc9b6ca1d926ce7574334101d684825b8a84328e",
+      "included_at": "2026-04-19T10:21:00.607542+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__027",
+      "title": "33 Como definir ações práticas a partir de um perfil",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/33 Como definir ações práticas a partir de um perfil.pdf",
+      "hash": "88fceb37f4329550d736ad78c043eb79b4ac82bf043315330b4c445fc3bfd273",
+      "included_at": "2026-04-19T10:21:02.110549+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__028",
+      "title": "34 Uso de testes comportamentais em feedback",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/34 Uso de testes comportamentais em feedback.pdf",
+      "hash": "2c3413e4fb3f67062a6b766f08cfbed4047da18b83a2b5c1f1eccd5c810a668d",
+      "included_at": "2026-04-19T10:21:02.621551+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__029",
+      "title": "35 Erros mais comuns na interpretação de testes comportamentais",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/35 Erros mais comuns na interpretação de testes comportamentais.pdf",
+      "hash": "612a3f3b559f52bff2e22554ceb5fe8ef407f62f1212a014c854cdbf291595f2",
+      "included_at": "2026-04-19T10:21:03.210554+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__030",
+      "title": "36 Erros no uso de testes em seleção",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/36 Erros no uso de testes em seleção.pdf",
+      "hash": "29a3c7a25d23d03bec60bda5488cc80b7652cc97afda39659d7e052e603c85b2",
+      "included_at": "2026-04-19T10:21:03.760556+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__031",
+      "title": "37 O que um teste comportamental não pode afirmar",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/37 O que um teste comportamental não pode afirmar.pdf",
+      "hash": "7ea93821bf40aa668b6e7af6e5c3c1a01ff4b76a2008f49a7a2ae08235d939cc",
+      "included_at": "2026-04-19T10:21:04.267559+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__032",
+      "title": "38 Casos práticos de uso de testes comportamentais em RH",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/38 Casos práticos de uso de testes comportamentais em RH.pdf",
+      "hash": "b0bb9a3d8d31324638c69c3066806f9a49400a3baf135c07ea15eafc23f98b6a",
+      "included_at": "2026-04-19T10:21:04.795561+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__033",
+      "title": "39 Estudos de caso_ interpretação correta e incorreta",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/39 Estudos de caso_ interpretação correta e incorreta.pdf",
+      "hash": "f5855cdead952d0b4df8f6d0fa592f3969f5241b57c47ccb82a4282fdc1a9b07",
+      "included_at": "2026-04-19T10:21:05.352564+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__034",
+      "title": "4 Limites dos testes comportamentais",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/4 Limites dos testes comportamentais.pdf",
+      "hash": "bfd355250cc2cb3b361367d812fcc2414a40859112e769c40c5702154f1ad22f",
+      "included_at": "2026-04-19T10:20:44.472468+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__035",
+      "title": "40 Perfis diferentes em equipes",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/40 Perfis diferentes em equipes.pdf",
+      "hash": "39eff1388ccba7270e1c8114f9a16a5f4d2344d12d27e1bb246e4350eae91e11",
+      "included_at": "2026-04-19T10:21:05.915566+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__036",
+      "title": "41 Casos de devolutiva e desenvolvimento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/41 Casos de devolutiva e desenvolvimento.pdf",
+      "hash": "0818154773d195054b3df748544bc12c4334339c934337bc1e707f05dfb1c887",
+      "included_at": "2026-04-19T10:21:06.413568+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__037",
+      "title": "42 Perguntas frequentes sobre testes comportamentais",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/42 Perguntas frequentes sobre testes comportamentais.pdf",
+      "hash": "689c3e905b3e357c188d24c298f6bcaad97fda7fa4ea67c44ad0c95f2786ae15",
+      "included_at": "2026-04-19T10:21:06.973571+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__038",
+      "title": "43 Mitos e verdades sobre testes comportamentais",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/43 Mitos e verdades sobre testes comportamentais.pdf",
+      "hash": "30a5a4a9fbf77ea376548c81cf8a5ceeae33f412505c2a1d68c7159cc85d7a51",
+      "included_at": "2026-04-19T10:21:07.472573+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__039",
+      "title": "5 Como funciona um teste comportamental",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/5 Como funciona um teste comportamental.pdf",
+      "hash": "0dfeef6a91d41b091db75953495ae7ce706d564c167011aa7ec93a629b358bdb",
+      "included_at": "2026-04-19T10:20:45.028470+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__040",
+      "title": "6 O que é validade, confiabilidade e padronização",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/6 O que é validade, confiabilidade e padronização.pdf",
+      "hash": "bf6659e1a092b160da5db14fb688d3b3648f0f0b599966ccdf76f201fc05e28b",
+      "included_at": "2026-04-19T10:20:45.510472+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__041",
+      "title": "7 Como interpretar resultados sem rotular pessoas",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/7 Como interpretar resultados sem rotular pessoas.pdf",
+      "hash": "2f415c85c2d8a7c9f2d42648055198c2deb09c6c4600c2e48a3f443812dcc216",
+      "included_at": "2026-04-19T10:20:46.082475+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__042",
+      "title": "8 Cuidados éticos no uso de testes comportamentais",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/8 Cuidados éticos no uso de testes comportamentais.pdf",
+      "hash": "bd8fa6d73c19c4dd4644105447bcb69f779baccdf89963936095259d49421b82",
+      "included_at": "2026-04-19T10:20:46.573477+00:00"
+    },
+    {
+      "document_id": "testes_comportamentais__043",
+      "title": "9 DISC_ visão geral e funcionamento",
+      "theme": "TESTES_COMPORTAMENTAIS",
+      "source_type": "pdf",
+      "version": "1.0",
+      "status": "approved",
+      "tags": [
+        "docsia",
+        "testes_comportamentais"
+      ],
+      "file_path": "backend/ai_analyst/docsIA/TESTES_COMPORTAMENTAIS/9 DISC_ visão geral e funcionamento.pdf",
+      "hash": "f54a973d5f6bd4013628ea43b53ac80fc54cec3b1fc0fc14192e931c8f37bcd0",
+      "included_at": "2026-04-19T10:20:47.120480+00:00"
+    }
+  ],
+  "status": "active",
+  "allowed_source_types": [
+    "pdf"
+  ],
+  "allowed_statuses": [
+    "draft",
+    "approved",
+    "archived"
+  ]
+}

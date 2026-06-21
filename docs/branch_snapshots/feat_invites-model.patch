@@ -1,0 +1,186 @@
+diff --git a/backend/alembic/versions/9283a14f4850_invites_table.py b/backend/alembic/versions/9283a14f4850_invites_table.py
+new file mode 100644
+index 0000000..aab8758
+--- /dev/null
++++ b/backend/alembic/versions/9283a14f4850_invites_table.py
+@@ -0,0 +1,27 @@
++"""invites table (stub)
++
++Revision ID: 9283a14f4850
++Revises: e482c64a233a
++Create Date: 2026-03-17 00:00:00
++
++"""
++from __future__ import annotations
++
++from alembic import op
++
++
++# revision identifiers, used by Alembic.
++revision = "9283a14f4850"
++down_revision = "e482c64a233a"
++branch_labels = None
++depends_on = None
++
++
++def upgrade() -> None:
++    # Este arquivo existe para manter o grafo consistente.
++    # A criação real da tabela invites ocorre na migration seguinte (inv829...).
++    pass
++
++
++def downgrade() -> None:
++    pass
+diff --git a/backend/alembic/versions/inv829178527_invites_table_fix.py b/backend/alembic/versions/inv829178527_invites_table_fix.py
+new file mode 100644
+index 0000000..29f204f
+--- /dev/null
++++ b/backend/alembic/versions/inv829178527_invites_table_fix.py
+@@ -0,0 +1,55 @@
++"""invites table fix
++
++Revision ID: inv829178527
++Revises: 9283a14f4850
++Create Date: 2026-03-17 00:00:00
++
++"""
++from __future__ import annotations
++
++import sqlalchemy as sa
++from alembic import op
++from sqlalchemy.dialects import postgresql
++
++
++# revision identifiers, used by Alembic.
++revision = "inv829178527"
++down_revision = "9283a14f4850"
++branch_labels = None
++depends_on = None
++
++
++def upgrade() -> None:
++    op.create_table(
++        "invites",
++        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
++        sa.Column("token_hash", sa.String(length=64), nullable=False),
++        sa.Column("cliente_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("clientes.id", ondelete="RESTRICT"), nullable=False),
++        sa.Column("rodada_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("rodadas_aplicacao.id", ondelete="RESTRICT"), nullable=False),
++        sa.Column("setor_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("setores_empresa.id", ondelete="SET NULL"), nullable=True),
++        sa.Column("cargo", sa.String(length=255), nullable=True),
++        sa.Column("tipo_aplicacao", sa.String(length=32), nullable=False),
++        sa.Column("status", sa.String(length=32), nullable=False, server_default="NEW"),
++        sa.Column("criado_por", postgresql.UUID(as_uuid=True), sa.ForeignKey("admin_users.id", ondelete="RESTRICT"), nullable=False),
++        sa.Column("criado_em", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("now()")),
++        sa.Column("usado_em", sa.DateTime(timezone=True), nullable=True),
++        sa.Column("attempt_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("attempts.id", ondelete="SET NULL"), nullable=True),
++        sa.Column("ativo", sa.Boolean(), nullable=False, server_default=sa.text("true")),
++    )
++
++    op.create_index("ix_invites_token_hash", "invites", ["token_hash"], unique=True)
++    op.create_index("ix_invites_cliente_id", "invites", ["cliente_id"], unique=False)
++    op.create_index("ix_invites_rodada_id", "invites", ["rodada_id"], unique=False)
++    op.create_index("ix_invites_setor_id", "invites", ["setor_id"], unique=False)
++    op.create_index("ix_invites_status", "invites", ["status"], unique=False)
++    op.create_index("ix_invites_ativo", "invites", ["ativo"], unique=False)
++
++
++def downgrade() -> None:
++    op.drop_index("ix_invites_ativo", table_name="invites")
++    op.drop_index("ix_invites_status", table_name="invites")
++    op.drop_index("ix_invites_setor_id", table_name="invites")
++    op.drop_index("ix_invites_rodada_id", table_name="invites")
++    op.drop_index("ix_invites_cliente_id", table_name="invites")
++    op.drop_index("ix_invites_token_hash", table_name="invites")
++    op.drop_table("invites")
+diff --git a/backend/models/__init__.py b/backend/models/__init__.py
+index 1a8dfdf..9e2c6eb 100644
+--- a/backend/models/__init__.py
++++ b/backend/models/__init__.py
+@@ -1,9 +1,10 @@
+-"""
+-Importa os models para registrar tabelas no Base.metadata.
++from __future__ import annotations
+ 
+-Necessário para Alembic autogenerate.
+-"""
+-from backend.models import admin_user  # noqa: F401
+-from backend.models import attempt     # noqa: F401
+-from backend.models import cliente     # noqa: F401
+-from backend.models import result      # noqa: F401
++# Este pacote existe para registrar models no metadata via import (Alembic env.py).
++# O Base oficial do projeto é backend.database.Base (SSOT do projeto atual).
++
++import backend.models.admin_user  # noqa: F401
++import backend.models.attempt     # noqa: F401
++import backend.models.cliente     # noqa: F401
++import backend.models.result      # noqa: F401
++import backend.models.invite      # noqa: F401
+diff --git a/backend/models/invite.py b/backend/models/invite.py
+new file mode 100644
+index 0000000..972349e
+--- /dev/null
++++ b/backend/models/invite.py
+@@ -0,0 +1,63 @@
++from __future__ import annotations
++
++import uuid
++from datetime import datetime, timezone
++from typing import Optional
++
++from sqlalchemy import Boolean, DateTime, ForeignKey, String
++from sqlalchemy.dialects.postgresql import UUID
++from sqlalchemy.orm import Mapped, mapped_column
++
++from backend.database import Base
++
++
++class Invite(Base):
++    __tablename__ = "invites"
++
++    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
++
++    # Nunca armazenar token em claro: guardar hash (64 hex).
++    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
++
++    cliente_id: Mapped[uuid.UUID] = mapped_column(
++        UUID(as_uuid=True),
++        ForeignKey("clientes.id", ondelete="RESTRICT"),
++        nullable=False,
++    )
++    rodada_id: Mapped[uuid.UUID] = mapped_column(
++        UUID(as_uuid=True),
++        ForeignKey("rodadas_aplicacao.id", ondelete="RESTRICT"),
++        nullable=False,
++    )
++
++    setor_id: Mapped[Optional[uuid.UUID]] = mapped_column(
++        UUID(as_uuid=True),
++        ForeignKey("setores_empresa.id", ondelete="SET NULL"),
++        nullable=True,
++    )
++    cargo: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
++
++    tipo_aplicacao: Mapped[str] = mapped_column(String(32), nullable=False)
++
++    # NEW | USED | REVOKED
++    status: Mapped[str] = mapped_column(String(32), nullable=False, default="NEW")
++
++    criado_por: Mapped[uuid.UUID] = mapped_column(
++        UUID(as_uuid=True),
++        ForeignKey("admin_users.id", ondelete="RESTRICT"),
++        nullable=False,
++    )
++    criado_em: Mapped[datetime] = mapped_column(
++        DateTime(timezone=True),
++        nullable=False,
++        default=lambda: datetime.now(timezone.utc),
++    )
++
++    usado_em: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
++    attempt_id: Mapped[Optional[uuid.UUID]] = mapped_column(
++        UUID(as_uuid=True),
++        ForeignKey("attempts.id", ondelete="SET NULL"),
++        nullable=True,
++    )
++
++    ativo: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)

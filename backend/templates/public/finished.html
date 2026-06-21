@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block body_class %}public-flow{% endblock %}
+{% block content %}
+<main class="public-shell">
+  <section class="public-stage">
+    <div class="public-card public-card--compact">
+      <div class="public-brand">
+        <div class="public-brand__logo">
+          <img src="/static/img/dna-logo.png" alt="Profile DNA">
+        </div>
+        <div>
+          <p class="public-brand__eyebrow">Envio concluído</p>
+          <h1 class="public-brand__title">Seu questionário foi enviado com sucesso</h1>
+          <p class="public-brand__subtitle">
+            Obrigado por concluir esta etapa com atenção e sinceridade.
+          </p>
+        </div>
+      </div>
+
+      <div class="public-subcard">
+        <h3 style="margin-bottom: 10px;">Agradecemos sua participação</h3>
+        <p class="public-text">
+          Suas respostas foram registradas corretamente e o preenchimento foi finalizado.
+        </p>
+        <p class="public-text" style="margin-top: 10px;">
+          O resultado seguirá o fluxo definido pela DNA Agência ou pela empresa aplicadora.
+          Caso exista uma devolutiva prevista, ela será disponibilizada conforme o processo desta aplicação.
+        </p>
+      </div>
+
+      <div class="public-actions public-actions--right" style="margin-top: 24px;">
+        <span class="public-footer-note">
+          Esta etapa está concluída. Você já pode encerrar esta página.
+        </span>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

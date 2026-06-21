@@ -1,0 +1,91 @@
+<div class="card">
+  <h3>2. Síntese Executiva</h3>
+
+  {% set participant = participant if participant is defined and participant else {} %}
+  {% set ranking = ranking if ranking is defined and ranking else {} %}
+  {% set sintese_executiva = sintese_executiva if sintese_executiva is defined and sintese_executiva else {} %}
+
+  {% set tipo_aplicacao = participant.get("tipo_aplicacao", "") %}
+
+  {% set destaques_principais = sintese_executiva.get("destaques_principais", []) %}
+  {% if not destaques_principais %}
+    {% set destaques_principais = sintese_executiva.get("strengths", []) %}
+  {% endif %}
+  {% if not destaques_principais %}
+    {% set destaques_principais = ranking.get("top3", []) %}
+  {% endif %}
+
+  {% set ampliacao_potencial = sintese_executiva.get("ampliacao_potencial", []) %}
+  {% if not ampliacao_potencial %}
+    {% set ampliacao_potencial = sintese_executiva.get("growth", []) %}
+  {% endif %}
+  {% if not ampliacao_potencial %}
+    {% set ampliacao_potencial = ranking.get("top5", []) %}
+  {% endif %}
+
+  {% set pontos_atencao = sintese_executiva.get("pontos_atencao", []) %}
+  {% if not pontos_atencao %}
+    {% set pontos_atencao = sintese_executiva.get("attention", []) %}
+  {% endif %}
+  {% if not pontos_atencao %}
+    {% set pontos_atencao = ranking.get("bottom3", []) %}
+  {% endif %}
+
+  {% if sintese_executiva.get("texto") %}
+    <p>{{ sintese_executiva.get("texto") }}</p>
+  {% else %}
+    <p>
+      Este resultado apresenta uma visão consolidada do perfil avaliado, com destaque para
+      os fatores de maior recorrência e os pontos que merecem maior atenção no desenvolvimento.
+    </p>
+  {% endif %}
+
+  <div class="grid">
+    <div class="card mini">
+      <h4>Destaques principais</h4>
+      {% if destaques_principais %}
+        <ul>
+          {% for item in destaques_principais %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Não disponível.</p>
+      {% endif %}
+    </div>
+
+    <div class="card mini">
+      <h4>Ampliação de potencial</h4>
+      {% if ampliacao_potencial %}
+        <ul>
+          {% for item in ampliacao_potencial %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Não disponível.</p>
+      {% endif %}
+    </div>
+
+    <div class="card mini">
+      <h4>Pontos de atenção</h4>
+      {% if pontos_atencao %}
+        <ul>
+          {% for item in pontos_atencao %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Não disponível.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <p class="muted">
+    {% if tipo_aplicacao %}
+      Contexto de aplicação: <strong>{{ tipo_aplicacao }}</strong>.
+    {% else %}
+      Contexto de aplicação não informado.
+    {% endif %}
+  </p>
+</div>

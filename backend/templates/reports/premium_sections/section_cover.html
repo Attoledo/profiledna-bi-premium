@@ -1,0 +1,39 @@
+{% set _nome = ((participant.get("nome", "") ~ " " ~ participant.get("sobrenome", "")).strip()) %}
+{% set _empresa = participant.get("empresa_nome", "") %}
+{% set _cargo = attempt.get("cargo", "") %}
+{% set _data_display = assessment_datetime_display if assessment_datetime_display else "Não informados" %}
+
+<section class="premium-section">
+  {% if brand_logo_path %}
+    <img src="{{ brand_logo_path }}" alt="DNA Agência" class="premium-logo">
+  {% endif %}
+
+  <div class="premium-kicker">DNA Agência</div>
+  <h1 class="premium-title">Teste de Perfil - Profile DNA</h1>
+
+  <div class="premium-meta-grid">
+    <div class="premium-meta-card">
+      <div class="premium-meta-label">Colaborador</div>
+      <div class="premium-meta-value">{{ _nome or "Participante avaliado" }}</div>
+    </div>
+
+    <div class="premium-meta-card">
+      <div class="premium-meta-label">Cargo</div>
+      <div class="premium-meta-value">{{ _cargo or "Não informado" }}</div>
+    </div>
+
+    <div class="premium-meta-card">
+      <div class="premium-meta-label">Empresa</div>
+      <div class="premium-meta-value">{{ _empresa or "Não informada" }}</div>
+    </div>
+
+    <div class="premium-meta-card">
+      <div class="premium-meta-label">Data e horário da avaliação</div>
+      <div class="premium-meta-value">{{ _data_display }}</div>
+    </div>
+  </div>
+
+  <div class="premium-kicker">Resumo Executivo</div>
+  <h2 class="premium-h2">Síntese consultiva do perfil</h2>
+  <p class="premium-text premium-text--executive-summary">{{ executive_summary_text }}</p>
+</section>

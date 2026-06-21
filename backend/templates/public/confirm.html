@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body_class %}public-flow{% endblock %}
+{% block content %}
+<main class="public-shell">
+  <section class="public-stage">
+    <div class="public-card public-card--compact">
+      <div class="public-brand">
+        <div class="public-brand__logo">
+          <img src="/static/img/dna-logo.png" alt="DNA Agência">
+        </div>
+        <div>
+          <p class="public-brand__eyebrow">Confirmação final</p>
+          <h1 class="public-brand__title">Deseja enviar suas respostas?</h1>
+          <p class="public-brand__subtitle">
+            Após confirmar, o questionário será finalizado e não poderá mais ser alterado.
+          </p>
+        </div>
+      </div>
+
+      <div class="public-subcard">
+        <h3 style="margin-bottom: 10px;">Atenção</h3>
+        <p class="public-text">
+          Revise com cuidado. Este envio é definitivo e dará sequência ao processamento do seu resultado.
+        </p>
+      </div>
+
+      <form method="post" action="{{ submit_action }}" style="margin-top: 24px;">
+        <div class="public-actions">
+          <a class="public-btn public-btn--secondary" href="{{ back_href }}">Voltar</a>
+          <button class="public-btn public-btn--primary" type="submit">Confirmar envio</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+{% endblock %}

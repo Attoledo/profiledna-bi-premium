@@ -1,0 +1,102 @@
+{% set participant = participant if participant is defined and participant else {} %}
+{% set gestor_rh = gestor_rh if gestor_rh is defined and gestor_rh else {} %}
+{% set tipo_aplicacao = (participant.get("tipo_aplicacao", "") or "")|lower %}
+
+{% if tipo_aplicacao in ["empresa", "empresarial", "corporativo", "corporativa", "profissional"] %}
+  {% set enabled = gestor_rh.get("enabled", True) %}
+  {% if enabled %}
+    {% set texto = gestor_rh.get("texto", "") %}
+    {% set recomendacoes = gestor_rh.get("recomendacoes", []) %}
+    {% set blocos = gestor_rh.get("blocos", []) %}
+    {% set engajar = gestor_rh.get("engajar", []) %}
+    {% set feedback = gestor_rh.get("feedback", []) %}
+    {% set ambiente_ideal = gestor_rh.get("ambiente_ideal", []) %}
+
+    <div class="card">
+      <h3>7. Recomendações para Gestor / RH</h3>
+
+      {% if texto %}
+        <p>{{ texto }}</p>
+      {% else %}
+        <p>
+          Esta seção é destinada ao contexto organizacional e deve apoiar leituras de desenvolvimento,
+          alocação, acompanhamento e tomada de decisão com base no resultado consolidado do perfil.
+        </p>
+      {% endif %}
+
+      {% if recomendacoes %}
+        <div class="card mini">
+          <h4>Direcionamentos gerais</h4>
+          <ul>
+            {% for item in recomendacoes %}
+              <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if blocos %}
+        <div class="grid">
+          {% for bloco in blocos %}
+            {% set titulo = bloco.get("titulo", "Recomendações") %}
+            {% set bullets = bloco.get("bullets", []) %}
+            <div class="card mini">
+              <h4>{{ titulo }}</h4>
+              {% if bullets %}
+                <ul>
+                  {% for item in bullets %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="muted">Sem recomendações específicas neste bloco.</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="grid">
+          {% if engajar %}
+            <div class="card mini">
+              <h4>Como engajar</h4>
+              <ul>
+                {% for item in engajar %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          {% if feedback %}
+            <div class="card mini">
+              <h4>Como dar feedback</h4>
+              <ul>
+                {% for item in feedback %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          {% if ambiente_ideal %}
+            <div class="card mini">
+              <h4>Ambiente ideal</h4>
+              <ul>
+                {% for item in ambiente_ideal %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if not engajar and not feedback and not ambiente_ideal and not recomendacoes %}
+          <p class="muted">
+            As recomendações específicas para Gestor/RH serão exibidas aqui conforme o payload analítico
+            canônico do relatório final.
+          </p>
+        {% endif %}
+      {% endif %}
+    </div>
+  {% endif %}
+{% endif %}

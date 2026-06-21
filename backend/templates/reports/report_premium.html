@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  @page {
+    size: A4;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    background-image: none !important;
+  }
+
+  * {
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+    background: #ffffff !important;
+    background-image: none !important;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11.5pt;
+    line-height: 1.42;
+  }
+
+  .premium-wrapper {
+    background: #ffffff !important;
+    width: 100%;
+  }
+
+  .premium-section {
+    margin: 0 0 14px 0;
+    padding: 0;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  .premium-force-page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .premium-avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .premium-kicker {
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c86410;
+    margin-bottom: 6px;
+  }
+
+  .premium-title {
+    font-size: 24pt;
+    line-height: 1.15;
+    margin: 0 0 12px 0;
+    color: #1f2937;
+  }
+
+  .premium-h2 {
+    font-size: 17pt;
+    line-height: 1.2;
+    margin: 0 0 10px 0;
+    color: #1f2937;
+  }
+
+  .premium-text {
+    margin: 0 0 10px 0;
+    color: #374151;
+  }
+
+
+.premium-text--executive-summary {
+  line-height: 1.68 !important;
+  margin-top: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+  .premium-logo {
+    display: block;
+    width: 140px;
+    height: auto;
+    margin: 0 0 14px 0;
+  }
+
+  .premium-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .premium-meta-card,
+  .premium-card,
+  .premium-analysis-card,
+  .premium-pdi-card,
+  .premium-panel {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .premium-meta-label,
+  .premium-small-label {
+    font-size: 9pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+
+  .premium-meta-value,
+  .premium-card-title,
+  .premium-panel-title,
+  .premium-pdi-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .premium-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fff4ea;
+    color: #c86410;
+    font-size: 9pt;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  .premium-panel {
+    margin-bottom: 12px;
+  }
+
+  .premium-analysis-card,
+  .premium-pdi-card {
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .premium-pdi-block {
+    margin-top: 10px;
+  }
+
+  .premium-card-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .premium-bar-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: #eceff3;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .premium-bar-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #e67e22 0%, #c86410 100%);
+    border-radius: 999px;
+  }
+
+  .premium-clean-list {
+    margin: 6px 0 0 18px;
+    padding: 0;
+  }
+
+  .premium-clean-list li {
+    margin: 0 0 4px 0;
+  }
+
+  .premium-clean-list:empty {
+    display: none;
+  }
+
+  .premium-section--closing {
+    page-break-before: auto !important;
+    break-before: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .premium-closing-block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-before: auto !important;
+    break-before: auto !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .premium-card--closing {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .premium-footer-note {
+    margin-top: 10px !important;
+    font-size: 9pt;
+    color: #6b7280;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+</style>
+
+<div class="premium-wrapper">
+  {% include "reports/premium_sections/section_cover.html" %}
+  {% include "reports/premium_sections/section_graficos.html" %}
+  {% include "reports/premium_sections/section_top5_bottom3.html" %}
+  {% include "reports/premium_sections/section_pdi_premium.html" %}
+  {% include "reports/premium_sections/section_parecer_tecnico.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  db:
+    # no CI, não queremos gravar em /srv nem depender de volumes externos
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+
+  api_v2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.v2
+
+    # no CI, usamos runtime/.env dentro do workspace
+    env_file:
+      - ./runtime/.env
+
+    # mantém reports cacheado em path relativo no workspace do runner
+    volumes:
+      - ./volumes/reports:/app/volumes/reports
+      # compat com backend/config.py (env_file absoluto dentro do container)
+      - ./runtime:/srv/profiledna/runtime:ro
+
+networks:
+  legacy:
+    driver: bridge

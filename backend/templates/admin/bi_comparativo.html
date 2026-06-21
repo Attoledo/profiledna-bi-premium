@@ -1,0 +1,1999 @@
+{% extends "admin/base_admin.html" %}
+
+{% set csrf_token = csrf_token if csrf_token is defined else "" %}
+{% set filters = filters if filters is defined and filters else {} %}
+{% set filter_options = filter_options if filter_options is defined and filter_options else {} %}
+{% set comparison_dimension_rows = comparison_dimension_rows if comparison_dimension_rows is defined and comparison_dimension_rows else [] %}
+
+{% set left_context = left_context if left_context is defined and left_context else {} %}
+{% set right_context = right_context if right_context is defined and right_context else {} %}
+
+{% set left_overview_cards = left_overview_cards if left_overview_cards is defined and left_overview_cards else [] %}
+{% set right_overview_cards = right_overview_cards if right_overview_cards is defined and right_overview_cards else [] %}
+
+{% set left_dimension_rows = left_dimension_rows if left_dimension_rows is defined and left_dimension_rows else [] %}
+{% set right_dimension_rows = right_dimension_rows if right_dimension_rows is defined and right_dimension_rows else [] %}
+
+{% set left_area_rows = left_area_rows if left_area_rows is defined and left_area_rows else [] %}
+{% set right_area_rows = right_area_rows if right_area_rows is defined and right_area_rows else [] %}
+
+{% set left_ranking_top = left_ranking_top if left_ranking_top is defined and left_ranking_top else [] %}
+{% set left_ranking_bottom = left_ranking_bottom if left_ranking_bottom is defined and left_ranking_bottom else [] %}
+{% set right_ranking_top = right_ranking_top if right_ranking_top is defined and right_ranking_top else [] %}
+{% set right_ranking_bottom = right_ranking_bottom if right_ranking_bottom is defined and right_ranking_bottom else [] %}
+
+{% set left_chart_bundle = left_chart_bundle if left_chart_bundle is defined and left_chart_bundle else {} %}
+{% set right_chart_bundle = right_chart_bundle if right_chart_bundle is defined and right_chart_bundle else {} %}
+
+{% set left_radar_chart = left_radar_chart if left_radar_chart is defined and left_radar_chart else (left_chart_bundle.radar_area_chart if left_chart_bundle and left_chart_bundle.radar_area_chart is defined else {}) %}
+{% set right_radar_chart = right_radar_chart if right_radar_chart is defined and right_radar_chart else (right_chart_bundle.radar_area_chart if right_chart_bundle and right_chart_bundle.radar_area_chart is defined else {}) %}
+
+{% set left_status_chart = left_status_chart if left_status_chart is defined and left_status_chart else (left_chart_bundle.status_pie_chart if left_chart_bundle and left_chart_bundle.status_pie_chart is defined else {}) %}
+{% set right_status_chart = right_status_chart if right_status_chart is defined and right_status_chart else (right_chart_bundle.status_pie_chart if right_chart_bundle and right_chart_bundle.status_pie_chart is defined else {}) %}
+
+{% set left_top5_chart = left_top5_chart if left_top5_chart is defined and left_top5_chart else (left_chart_bundle.top5_chart if left_chart_bundle and left_chart_bundle.top5_chart is defined else {}) %}
+{% set right_top5_chart = right_top5_chart if right_top5_chart is defined and right_top5_chart else (right_chart_bundle.top5_chart if right_chart_bundle and right_chart_bundle.top5_chart is defined else {}) %}
+
+{% set left_bottom3_chart = left_bottom3_chart if left_bottom3_chart is defined and left_bottom3_chart else (left_chart_bundle.bottom3_chart if left_chart_bundle and left_chart_bundle.bottom3_chart is defined else {}) %}
+{% set right_bottom3_chart = right_bottom3_chart if right_bottom3_chart is defined and right_bottom3_chart else (right_chart_bundle.bottom3_chart if right_chart_bundle and right_chart_bundle.bottom3_chart is defined else {}) %}
+
+{% set cliente_options = filter_options.clientes if filter_options and filter_options.clientes is defined else [] %}
+{% set rodada_options = filter_options.rodadas if filter_options and filter_options.rodadas is defined else [] %}
+{% set setor_options = filter_options.setores if filter_options and filter_options.setores is defined else [] %}
+{% set cargo_options = filter_options.cargos if filter_options and filter_options.cargos is defined else [] %}
+{% set tipo_options = filter_options.tipos_aplicacao if filter_options and filter_options.tipos_aplicacao is defined else [] %}
+{% set status_options = filter_options.statuses if filter_options and filter_options.statuses is defined else [] %}
+
+{% set comparison_title = comparison_title if comparison_title is defined and comparison_title else "BI — Comparativo" %}
+
+{% block title %}ProfileDNA — BI Comparativo{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      overflow-x: hidden;
+    }
+
+    .pd-compare-page {
+      display: grid;
+      gap: 20px;
+    }
+
+    .pd-compare-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 8px 0 2px;
+    }
+
+    .pd-compare-hero__content {
+      max-width: 920px;
+      min-width: 0;
+    }
+
+    .pd-compare-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+
+    .pd-compare-title {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 52px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .pd-compare-subtitle {
+      margin: 14px 0 0;
+      max-width: 980px;
+      color: #6b7280;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .pd-compare-hero__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pd-compare-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .pd-compare-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+    }
+
+    .pd-compare-btn--primary {
+      border-color: transparent;
+      color: #ffffff;
+      background: linear-gradient(90deg, #f39c4a 0%, #f97316 48%, #ef4444 100%);
+      box-shadow: 0 18px 34px rgba(249, 115, 22, 0.22);
+    }
+
+    .pd-compare-card,
+    .pd-compare-panel,
+    .pd-compare-side-card,
+    .pd-compare-guide-card {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+      min-width: 0;
+    }
+
+    .pd-compare-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .pd-compare-card-title {
+      margin: 0;
+      color: #111827;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .pd-compare-card-text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 900px;
+    }
+
+    .pd-compare-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pd-compare-filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .pd-compare-filter-side {
+      border: 1px solid #dbe1ea;
+      border-radius: 18px;
+      padding: 16px;
+      background: #fbfcfe;
+      min-width: 0;
+    }
+
+    .pd-compare-filter-side__title {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+      line-height: 1.2;
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .pd-compare-filter-side__meta {
+      margin: 0 0 12px 0;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .pd-compare-filter-inner-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .pd-compare-field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .pd-compare-field label,
+    .pd-compare-field span {
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .pd-compare-select {
+      width: 100%;
+      min-width: 0;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      padding: 0 12px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    .pd-compare-select:focus {
+      border-color: rgba(243, 156, 74, 0.72);
+      box-shadow: 0 0 0 4px rgba(243, 156, 74, 0.12);
+    }
+
+    .pd-compare-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .pd-compare-form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .pd-compare-helper {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #fde68a;
+      background: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%);
+      color: #7c2d12;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-compare-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pd-compare-guide-item {
+      border: 1px solid #eef2f7;
+      border-radius: 18px;
+      background: #f9fafb;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .pd-compare-guide-item__title {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .pd-compare-guide-item__text {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-compare-canonical-table-wrap {
+      overflow-x: auto;
+    }
+
+    .pd-compare-canonical-table {
+      width: 100%;
+      min-width: 1100px;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .pd-compare-canonical-table thead th {
+      text-align: left;
+      padding: 14px 10px;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .pd-compare-canonical-table tbody td {
+      padding: 14px 10px;
+      vertical-align: top;
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.55;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .pd-compare-canonical-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pd-compare-signal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .pd-compare-signal--a {
+      background: #ffedd5;
+      color: #c2410c;
+      border-color: #fdba74;
+    }
+
+    .pd-compare-signal--b {
+      background: #e5e7eb;
+      color: #111827;
+      border-color: #cbd5e1;
+    }
+
+    .pd-compare-signal--equal {
+      background: #f3f4f6;
+      color: #374151;
+      border-color: #e5e7eb;
+    }
+
+    .pd-compare-dual-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pd-compare-side-header {
+      background: #ffffff;
+      border: 1px solid #dbe1ea;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 3px rgba(17,24,39,.04);
+      min-width: 0;
+    }
+
+    .pd-compare-side-header__title {
+      margin: 0 0 6px 0;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .pd-compare-side-header__text {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .pd-compare-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .pd-compare-kpi-card {
+      background: #ffffff;
+      border: 1px solid #dbe1ea;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 1px 3px rgba(17,24,39,.04);
+      min-width: 0;
+    }
+
+    .pd-compare-kpi-card__label {
+      font-size: 12px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+      font-weight: 900;
+    }
+
+    .pd-compare-kpi-card__value {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 8px;
+      color: #111827;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-compare-kpi-card__text {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-compare-chart-panel {
+      background: #ffffff;
+      border: 1px solid #dbe1ea;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 3px rgba(17,24,39,.04);
+      min-width: 0;
+    }
+
+    .pd-compare-chart-panel__title {
+      margin: 0;
+      font-size: 20px;
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .pd-compare-chart-panel__text {
+      margin: 8px 0 0;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .pd-compare-chart-box {
+      position: relative;
+      min-height: 300px;
+      margin-top: 14px;
+    }
+
+    .pd-compare-ranking-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .pd-compare-ranking-card {
+      background: #ffffff;
+      border: 1px solid #dbe1ea;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(17,24,39,.04);
+      min-width: 0;
+    }
+
+    .pd-compare-ranking-card__title {
+      margin: 0;
+      font-size: 20px;
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .pd-compare-ranking-card__text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .pd-compare-ranking-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .pd-compare-ranking-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #ffffff;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .pd-compare-ranking-item__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .pd-compare-ranking-item__title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 900;
+      color: #111827;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-compare-ranking-item__metric {
+      flex: 0 0 auto;
+      font-size: 16px;
+      line-height: 1.1;
+      font-weight: 900;
+      color: #111827;
+      text-align: right;
+    }
+
+    .pd-compare-ranking-item__area {
+      margin-top: 4px;
+      color: #6b7280;
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+    }
+
+    .pd-compare-ranking-item__desc {
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .pd-compare-ranking-item__meta {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .pd-compare-bar-track {
+      height: 6px;
+      border-radius: 999px;
+      background: #eef2f7;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .pd-compare-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .pd-compare-ranking-card--top5-b .pd-compare-bar-fill {
+      background: #f97316 !important;
+    }
+
+    .pd-compare-bar-fill--a-strong {
+      background: linear-gradient(90deg, #f39c4a 0%, #f97316 48%, #ef4444 100%);
+    }
+
+    .pd-compare-bar-fill--a-attention {
+      background: linear-gradient(90deg, #6b7280 0%, #4b5563 100%);
+    }
+
+    .pd-compare-bar-fill--b-strong {
+      background: linear-gradient(90deg, #111827 0%, #0f172a 100%);
+    }
+
+    .pd-compare-bar-fill--b-attention {
+      background: linear-gradient(90deg, #374151 0%, #111827 100%);
+    }
+
+    .pd-compare-detail-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pd-compare-data-table-wrap {
+      overflow-x: auto;
+    }
+
+    .pd-compare-data-table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .pd-compare-data-table thead th {
+      text-align: left;
+      padding: 14px 10px;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .pd-compare-data-table tbody td {
+      padding: 14px 10px;
+      vertical-align: top;
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.55;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .pd-compare-data-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pd-compare-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .pd-compare-badge--left {
+      background: #fff7ed;
+      color: #9a3412;
+    }
+
+    .pd-compare-badge--right {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .pd-compare-area-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .pd-compare-area-item {
+      border: 1px solid #eef2f7;
+      border-radius: 16px;
+      background: #f9fafb;
+      padding: 14px 16px;
+      min-width: 0;
+    }
+
+    .pd-compare-area-item__top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .pd-compare-area-item__title {
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 900;
+      color: #111827;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-compare-area-item__value {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .pd-compare-area-item__desc {
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-compare-area-chart-card {
+      margin-top: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+      padding: 16px;
+    }
+
+    .pd-compare-area-chart-card__title {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .pd-compare-area-chart-card__text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .pd-compare-area-chart-box {
+      position: relative;
+      min-height: 260px;
+      margin-top: 14px;
+    }
+
+    .pd-compare-area-reading {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-compare-area-reading strong {
+      color: #111827;
+    }
+
+    .pd-compare-empty {
+      padding: 16px 18px;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #f9fafb;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1320px) {
+      .pd-compare-guide-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pd-compare-kpi-grid {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .pd-compare-filter-grid,
+      .pd-compare-dual-columns,
+      .pd-compare-ranking-grid,
+      .pd-compare-detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-compare-filter-inner-grid {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+    }
+
+    @media (max-width: 860px) {
+      .pd-compare-kpi-grid,
+      .pd-compare-guide-grid,
+      .pd-compare-filter-inner-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-compare-hero__actions {
+        width: 100%;
+      }
+
+      .pd-compare-hero__actions .pd-compare-btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .pd-compare-form-actions {
+        width: 100%;
+      }
+
+      .pd-compare-form-actions > .pd-compare-btn {
+        width: 100%;
+      }
+
+      .pd-compare-chart-box,
+      .pd-compare-area-chart-box {
+        min-height: 250px;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block admin_page_header %}
+  <div class="pd-compare-hero">
+    <div class="pd-compare-hero__content">
+      <div class="pd-compare-kicker">Business Intelligence</div>
+      <h1 class="pd-compare-title">{{ comparison_title }}</h1>
+      <p class="pd-compare-subtitle">
+        Compare dois recortes do ProfileDNA para identificar diferenças de comportamento, intensidade e predominância por dimensão e por área.
+      </p>
+    </div>
+
+    <div class="pd-compare-hero__actions">
+      <a href="/admin/dashboard" class="pd-compare-btn">Dashboard</a>
+      <a href="/admin/bi/overview" class="pd-compare-btn">BI — Visão Geral</a>
+      <a href="/admin/logout" class="pd-compare-btn pd-compare-btn--primary">Sair</a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block admin_context_bar %}
+  <section class="pd-compare-guide-card">
+    <div class="pd-compare-card-head">
+      <div>
+        <h2 class="pd-compare-card-title">Como interpretar o comparativo</h2>
+        <p class="pd-compare-card-text">
+          Esta página foi desenhada para leitura gerencial. O objetivo é mostrar, de forma clara, em qual lado cada característica aparece com mais força e o que isso significa na prática.
+        </p>
+      </div>
+      <div class="pd-compare-chip">Leitura didática</div>
+    </div>
+
+    <div class="pd-compare-guide-grid">
+      <article class="pd-compare-guide-item">
+        <h3 class="pd-compare-guide-item__title">Lado A e Lado B</h3>
+        <p class="pd-compare-guide-item__text">
+          Cada lado representa um recorte diferente. Normalmente, a comparação mais útil é entre duas rodadas do mesmo cliente.
+        </p>
+      </article>
+
+      <article class="pd-compare-guide-item">
+        <h3 class="pd-compare-guide-item__title">Diferença por dimensão</h3>
+        <p class="pd-compare-guide-item__text">
+          A tabela canônica mostra onde cada dimensão ficou mais alta. Isso ajuda a identificar mudanças reais entre os dois grupos.
+        </p>
+      </article>
+
+      <article class="pd-compare-guide-item">
+        <h3 class="pd-compare-guide-item__title">Top 5 e 3 Pontos de atenção</h3>
+        <p class="pd-compare-guide-item__text">
+          Esses blocos resumem rapidamente quais dimensões aparecem com mais força e quais merecem mais atenção em cada lado.
+        </p>
+      </article>
+
+      <article class="pd-compare-guide-item">
+        <h3 class="pd-compare-guide-item__title">Mesmo cliente</h3>
+        <p class="pd-compare-guide-item__text">
+          O comparativo ideal mantém o mesmo cliente nos dois lados e varia apenas a rodada, para permitir leitura evolutiva consistente.
+        </p>
+      </article>
+    </div>
+
+    <div class="pd-compare-helper">
+      <strong>Regra de leitura recomendada:</strong>
+      primeiro compare os dois recortes na tabela canônica por dimensão. Depois use Top 5 e 3 Pontos de atenção para leitura rápida de forças e pontos de atenção em cada lado.
+    </div>
+  </section>
+{% endblock %}
+
+{% block admin_content %}
+  <div class="pd-compare-page">
+    <section class="pd-compare-card">
+      <div class="pd-compare-card-head">
+        <div>
+          <h2 class="pd-compare-card-title">Filtros do comparativo</h2>
+          <p class="pd-compare-card-text">
+            Defina os dois grupos que serão comparados. O Lado A e o Lado B devem, preferencialmente, usar o mesmo cliente e variar a rodada para permitir leitura evolutiva mais confiável.
+          </p>
+        </div>
+        <div class="pd-compare-chip">Comparativo contextual</div>
+      </div>
+
+      <form method="get" action="/admin/bi/comparativo">
+        <div class="pd-compare-filter-grid">
+          <section class="pd-compare-filter-side">
+            <h3 class="pd-compare-filter-side__title">Lado A</h3>
+            <p class="pd-compare-filter-side__meta">
+              Este é o primeiro recorte comparado. Em geral, representa a rodada-base.
+            </p>
+
+            <div class="pd-compare-filter-inner-grid">
+              <div class="pd-compare-field">
+                <label for="left_cliente_id">Cliente</label>
+                <select id="left_cliente_id" name="left_cliente_id" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in cliente_options %}
+                    {% set option_value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                    {% set option_label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.left_cliente_id|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="left_rodada_id">Rodada</label>
+                <select id="left_rodada_id" name="left_rodada_id" class="pd-compare-select">
+                  <option value="">Todas</option>
+                  {% for item in rodada_options %}
+                    {% set option_value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                    {% set option_label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.left_rodada_id|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="left_setor_id">Setor</label>
+                <select id="left_setor_id" name="left_setor_id" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in setor_options %}
+                    {% set option_value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                    {% set option_label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.left_setor_id|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="left_cargo">Cargo</label>
+                <select id="left_cargo" name="left_cargo" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in cargo_options %}
+                    {% set option_value = item.value if item.value is defined else item %}
+                    {% set option_label = item.label if item.label is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.left_cargo|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="left_tipo_aplicacao">Tipo</label>
+                <select id="left_tipo_aplicacao" name="left_tipo_aplicacao" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in tipo_options %}
+                    {% set option_value = item.value if item.value is defined else item %}
+                    {% set option_label = item.label if item.label is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.left_tipo_aplicacao|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="left_status">Status</label>
+                <select id="left_status" name="left_status" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in status_options %}
+                    {% set option_value = item.value if item.value is defined else item %}
+                    {% set option_label = item.label if item.label is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.left_status|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <label class="pd-compare-checkbox">
+              <input type="checkbox" name="left_only_completed" value="true" {% if filters.left_only_completed %}checked{% endif %}>
+              <span>Somente concluídos</span>
+            </label>
+          </section>
+
+          <section class="pd-compare-filter-side">
+            <h3 class="pd-compare-filter-side__title">Lado B</h3>
+            <p class="pd-compare-filter-side__meta">
+              Este é o segundo recorte comparado. Em geral, representa a rodada que será contrastada contra o Lado A.
+            </p>
+
+            <div class="pd-compare-filter-inner-grid">
+              <div class="pd-compare-field">
+                <label for="right_cliente_id">Cliente</label>
+                <select id="right_cliente_id" name="right_cliente_id" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in cliente_options %}
+                    {% set option_value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                    {% set option_label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.right_cliente_id|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="right_rodada_id">Rodada</label>
+                <select id="right_rodada_id" name="right_rodada_id" class="pd-compare-select">
+                  <option value="">Todas</option>
+                  {% for item in rodada_options %}
+                    {% set option_value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                    {% set option_label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.right_rodada_id|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="right_setor_id">Setor</label>
+                <select id="right_setor_id" name="right_setor_id" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in setor_options %}
+                    {% set option_value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                    {% set option_label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.right_setor_id|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="right_cargo">Cargo</label>
+                <select id="right_cargo" name="right_cargo" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in cargo_options %}
+                    {% set option_value = item.value if item.value is defined else item %}
+                    {% set option_label = item.label if item.label is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.right_cargo|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="right_tipo_aplicacao">Tipo</label>
+                <select id="right_tipo_aplicacao" name="right_tipo_aplicacao" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in tipo_options %}
+                    {% set option_value = item.value if item.value is defined else item %}
+                    {% set option_label = item.label if item.label is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.right_tipo_aplicacao|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="pd-compare-field">
+                <label for="right_status">Status</label>
+                <select id="right_status" name="right_status" class="pd-compare-select">
+                  <option value="">Todos</option>
+                  {% for item in status_options %}
+                    {% set option_value = item.value if item.value is defined else item %}
+                    {% set option_label = item.label if item.label is defined else item %}
+                    <option value="{{ option_value }}" {% if filters.right_status|string == option_value|string %}selected{% endif %}>{{ option_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <label class="pd-compare-checkbox">
+              <input type="checkbox" name="right_only_completed" value="true" {% if filters.right_only_completed %}checked{% endif %}>
+              <span>Somente concluídos</span>
+            </label>
+          </section>
+        </div>
+
+        <div class="pd-compare-form-actions">
+          <button type="submit" class="pd-compare-btn pd-compare-btn--primary">Aplicar comparativo</button>
+          <a href="/admin/bi/comparativo" class="pd-compare-btn">Limpar</a>
+        </div>
+
+        <div class="pd-compare-helper">
+          <strong>Melhor prática:</strong>
+          use o mesmo cliente nos dois lados e compare duas rodadas desse cliente. Isso torna a interpretação mais consistente e útil para tomada de decisão.
+        </div>
+      </form>
+    </section>
+
+    <section class="pd-compare-card">
+      <div class="pd-compare-card-head">
+        <div>
+          <h2 class="pd-compare-card-title">Comparativo canônico por dimensão</h2>
+          <p class="pd-compare-card-text">
+            Esta tabela mostra, dimensão por dimensão, onde o Lado A e o Lado B se distanciam em intensidade média.
+          </p>
+        </div>
+        <div class="pd-compare-chip">Leitura central</div>
+      </div>
+
+      {% if comparison_dimension_rows %}
+        <div class="pd-compare-canonical-table-wrap">
+          <table class="pd-compare-canonical-table">
+            <thead>
+              <tr>
+                <th>Dimensão</th>
+                <th>Área</th>
+                <th>Média A</th>
+                <th>Média B</th>
+                <th>Diferença</th>
+                <th>Leitura</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in comparison_dimension_rows %}
+                {% set delta_value = row.delta if row.delta is defined and row.delta is not none else 0 %}
+                {% set signal_value = row.signal if row.signal is defined and row.signal else "IGUAL" %}
+                <tr>
+                  <td style="font-weight:700;">
+                    {{ row.dimension_label if row.dimension_label is defined else row.dimension if row.dimension is defined else "-" }}
+                  </td>
+                  <td>{{ row.area if row.area is defined else "-" }}</td>
+                  <td>{{ "%.2f"|format(row.mean_a) if row.mean_a is not none else "—" }}</td>
+                  <td>{{ "%.2f"|format(row.mean_b) if row.mean_b is not none else "—" }}</td>
+                  <td>{{ "%.2f"|format(delta_value) }}</td>
+                  <td>
+                    {% if signal_value == "A_MAIOR" %}
+                      <span class="pd-compare-signal pd-compare-signal--a">Lado A acima do Lado B</span>
+                    {% elif signal_value == "B_MAIOR" %}
+                      <span class="pd-compare-signal pd-compare-signal--b">Lado B acima do Lado A</span>
+                    {% else %}
+                      <span class="pd-compare-signal pd-compare-signal--equal">Equilíbrio entre os lados</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pd-compare-helper" style="margin-top:12px;">
+          <strong>Como ler:</strong>
+          Média A e Média B mostram a intensidade da dimensão em cada lado. Diferença mostra o afastamento entre os recortes. A leitura resume qual lado está acima.
+        </div>
+      {% else %}
+        <div class="pd-compare-empty">
+          Comparativo canônico por dimensão ainda não disponível.
+        </div>
+      {% endif %}
+    </section>
+
+    <div class="pd-compare-dual-columns">
+      <section>
+        <div class="pd-compare-side-header">
+          <h2 class="pd-compare-side-header__title">Lado A</h2>
+          <p class="pd-compare-side-header__text">
+            {{ left_context.page_subtitle if left_context and left_context.page_subtitle is defined else "Primeiro recorte do comparativo." }}
+          </p>
+        </div>
+
+        <section class="pd-compare-kpi-grid">
+          {% if left_overview_cards %}
+            {% for card in left_overview_cards %}
+              <div class="pd-compare-kpi-card">
+                <div class="pd-compare-kpi-card__label">
+                  {{ card.label if card.label is defined else "Indicador" }}
+                </div>
+                <div class="pd-compare-kpi-card__value">
+                  {{ card.value if card.value is defined else "-" }}
+                </div>
+                {% if card.description is defined and card.description %}
+                  <div class="pd-compare-kpi-card__text">
+                    {{ card.description }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </section>
+
+        <section class="pd-compare-chart-panel">
+          <h3 class="pd-compare-chart-panel__title">Radar / Área analítica</h3>
+          <p class="pd-compare-chart-panel__text">
+            Mostra a média das macroáreas no Lado A.
+          </p>
+
+          {% if left_radar_chart and left_radar_chart.has_data %}
+            <div class="pd-compare-chart-box">
+              <canvas id="leftRadarAreaChart"></canvas>
+            </div>
+          {% else %}
+            <div class="pd-compare-empty" style="margin-top:14px;">
+              Radar indisponível no Lado A.
+            </div>
+          {% endif %}
+        </section>
+
+        <section class="pd-compare-chart-panel">
+          <h3 class="pd-compare-chart-panel__title">Distribuição por status</h3>
+          <p class="pd-compare-chart-panel__text">
+            Mostra em que etapa estão os participantes do Lado A.
+          </p>
+
+          {% if left_status_chart and left_status_chart.has_data %}
+            <div class="pd-compare-chart-box">
+              <canvas id="leftStatusPieChart"></canvas>
+            </div>
+          {% else %}
+            <div class="pd-compare-empty" style="margin-top:14px;">
+              Status indisponível no Lado A.
+            </div>
+          {% endif %}
+        </section>
+
+        <div class="pd-compare-ranking-grid">
+          <section class="pd-compare-ranking-card">
+            <h3 class="pd-compare-ranking-card__title">Top 5 forças coletivas</h3>
+            <p class="pd-compare-ranking-card__text">
+              Mostra as dimensões que aparecem com mais força ou recorrência no Lado A.
+            </p>
+
+            {% set left_top_items = left_ranking_top %}
+            {% if left_top_items %}
+              <div class="pd-compare-ranking-list">
+                {% for item in left_top_items[:5] %}
+                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+                  <article class="pd-compare-ranking-item">
+                    <div class="pd-compare-ranking-item__top">
+                      <div>
+                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
+                      </div>
+                      <div class="pd-compare-ranking-item__metric">
+                        {{ item_value }}
+                      </div>
+                    </div>
+
+                    <div class="pd-compare-bar-track">
+                      <div class="pd-compare-bar-fill pd-compare-bar-fill--a-strong" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
+                    </div>
+
+                    <div class="pd-compare-ranking-item__desc">
+                      {{ item_description }}
+                    </div>
+
+                    <div class="pd-compare-ranking-item__meta">
+                      <strong>Recorrências no grupo:</strong> {{ item_value }}
+                      {% if item_pct is not none %}
+                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
+                      {% endif %}
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="pd-compare-empty" style="margin-top:16px;">
+                Top 5 indisponível no Lado A.
+              </div>
+            {% endif %}
+          </section>
+
+          <section class="pd-compare-ranking-card">
+            <h3 class="pd-compare-ranking-card__title">3 Pontos de atenção</h3>
+            <p class="pd-compare-ranking-card__text">
+              Mostra as dimensões menos predominantes no Lado A e que podem merecer acompanhamento mais cuidadoso.
+            </p>
+
+            {% set left_bottom_items = left_ranking_bottom %}
+            {% if left_bottom_items %}
+              <div class="pd-compare-ranking-list">
+                {% for item in left_bottom_items[:3] %}
+                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+                  <article class="pd-compare-ranking-item">
+                    <div class="pd-compare-ranking-item__top">
+                      <div>
+                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
+                      </div>
+                      <div class="pd-compare-ranking-item__metric">
+                        {{ item_value }}
+                      </div>
+                    </div>
+
+                    <div class="pd-compare-bar-track">
+                      <div class="pd-compare-bar-fill pd-compare-bar-fill--a-attention" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
+                    </div>
+
+                    <div class="pd-compare-ranking-item__desc">
+                      {{ item_description }}
+                    </div>
+
+                    <div class="pd-compare-ranking-item__meta">
+                      <strong>Recorrências no grupo:</strong> {{ item_value }}
+                      {% if item_pct is not none %}
+                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
+                      {% endif %}
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+
+              <div class="pd-compare-helper" style="margin-top:16px;">
+                <strong>Sugestão ao gestor:</strong>
+                trate esses itens como pontos de atenção para aprofundar leitura por rodada, setor e cargo. Eles não são problema isolado por si só; indicam áreas que merecem interpretação mais cuidadosa.
+              </div>
+            {% else %}
+              <div class="pd-compare-empty" style="margin-top:16px;">
+                Bottom 3 indisponível no Lado A.
+              </div>
+            {% endif %}
+          </section>
+        </div>
+
+        <div class="pd-compare-detail-grid">
+          <section class="pd-compare-side-card">
+            <div class="pd-compare-card-head">
+              <div>
+                <h3 class="pd-compare-card-title">Tabela dimensional</h3>
+                <p class="pd-compare-card-text">
+                  Detalhe por dimensão do Lado A.
+                </p>
+              </div>
+            </div>
+
+            {% if left_dimension_rows %}
+              <div class="pd-compare-data-table-wrap">
+                <table class="pd-compare-data-table">
+                  <thead>
+                    <tr>
+                      <th>Dimensão</th>
+                      <th>Área</th>
+                      <th>Média</th>
+                      <th>Mediana</th>
+                      <th>Faixa</th>
+                      <th>Leitura</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in left_dimension_rows %}
+                      <tr>
+                        <td style="font-weight:700;">{{ row.label if row.label is defined else "-" }}</td>
+                        <td>{{ row.area if row.area is defined else "-" }}</td>
+                        <td>{{ row.average_label if row.average_label is defined else row.value if row.value is defined else "-" }}</td>
+                        <td>{{ row.median_label if row.median_label is defined else "-" }}</td>
+                        <td>
+                          <span class="pd-compare-badge pd-compare-badge--left">
+                            {{ row.band if row.band is defined else "-" }}
+                          </span>
+                        </td>
+                        <td>{{ row.description if row.description is defined else "-" }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="pd-compare-empty">
+                Tabela dimensional indisponível no Lado A.
+              </div>
+            {% endif %}
+          </section>
+
+          <section class="pd-compare-side-card">
+            <div class="pd-compare-card-head">
+              <div>
+                <h3 class="pd-compare-card-title">Áreas consolidadas</h3>
+                <p class="pd-compare-card-text">
+                  Resumo por macroárea do Lado A.
+                </p>
+              </div>
+            </div>
+
+            {% if left_area_rows %}
+              <div class="pd-compare-area-list">
+                {% for row in left_area_rows %}
+                  <div class="pd-compare-area-item">
+                    <div class="pd-compare-area-item__top">
+                      <div class="pd-compare-area-item__title">{{ row.label if row.label is defined else "-" }}</div>
+                      <div class="pd-compare-area-item__value">{{ row.value if row.value is defined else "-" }}</div>
+                    </div>
+                    {% if row.description is defined and row.description %}
+                      <div class="pd-compare-area-item__desc">{{ row.description }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+
+              {% set left_area_sorted = left_area_rows|sort(attribute='average_score', reverse=true) %}
+              {% set left_primary_area = left_area_sorted[0] if left_area_sorted else none %}
+              {% set left_secondary_area = left_area_sorted[1] if left_area_sorted|length > 1 else none %}
+
+              <div class="pd-compare-area-chart-card">
+                <h4 class="pd-compare-area-chart-card__title">Leitura visual das macroáreas</h4>
+                <p class="pd-compare-area-chart-card__text">
+                  O gráfico em pizza resume a distribuição relativa das médias consolidadas do Lado A entre as macroáreas.
+                </p>
+
+                <div class="pd-compare-area-chart-box">
+                  <canvas id="leftAreaPieChart"></canvas>
+                </div>
+
+                <div class="pd-compare-area-reading">
+                  {% if left_primary_area %}
+                    <strong>Destaque:</strong>
+                    no Lado A, a macroárea com maior média consolidada é
+                    <strong>{{ left_primary_area.label }}</strong>
+                    ({{ left_primary_area.value }}).
+                    {% if left_secondary_area %}
+                      Em seguida aparece <strong>{{ left_secondary_area.label }}</strong>
+                      ({{ left_secondary_area.value }}),
+                      o que ajuda a entender onde o grupo concentra maior força relativa.
+                    {% else %}
+                      Este recorte mostra concentração principal nessa área.
+                    {% endif %}
+                  {% else %}
+                    <strong>Destaque:</strong>
+                    não há dados suficientes para leitura consolidada das áreas no Lado A.
+                  {% endif %}
+                </div>
+              </div>
+            {% else %}
+              <div class="pd-compare-empty">
+                Áreas consolidadas indisponíveis no Lado A.
+              </div>
+            {% endif %}
+          </section>
+        </div>
+      </section>
+
+      <section>
+        <div class="pd-compare-side-header">
+          <h2 class="pd-compare-side-header__title">Lado B</h2>
+          <p class="pd-compare-side-header__text">
+            {{ right_context.page_subtitle if right_context and right_context.page_subtitle is defined else "Segundo recorte do comparativo." }}
+          </p>
+        </div>
+
+        <section class="pd-compare-kpi-grid">
+          {% if right_overview_cards %}
+            {% for card in right_overview_cards %}
+              <div class="pd-compare-kpi-card">
+                <div class="pd-compare-kpi-card__label">
+                  {{ card.label if card.label is defined else "Indicador" }}
+                </div>
+                <div class="pd-compare-kpi-card__value">
+                  {{ card.value if card.value is defined else "-" }}
+                </div>
+                {% if card.description is defined and card.description %}
+                  <div class="pd-compare-kpi-card__text">
+                    {{ card.description }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </section>
+
+        <section class="pd-compare-chart-panel">
+          <h3 class="pd-compare-chart-panel__title">Radar / Área analítica</h3>
+          <p class="pd-compare-chart-panel__text">
+            Mostra a média das macroáreas no Lado B.
+          </p>
+
+          {% if right_radar_chart and right_radar_chart.has_data %}
+            <div class="pd-compare-chart-box">
+              <canvas id="rightRadarAreaChart"></canvas>
+            </div>
+          {% else %}
+            <div class="pd-compare-empty" style="margin-top:14px;">
+              Radar indisponível no Lado B.
+            </div>
+          {% endif %}
+        </section>
+
+        <section class="pd-compare-chart-panel">
+          <h3 class="pd-compare-chart-panel__title">Distribuição por status</h3>
+          <p class="pd-compare-chart-panel__text">
+            Mostra em que etapa estão os participantes do Lado B.
+          </p>
+
+          {% if right_status_chart and right_status_chart.has_data %}
+            <div class="pd-compare-chart-box">
+              <canvas id="rightStatusPieChart"></canvas>
+            </div>
+          {% else %}
+            <div class="pd-compare-empty" style="margin-top:14px;">
+              Status indisponível no Lado B.
+            </div>
+          {% endif %}
+        </section>
+
+        <div class="pd-compare-ranking-grid">
+          <section class="pd-compare-ranking-card pd-compare-ranking-card--top5-b">
+            <h3 class="pd-compare-ranking-card__title">Top 5 forças coletivas</h3>
+            <p class="pd-compare-ranking-card__text">
+              Mostra as dimensões que aparecem com mais força ou recorrência no Lado B.
+            </p>
+
+            {% set right_top_items = right_ranking_top %}
+            {% if right_top_items %}
+              <div class="pd-compare-ranking-list">
+                {% for item in right_top_items[:5] %}
+                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+                  <article class="pd-compare-ranking-item">
+                    <div class="pd-compare-ranking-item__top">
+                      <div>
+                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
+                      </div>
+                      <div class="pd-compare-ranking-item__metric">
+                        {{ item_value }}
+                      </div>
+                    </div>
+
+                    <div class="pd-compare-bar-track">
+                      <div class="pd-compare-bar-fill pd-compare-bar-fill--b-strong" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
+                    </div>
+
+                    <div class="pd-compare-ranking-item__desc">
+                      {{ item_description }}
+                    </div>
+
+                    <div class="pd-compare-ranking-item__meta">
+                      <strong>Recorrências no grupo:</strong> {{ item_value }}
+                      {% if item_pct is not none %}
+                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
+                      {% endif %}
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="pd-compare-empty" style="margin-top:16px;">
+                Top 5 indisponível no Lado B.
+              </div>
+            {% endif %}
+          </section>
+
+          <section class="pd-compare-ranking-card">
+            <h3 class="pd-compare-ranking-card__title">3 Pontos de atenção</h3>
+            <p class="pd-compare-ranking-card__text">
+              Mostra as dimensões menos predominantes no Lado B e que podem merecer acompanhamento mais cuidadoso.
+            </p>
+
+            {% set right_bottom_items = right_ranking_bottom %}
+            {% if right_bottom_items %}
+              <div class="pd-compare-ranking-list">
+                {% for item in right_bottom_items[:3] %}
+                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+                  <article class="pd-compare-ranking-item">
+                    <div class="pd-compare-ranking-item__top">
+                      <div>
+                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
+                      </div>
+                      <div class="pd-compare-ranking-item__metric">
+                        {{ item_value }}
+                      </div>
+                    </div>
+
+                    <div class="pd-compare-bar-track">
+                      <div class="pd-compare-bar-fill pd-compare-bar-fill--b-attention" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
+                    </div>
+
+                    <div class="pd-compare-ranking-item__desc">
+                      {{ item_description }}
+                    </div>
+
+                    <div class="pd-compare-ranking-item__meta">
+                      <strong>Recorrências no grupo:</strong> {{ item_value }}
+                      {% if item_pct is not none %}
+                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
+                      {% endif %}
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+
+              <div class="pd-compare-helper" style="margin-top:16px;">
+                <strong>Sugestão ao gestor:</strong>
+                trate esses itens como pontos de atenção para aprofundar leitura por rodada, setor e cargo. Eles não são problema isolado por si só; indicam áreas que merecem interpretação mais cuidadosa.
+              </div>
+            {% else %}
+              <div class="pd-compare-empty" style="margin-top:16px;">
+                Bottom 3 indisponível no Lado B.
+              </div>
+            {% endif %}
+          </section>
+        </div>
+
+        <div class="pd-compare-detail-grid">
+          <section class="pd-compare-side-card">
+            <div class="pd-compare-card-head">
+              <div>
+                <h3 class="pd-compare-card-title">Tabela dimensional</h3>
+                <p class="pd-compare-card-text">
+                  Detalhe por dimensão do Lado B.
+                </p>
+              </div>
+            </div>
+
+            {% if right_dimension_rows %}
+              <div class="pd-compare-data-table-wrap">
+                <table class="pd-compare-data-table">
+                  <thead>
+                    <tr>
+                      <th>Dimensão</th>
+                      <th>Área</th>
+                      <th>Média</th>
+                      <th>Mediana</th>
+                      <th>Faixa</th>
+                      <th>Leitura</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in right_dimension_rows %}
+                      <tr>
+                        <td style="font-weight:700;">{{ row.label if row.label is defined else "-" }}</td>
+                        <td>{{ row.area if row.area is defined else "-" }}</td>
+                        <td>{{ row.average_label if row.average_label is defined else row.value if row.value is defined else "-" }}</td>
+                        <td>{{ row.median_label if row.median_label is defined else "-" }}</td>
+                        <td>
+                          <span class="pd-compare-badge pd-compare-badge--right">
+                            {{ row.band if row.band is defined else "-" }}
+                          </span>
+                        </td>
+                        <td>{{ row.description if row.description is defined else "-" }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="pd-compare-empty">
+                Tabela dimensional indisponível no Lado B.
+              </div>
+            {% endif %}
+          </section>
+
+          <section class="pd-compare-side-card">
+            <div class="pd-compare-card-head">
+              <div>
+                <h3 class="pd-compare-card-title">Áreas consolidadas</h3>
+                <p class="pd-compare-card-text">
+                  Resumo por macroárea do Lado B.
+                </p>
+              </div>
+            </div>
+
+            {% if right_area_rows %}
+              <div class="pd-compare-area-list">
+                {% for row in right_area_rows %}
+                  <div class="pd-compare-area-item">
+                    <div class="pd-compare-area-item__top">
+                      <div class="pd-compare-area-item__title">{{ row.label if row.label is defined else "-" }}</div>
+                      <div class="pd-compare-area-item__value">{{ row.value if row.value is defined else "-" }}</div>
+                    </div>
+                    {% if row.description is defined and row.description %}
+                      <div class="pd-compare-area-item__desc">{{ row.description }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+
+              {% set right_area_sorted = right_area_rows|sort(attribute='average_score', reverse=true) %}
+              {% set right_primary_area = right_area_sorted[0] if right_area_sorted else none %}
+              {% set right_secondary_area = right_area_sorted[1] if right_area_sorted|length > 1 else none %}
+
+              <div class="pd-compare-area-chart-card">
+                <h4 class="pd-compare-area-chart-card__title">Leitura visual das macroáreas</h4>
+                <p class="pd-compare-area-chart-card__text">
+                  O gráfico em pizza resume a distribuição relativa das médias consolidadas do Lado B entre as macroáreas.
+                </p>
+
+                <div class="pd-compare-area-chart-box">
+                  <canvas id="rightAreaPieChart"></canvas>
+                </div>
+
+                <div class="pd-compare-area-reading">
+                  {% if right_primary_area %}
+                    <strong>Destaque:</strong>
+                    no Lado B, a macroárea com maior média consolidada é
+                    <strong>{{ right_primary_area.label }}</strong>
+                    ({{ right_primary_area.value }}).
+                    {% if right_secondary_area %}
+                      Em seguida aparece <strong>{{ right_secondary_area.label }}</strong>
+                      ({{ right_secondary_area.value }}),
+                      o que ajuda a entender onde o grupo concentra maior força relativa.
+                    {% else %}
+                      Este recorte mostra concentração principal nessa área.
+                    {% endif %}
+                  {% else %}
+                    <strong>Destaque:</strong>
+                    não há dados suficientes para leitura consolidada das áreas no Lado B.
+                  {% endif %}
+                </div>
+              </div>
+            {% else %}
+              <div class="pd-compare-empty">
+                Áreas consolidadas indisponíveis no Lado B.
+              </div>
+            {% endif %}
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ super() }}
+  <script>
+    (() => {
+      const palette = {
+        dark: "#111827",
+        darkSoft: "#4b5563",
+        orange: "#f97316",
+        orangeSoft: "rgba(249, 115, 22, 0.18)",
+        border: "#dbe1ea",
+        grid: "rgba(17, 24, 39, 0.08)",
+        surface: "#ffffff"
+      };
+
+      const defaultPiePalette = [
+        palette.dark,
+        palette.orange,
+        palette.darkSoft,
+        "#9ca3af",
+        "#cbd5e1",
+        "#fed7aa"
+      ];
+
+      const leftRadarChartData = {{ left_radar_chart | tojson }};
+      const rightRadarChartData = {{ right_radar_chart | tojson }};
+      const leftStatusChartData = {{ left_status_chart | tojson }};
+      const rightStatusChartData = {{ right_status_chart | tojson }};
+      const leftAreaRows = {{ left_area_rows | tojson }};
+      const rightAreaRows = {{ right_area_rows | tojson }};
+
+      function hasArray(value) {
+        return Array.isArray(value) && value.length > 0;
+      }
+
+      function toNumber(value) {
+        if (typeof value === "number" && Number.isFinite(value)) return value;
+        if (typeof value === "string") {
+          const normalized = value.replace(",", ".").replace(/[^\d.-]/g, "");
+          const parsed = Number(normalized);
+          return Number.isFinite(parsed) ? parsed : 0;
+        }
+        return 0;
+      }
+
+      function buildPieColors(count) {
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+          colors.push(defaultPiePalette[i % defaultPiePalette.length]);
+        }
+        return colors;
+      }
+
+      function buildAreaDataset(rows) {
+        const cleanRows = Array.isArray(rows)
+          ? rows
+              .map((row) => ({
+                label: row && (row.label || row.area) ? String(row.label || row.area) : "Área",
+                value: toNumber(row && (row.average_score ?? row.average ?? row.value))
+              }))
+              .filter((row) => row.value > 0)
+          : [];
+
+        return {
+          labels: cleanRows.map((row) => row.label),
+          values: cleanRows.map((row) => row.value)
+        };
+      }
+
+      const commonPlugins = {
+        legend: {
+          labels: {
+            color: palette.darkSoft,
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: "#f97316",
+          titleColor: "#ffffff",
+          bodyColor: "#ffffff",
+          padding: 10
+        }
+      };
+
+      function buildRadar(canvasId, chartData, emphasisColor) {
+        if (!chartData || !chartData.has_data) return;
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        const labels = hasArray(chartData.labels) ? chartData.labels : [];
+        const dataset = hasArray(chartData.datasets) ? chartData.datasets[0] : null;
+        const values = dataset && hasArray(dataset.data) ? dataset.data : [];
+
+        new Chart(canvas, {
+          type: "radar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: dataset && dataset.label ? dataset.label : "Média por área",
+                data: values,
+                borderColor: emphasisColor,
+                backgroundColor: emphasisColor === palette.orange ? palette.orangeSoft : "rgba(17, 24, 39, 0.12)",
+                pointBackgroundColor: emphasisColor,
+                pointBorderColor: emphasisColor,
+                pointRadius: 3,
+                borderWidth: 2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                min: chartData.scale_min !== undefined ? chartData.scale_min : 0,
+                max: chartData.scale_max !== undefined ? chartData.scale_max : 10,
+                ticks: {
+                  backdropColor: "transparent",
+                  color: palette.darkSoft
+                },
+                grid: {
+                  color: palette.grid
+                },
+                angleLines: {
+                  color: palette.grid
+                },
+                pointLabels: {
+                  color: palette.darkSoft,
+                  font: {
+                    size: 12
+                  }
+                }
+              }
+            },
+            plugins: commonPlugins
+          }
+        });
+      }
+
+      function buildPie(canvasId, chartData) {
+        if (!chartData || !chartData.has_data) return;
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        const labels = hasArray(chartData.labels) ? chartData.labels : [];
+        const values = hasArray(chartData.values) ? chartData.values : [];
+
+        new Chart(canvas, {
+          type: "pie",
+          data: {
+            labels,
+            datasets: [
+              {
+                data: values,
+                backgroundColor: buildPieColors(values.length),
+                borderColor: palette.surface,
+                borderWidth: 2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: commonPlugins
+          }
+        });
+      }
+
+      function buildModernAreaPie(canvasId, rows) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        const dataset = buildAreaDataset(rows);
+        if (!hasArray(dataset.labels) || !hasArray(dataset.values)) return;
+
+        new Chart(canvas, {
+          type: "doughnut",
+          data: {
+            labels: dataset.labels,
+            datasets: [
+              {
+                data: dataset.values,
+                backgroundColor: buildPieColors(dataset.values.length),
+                borderColor: palette.surface,
+                borderWidth: 3,
+                hoverOffset: 8
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "46%",
+            plugins: {
+              ...commonPlugins,
+              legend: {
+                position: "bottom",
+                labels: {
+                  color: palette.darkSoft,
+                  usePointStyle: true,
+                  pointStyle: "circle",
+                  padding: 16,
+                  font: {
+                    size: 12
+                  }
+                }
+              },
+              tooltip: {
+                ...commonPlugins.tooltip,
+                callbacks: {
+                  label: (context) => {
+                    const label = context.label || "Área";
+                    const value = context.parsed ?? 0;
+                    return `${label}: ${Number(value).toFixed(2)}`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      buildRadar("leftRadarAreaChart", leftRadarChartData, palette.orange);
+      buildRadar("rightRadarAreaChart", rightRadarChartData, palette.dark);
+
+      buildPie("leftStatusPieChart", leftStatusChartData);
+      buildPie("rightStatusPieChart", rightStatusChartData);
+
+      buildModernAreaPie("leftAreaPieChart", leftAreaRows);
+      buildModernAreaPie("rightAreaPieChart", rightAreaRows);
+    })();
+  </script>
+{% endblock %}

@@ -1,0 +1,529 @@
+{% extends "admin/base_admin.html" %}
+
+{% set clientes = clientes if clientes is defined and clientes else [] %}
+{% set q = q if q is defined and q else "" %}
+{% set total_clientes = total_clientes if total_clientes is defined else 0 %}
+{% set total_ativos = total_ativos if total_ativos is defined else 0 %}
+{% set csrf_token = csrf_token if csrf_token is defined else "" %}
+
+{% set active_nav = "clientes" %}
+{% set page_title = "Gestão de Clientes" %}
+{% set page_subtitle = "Cadastre, visualize e gerencie os clientes da base operacional." %}
+
+{% block title %}ProfileDNA — Clientes{% endblock %}
+
+{% block admin_page_header %}
+  <div class="pd-cl-hero">
+    <div class="pd-cl-hero__content">
+      <div class="pd-cl-kicker">Operação Central</div>
+      <h1 class="pd-cl-title">Gestão de Clientes</h1>
+      <p class="pd-cl-subtitle">Cadastre, visualize e gerencie os clientes da base operacional.</p>
+    </div>
+    <div class="pd-cl-hero__actions">
+      <a href="/admin/clientes/novo" class="pd-cl-btn-primary">+ Cadastrar Novo Cliente</a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block admin_context_bar %}{% endblock %}
+
+{% block admin_content %}
+<style>
+  .pd-cl-hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .pd-cl-kicker {
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #f97316;
+    margin-bottom: 6px;
+  }
+
+  .pd-cl-title {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: #111827;
+  }
+
+  .pd-cl-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .pd-cl-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 26px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ef4444 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 14px 28px rgba(249, 115, 22, 0.22);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .pd-cl-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 32px rgba(249, 115, 22, 0.30);
+  }
+
+  /* ── KPI strip ── */
+  .pd-cl-kpi-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+
+  .pd-cl-kpi {
+    flex: 1 1 160px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.05);
+  }
+
+  .pd-cl-kpi__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(249, 115, 22, 0.10);
+    color: #f97316;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex: 0 0 auto;
+  }
+
+  .pd-cl-kpi__icon--green {
+    background: rgba(16, 185, 129, 0.10);
+    color: #10b981;
+  }
+
+  .pd-cl-kpi__body { min-width: 0; }
+
+  .pd-cl-kpi__label {
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin-bottom: 3px;
+  }
+
+  .pd-cl-kpi__value {
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #111827;
+  }
+
+  /* ── Search bar ── */
+  .pd-cl-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    box-shadow: 0 4px 14px rgba(17, 24, 39, 0.04);
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .pd-cl-search-input {
+    flex: 1 1 220px;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    background: rgba(255, 255, 255, 0.9);
+    color: #111827;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+
+  .pd-cl-search-input:focus {
+    border-color: rgba(249, 115, 22, 0.5);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.10);
+  }
+
+  .pd-cl-search-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .pd-cl-search-btn {
+    min-height: 40px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(90deg, #fb923c, #f97316);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: opacity .18s ease;
+    white-space: nowrap;
+  }
+
+  .pd-cl-search-btn:hover { opacity: 0.88; }
+
+  .pd-cl-search-clear {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    background: rgba(255, 255, 255, 0.8);
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: border-color .18s ease, color .18s ease;
+    white-space: nowrap;
+  }
+
+  .pd-cl-search-clear:hover {
+    border-color: #94a3b8;
+    color: #111827;
+  }
+
+  .pd-cl-search-hint {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+
+  /* ── Table card ── */
+  .pd-cl-table-card {
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    box-shadow: 0 8px 28px rgba(17, 24, 39, 0.06);
+    overflow: hidden;
+  }
+
+  .pd-cl-table-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+  }
+
+  .pd-cl-table-title {
+    font-size: 14px;
+    font-weight: 900;
+    color: #111827;
+  }
+
+  .pd-cl-table-count {
+    font-size: 12px;
+    font-weight: 800;
+    color: #6b7280;
+    background: rgba(229, 231, 235, 0.6);
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+
+  .pd-cl-table-wrap {
+    overflow-x: auto;
+  }
+
+  .pd-cl-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+  }
+
+  .pd-cl-table thead th {
+    padding: 11px 18px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    background: rgba(249, 250, 251, 0.7);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+    white-space: nowrap;
+  }
+
+  .pd-cl-table tbody tr {
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    transition: background .14s ease;
+  }
+
+  .pd-cl-table tbody tr:last-child { border-bottom: none; }
+
+  .pd-cl-table tbody tr:hover {
+    background: rgba(249, 115, 22, 0.03);
+  }
+
+  .pd-cl-table tbody td {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    vertical-align: middle;
+  }
+
+  .pd-cl-table__nome {
+    font-weight: 800;
+    color: #111827;
+  }
+
+  .pd-cl-table__sub {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    margin-top: 2px;
+  }
+
+  .pd-cl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .pd-cl-badge--ativo {
+    background: rgba(16, 185, 129, 0.10);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .pd-cl-badge--inativo {
+    background: rgba(156, 163, 175, 0.12);
+    color: #6b7280;
+    border: 1px solid rgba(156, 163, 175, 0.25);
+  }
+
+  .pd-cl-badge__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+  }
+
+  .pd-cl-badge--ativo .pd-cl-badge__dot { background: #10b981; }
+  .pd-cl-badge--inativo .pd-cl-badge__dot { background: #9ca3af; }
+
+  .pd-cl-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    background: rgba(255, 247, 237, 0.85);
+    color: #c2410c;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background .16s ease, border-color .16s ease;
+    white-space: nowrap;
+  }
+
+  .pd-cl-action-btn:hover {
+    background: rgba(254, 237, 213, 0.95);
+    border-color: rgba(249, 115, 22, 0.55);
+  }
+
+  /* ── Empty state ── */
+  .pd-cl-empty {
+    padding: 56px 24px;
+    text-align: center;
+    color: #9ca3af;
+  }
+
+  .pd-cl-empty__icon {
+    font-size: 36px;
+    margin-bottom: 14px;
+    opacity: 0.5;
+  }
+
+  .pd-cl-empty__title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+
+  .pd-cl-empty__desc {
+    font-size: 13px;
+    font-weight: 600;
+    color: #9ca3af;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 680px) {
+    .pd-cl-hero { flex-direction: column; }
+    .pd-cl-kpi-row { gap: 10px; }
+    .pd-cl-kpi { flex: 1 1 140px; }
+  }
+</style>
+
+<!-- KPI Strip -->
+<div class="pd-cl-kpi-row">
+  <div class="pd-cl-kpi">
+    <div class="pd-cl-kpi__icon">⊞</div>
+    <div class="pd-cl-kpi__body">
+      <div class="pd-cl-kpi__label">Total de Clientes</div>
+      <div class="pd-cl-kpi__value">{{ total_clientes }}</div>
+    </div>
+  </div>
+  <div class="pd-cl-kpi">
+    <div class="pd-cl-kpi__icon pd-cl-kpi__icon--green">◉</div>
+    <div class="pd-cl-kpi__body">
+      <div class="pd-cl-kpi__label">Clientes Ativos</div>
+      <div class="pd-cl-kpi__value">{{ total_ativos }}</div>
+    </div>
+  </div>
+  <div class="pd-cl-kpi">
+    <div class="pd-cl-kpi__icon" style="background:rgba(107,114,128,0.08);color:#6b7280;">○</div>
+    <div class="pd-cl-kpi__body">
+      <div class="pd-cl-kpi__label">Inativos</div>
+      <div class="pd-cl-kpi__value">{{ total_clientes - total_ativos }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Search Bar -->
+<form method="get" action="/admin/clientes" class="pd-cl-search-bar">
+  <input
+    type="text"
+    name="q"
+    value="{{ q }}"
+    placeholder="Buscar por nome ou CNPJ…"
+    class="pd-cl-search-input"
+    autocomplete="off"
+  />
+  <button type="submit" class="pd-cl-search-btn">Buscar</button>
+  {% if q %}
+    <a href="/admin/clientes" class="pd-cl-search-clear">Limpar</a>
+    <span class="pd-cl-search-hint">{{ total_clientes }} resultado{{ "s" if total_clientes != 1 else "" }} para "{{ q }}"</span>
+  {% endif %}
+</form>
+
+<!-- Client Table -->
+<div class="pd-cl-table-card">
+  <div class="pd-cl-table-head">
+    <span class="pd-cl-table-title">Clientes Cadastrados</span>
+    <span class="pd-cl-table-count">{{ total_clientes }} cliente{{ "s" if total_clientes != 1 else "" }}</span>
+  </div>
+
+  {% if clientes %}
+    <div class="pd-cl-table-wrap">
+      <table class="pd-cl-table">
+        <thead>
+          <tr>
+            <th>Nome do Cliente</th>
+            <th>Razão Social / CNPJ</th>
+            <th>Mercado</th>
+            <th>Responsável</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in clientes %}
+            {% set _nome          = c.nome          | default("—", true) %}
+            {% set _razao         = c.razao_social   | default("",  true) %}
+            {% set _cnpj          = c.cnpj           | default("",  true) %}
+            {% set _mercado       = c.setor_mercado  | default("—", true) %}
+            {% set _responsavel   = c.responsavel    | default("—", true) %}
+            {% set _ativo         = c.ativo %}
+            <tr>
+              <td class="pd-cl-table__nome">{{ _nome }}</td>
+              <td>
+                {% if _razao %}
+                  <div>{{ _razao }}</div>
+                {% endif %}
+                {% if _cnpj %}
+                  <div class="pd-cl-table__sub">{{ _cnpj }}</div>
+                {% endif %}
+                {% if not _razao and not _cnpj %}—{% endif %}
+              </td>
+              <td>{{ _mercado }}</td>
+              <td>{{ _responsavel }}</td>
+              <td>
+                {% if _ativo %}
+                  <span class="pd-cl-badge pd-cl-badge--ativo">
+                    <span class="pd-cl-badge__dot"></span>Ativo
+                  </span>
+                {% else %}
+                  <span class="pd-cl-badge pd-cl-badge--inativo">
+                    <span class="pd-cl-badge__dot"></span>Inativo
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="/admin/clientes/{{ c.id }}" class="pd-cl-action-btn">
+                  Abrir painel →
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="pd-cl-empty">
+      <div class="pd-cl-empty__icon">⊞</div>
+      {% if q %}
+        <div class="pd-cl-empty__title">Nenhum cliente encontrado</div>
+        <div class="pd-cl-empty__desc">Nenhum resultado para "{{ q }}". Tente outro nome ou CNPJ.</div>
+        <a href="/admin/clientes" class="pd-cl-action-btn">Ver todos os clientes</a>
+      {% else %}
+        <div class="pd-cl-empty__title">Nenhum cliente cadastrado</div>
+        <div class="pd-cl-empty__desc">Comece cadastrando o primeiro cliente da base operacional.</div>
+        <a href="/admin/clientes/novo" class="pd-cl-btn-primary">+ Cadastrar Novo Cliente</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

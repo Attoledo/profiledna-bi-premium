@@ -1,0 +1,93 @@
+<section class="premium-section premium-force-page-break">
+  <div class="premium-kicker">Desenvolvimento</div>
+  <h2 class="premium-h2">PDI — Plano de Desenvolvimento Individual</h2>
+
+  {% if pdi_competencias %}
+    {% for item in pdi_competencias %}
+      <div class="premium-pdi-card premium-avoid-break">
+        <div class="premium-card-title">{{ item.get("titulo") }}</div>
+        <div class="premium-small-label">{{ item.get("eixo") }} · {{ item.get("area") }}</div>
+
+        <div class="premium-pdi-block">
+          <strong>Objetivo do desenvolvimento</strong>
+          <p class="premium-text">{{ item.get("porque_relevante") }}</p>
+        </div>
+
+        <div class="premium-pdi-block">
+          <strong>Impacto esperado</strong>
+          <p class="premium-text">{{ item.get("impacto_esperado") }}</p>
+        </div>
+
+        <div class="premium-pdi-block">
+          <strong>Ações práticas</strong>
+          {% set _acoes = item.get("acoes_praticas", []) %}
+          {% if _acoes %}
+            <ul class="premium-clean-list">
+              {% for acao in _acoes %}
+                {% if acao and acao|string|trim %}
+                  <li>{{ acao }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+        <div class="premium-pdi-block">
+          <strong>Sugestões de treinamentos</strong>
+          {% set _treinos = item.get("sugestoes_treinamento", []) %}
+          {% if _treinos %}
+            <ul class="premium-clean-list">
+              {% for treino in _treinos %}
+                {% if treino and treino|string|trim %}
+                  <li>{{ treino }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+        <div class="premium-pdi-block">
+          <strong>Sugestões de acompanhamento do gestor</strong>
+          {% set _acomp = item.get("sugestoes_acompanhamento_gestor", []) %}
+          {% if _acomp %}
+            <ul class="premium-clean-list">
+              {% for acomp in _acomp %}
+                {% if acomp and acomp|string|trim %}
+                  <li>{{ acomp }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+        <div class="premium-pdi-grid">
+          <div class="premium-pdi-block">
+            <strong>Metas comportamentais</strong>
+            {% set _metas = item.get("metas_comportamentais", []) %}
+            {% if _metas %}
+              <ul class="premium-clean-list">
+                {% for meta in _metas %}
+                  {% if meta and meta|string|trim %}
+                    <li>{{ meta }}</li>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </ul>
+          </div>
+
+          <div class="premium-pdi-block">
+            <strong>Prazo recomendado</strong>
+            <p class="premium-text">{{ item.get("prazo_recomendado") }}</p>
+          </div>
+        </div>
+
+        <div class="premium-pdi-block">
+          <strong>Indicadores de evolução</strong>
+          <p class="premium-text">{{ item.get("indicador_evolucao") }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="premium-text">Os itens de desenvolvimento não estão disponíveis neste resultado.</p>
+  {% endif %}
+</section>

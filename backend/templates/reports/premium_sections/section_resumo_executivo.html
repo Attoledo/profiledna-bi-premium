@@ -1,0 +1,88 @@
+{% set _nome = ((participant.get("nome", "") ~ " " ~ participant.get("sobrenome", "")).strip()) %}
+{% set _cargo = attempt.get("cargo", "") %}
+{% set _tipo = participant.get("tipo_aplicacao", "") %}
+{% set _painel_1 = paineis_area[0] if paineis_area and paineis_area|length > 0 else {} %}
+{% set _painel_2 = paineis_area[1] if paineis_area and paineis_area|length > 1 else {} %}
+{% set _painel_3 = paineis_area[2] if paineis_area and paineis_area|length > 2 else {} %}
+{% set _item_1 = _painel_1.get("items", [])[0] if _painel_1.get("items", []) else {} %}
+{% set _item_2 = _painel_2.get("items", [])[0] if _painel_2.get("items", []) else {} %}
+{% set _item_3 = _painel_3.get("items", [])[0] if _painel_3.get("items", []) else {} %}
+
+<section class="premium-section">
+  <div class="premium-kicker">Resumo Executivo</div>
+  <h2 class="premium-h2">Síntese consultiva do perfil</h2>
+
+  <p class="premium-text">
+    Este material apresenta uma leitura executiva do perfil de {{ _nome or "participante avaliado" }},
+    considerando os indicadores comportamentais consolidados no sistema{% if _cargo %} para o contexto do cargo de {{ _cargo }}{% endif %}{% if _tipo %} e da aplicação {{ _tipo }}{% endif %}.
+  </p>
+
+  <p class="premium-text">
+    {{ premium_summary_text or "Os resultados oficiais foram organizados em linguagem consultiva para apoiar devolutiva, desenvolvimento e leitura profissional do perfil." }}
+  </p>
+
+  <div class="premium-card-grid-2">
+    <div class="premium-card">
+      <h3>Forma de trabalhar</h3>
+      <p>
+        {% if _item_1 %}
+          Observa-se destaque em <strong>{{ _item_1.get("name", "competência principal") }}</strong>,
+          atualmente em nível <strong>{{ _item_1.get("band", "não informado") }}</strong>.
+          Essa frente tende a influenciar a forma de conduzir prioridades, decisões e entrega.
+        {% else %}
+          A forma de trabalhar deve ser lida a partir das competências de maior recorrência do resultado oficial.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Comunicação e equipe</h3>
+      <p>
+        {% if _item_2 %}
+          Na leitura interpessoal, chama atenção <strong>{{ _item_2.get("name", "competência relacional") }}</strong>,
+          em nível <strong>{{ _item_2.get("band", "não informado") }}</strong>,
+          com impacto direto sobre comunicação, alinhamento e trocas com outras pessoas.
+        {% else %}
+          A dinâmica interpessoal deve ser acompanhada a partir dos indicadores relacionais consolidados no sistema.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Ritmo e adaptação</h3>
+      <p>
+        {% if _item_3 %}
+          No plano pessoal, destaca-se <strong>{{ _item_3.get("name", "competência pessoal") }}</strong>,
+          em nível <strong>{{ _item_3.get("band", "não informado") }}</strong>,
+          influenciando constância, reação à pressão e resposta às exigências do ambiente.
+        {% else %}
+          Ritmo e adaptação devem ser lidos a partir dos indicadores pessoais presentes no resultado oficial.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Talentos centrais</h3>
+      <p>
+        Os talentos centrais deste perfil devem ser lidos como pontos de maior apoio para performance,
+        posicionamento profissional e aproveitamento do potencial já presente.
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Pontos de atenção</h3>
+      <p>
+        Os pontos de atenção não representam limitação fixa, mas competências que podem ser acompanhadas
+        com estratégia de desenvolvimento, prática consistente e devolutiva qualificada.
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Leitura consultiva</h3>
+      <p>
+        O objetivo desta versão premium é transformar os dados oficiais em uma devolutiva mais clara,
+        profissional e aplicável para gestão, desenvolvimento e tomada de decisão.
+      </p>
+    </div>
+  </div>
+</section>

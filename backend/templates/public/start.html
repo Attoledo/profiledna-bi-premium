@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>Identificação</h2>
+
+  <p class="muted">
+    Preencha seus dados para iniciar o teste.
+  </p>
+
+  <form method="post" action="/start">
+    <label for="nome">Nome *</label>
+    <input id="nome" name="nome" type="text" required maxlength="255" />
+
+    <label for="sobrenome">Sobrenome</label>
+    <input id="sobrenome" name="sobrenome" type="text" maxlength="255" />
+
+    <label for="email">E-mail</label>
+    <input id="email" name="email" type="email" maxlength="255" />
+
+    <label for="empresa_nome">Empresa</label>
+    <input
+      id="empresa_nome"
+      name="empresa_nome"
+      type="text"
+      maxlength="255"
+      placeholder="Informe a empresa, se aplicável"
+    />
+
+    <label for="tipo_aplicacao">Tipo de aplicação *</label>
+    <select id="tipo_aplicacao" name="tipo_aplicacao" required>
+      <option value="pessoal">Pessoal</option>
+      <option value="empresa">Empresa</option>
+    </select>
+
+    <div class="row mt">
+      <button class="btn" type="submit">Continuar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

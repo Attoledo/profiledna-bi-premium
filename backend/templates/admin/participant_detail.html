@@ -1,0 +1,1140 @@
+{% extends "admin/base_admin.html" %}
+
+{% set csrf_token = csrf_token if csrf_token is defined else "" %}
+{% set attempt = attempt if attempt is defined and attempt else None %}
+{% set participant = participant if participant is defined and participant else None %}
+{% set cliente = cliente if cliente is defined and cliente else None %}
+{% set rodada = rodada if rodada is defined and rodada else None %}
+{% set setor = setor if setor is defined and setor else None %}
+{% set invite = invite if invite is defined and invite else None %}
+{% set computed_result = computed_result if computed_result is defined and computed_result else None %}
+{% set report_snapshot = report_snapshot if report_snapshot is defined and report_snapshot else None %}
+{% set report_status = report_status if report_status is defined and report_status else {} %}
+{% set delivery_status = delivery_status if delivery_status is defined and delivery_status else {} %}
+{% set participant_context = participant_context if participant_context is defined and participant_context else {} %}
+{% set token_traceability = token_traceability if token_traceability is defined and token_traceability else {} %}
+{% set ranking_details = ranking_details if ranking_details is defined and ranking_details else {} %}
+{% set top3 = top3 if top3 is defined and top3 else [] %}
+{% set top5 = top5 if top5 is defined and top5 else [] %}
+{% set bottom3 = bottom3 if bottom3 is defined and bottom3 else [] %}
+
+{% set _participant_name = participant_context.get("participant_name") if participant_context else "" %}
+{% if not _participant_name %}
+  {% set _nome = participant.nome if participant and participant.nome is defined and participant.nome else "" %}
+  {% set _sobrenome = participant.sobrenome if participant and participant.sobrenome is defined and participant.sobrenome else "" %}
+  {% set _participant_name = (_nome ~ " " ~ _sobrenome).strip() if _nome or _sobrenome else "Participante" %}
+{% endif %}
+
+{% set _participant_email = participant_context.get("participant_email", "Não informado") %}
+{% set _participant_empresa = participant_context.get("participant_empresa", "Não informado") %}
+{% set _tipo_aplicacao = participant_context.get("tipo_aplicacao_label", "Não informado") %}
+{% set _attempt_status = participant_context.get("status_label", "Não informado") %}
+{% set _attempt_progress = participant_context.get("progress_label", "0%") %}
+{% set _cargo_label = participant_context.get("cargo_label", "Não informado") %}
+{% set _cliente_label = participant_context.get("cliente_label", "Não informado") %}
+{% set _rodada_label = participant_context.get("rodada_label", "Não informado") %}
+{% set _setor_label = participant_context.get("setor_label", "Não informado") %}
+{% set _data_inicio_label = participant_context.get("data_inicio_label", "Não informado") %}
+{% set _data_conclusao_label = participant_context.get("data_conclusao_label", "Não informado") %}
+
+{% set _token_status_label = token_traceability.get("token_status_label", "Não informado") %}
+{% set _token_status_tone = token_traceability.get("token_status_tone", "neutral") %}
+{% set _invite_status_label = token_traceability.get("invite_status_label", "Não aplicável") %}
+{% set _opened_at_label = token_traceability.get("opened_at_label", "Não aplicável") %}
+{% set _traceability_note = token_traceability.get("traceability_note", "Sem nota adicional.") %}
+
+{% set _completion_label = delivery_status.get("completion_label", _attempt_status) %}
+{% set _snapshot_label = delivery_status.get("snapshot_label", "Indisponível") %}
+{% set _pdf_label = delivery_status.get("pdf_label", "Indisponível") %}
+{% set _has_pdf = true if delivery_status.get("has_pdf") else false %}
+{% set _has_snapshot = true if delivery_status.get("has_snapshot") else false %}
+
+{% set _ranking_top3 = ranking_details.get("top3", []) if ranking_details else [] %}
+{% set _ranking_top5 = ranking_details.get("top5", []) if ranking_details else [] %}
+{% set _ranking_bottom3 = ranking_details.get("bottom3", []) if ranking_details else [] %}
+{% set has_ranking = _ranking_top3 or _ranking_top5 or _ranking_bottom3 %}
+
+{% set interpretations = computed_result.interpretations if computed_result and computed_result.interpretations else {} %}
+{% set has_interpretations = interpretations is mapping and interpretations %}
+
+{% set page_title = "Resultado Individual — " ~ _participant_name %}
+{% set page_subtitle = "Leitura gerencial consolidada do participante, com rastreabilidade do fluxo, ranking principal e apoio à interpretação executiva." %}
+
+{% set dashboard_href = "/admin/dashboard" %}
+{% set bi_overview_href = bi_overview_url if bi_overview_url is defined and bi_overview_url else "/admin/bi/overview" %}
+{% set comparativo_href = comparativo_url if comparativo_url is defined and comparativo_url else "/admin/bi/comparativo" %}
+{% set dana_href = dana_url if dana_url is defined and dana_url else "/admin/ai/analysis-inteligente" %}
+{% set participants_href = participants_url if participants_url is defined and participants_url else "/admin/dashboard" %}
+{% set premium_pdf_href = premium_pdf_url if premium_pdf_url is defined and premium_pdf_url else "" %}
+{% set primary_action_label = "Baixar PDF" if pdf_url is defined and pdf_url else "" %}
+
+{% block title %}ProfileDNA — Participante{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <style>
+    .pd-participant-page {
+      display: grid;
+      gap: 20px;
+    }
+
+    .pd-participant-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 8px 0 2px;
+    }
+
+    .pd-participant-hero__content {
+      max-width: 920px;
+      min-width: 0;
+    }
+
+    .pd-participant-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(251, 146, 60, 0.35);
+      background: rgba(255, 247, 237, 0.65);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      color: var(--pd-brand-orange-strong);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+
+    .pd-participant-title {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 52px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #111827;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participant-subtitle {
+      margin: 14px 0 0;
+      max-width: 920px;
+      color: #6b7280;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .pd-participant-hero__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pd-participant-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      color: #4b5563;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .pd-participant-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+      border-color: var(--pd-brand-orange);
+    }
+
+    .pd-participant-btn--primary {
+      border-color: transparent;
+      color: #ffffff;
+      background: var(--pd-brand-gradient-liquid);
+      box-shadow: 0 18px 34px rgba(249, 115, 22, 0.28);
+    }
+
+    .pd-participant-btn--primary:hover {
+      box-shadow: 0 22px 40px rgba(249, 115, 22, 0.36);
+      border-color: transparent;
+    }
+
+    .pd-participant-btn[aria-disabled="true"],
+    .pd-participant-btn.is-disabled {
+      opacity: 0.55;
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .pd-participant-context-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px !important;
+    }
+
+    .pd-participant-context-card {
+      padding: 24px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.05);
+      min-width: 0;
+    }
+
+    .pd-participant-context-card__label {
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      color: #9ca3af;
+      margin: 0;
+    }
+
+    .pd-participant-context-card__value {
+      color: #111827;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participant-context-card__meta {
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participant-panel,
+    .pd-participant-data-card,
+    .pd-participant-guide-card {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.05);
+      min-width: 0;
+    }
+
+    .pd-participant-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .pd-participant-card-title {
+      margin: 0;
+      color: #111827;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .pd-participant-card-text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 860px;
+    }
+
+    .pd-participant-card-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(251, 146, 60, 0.35);
+      background: rgba(255, 247, 237, 0.65);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      color: var(--pd-brand-orange-strong);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pd-participant-two-col-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pd-participant-info-card {
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      min-width: 0;
+    }
+
+    .pd-participant-info-card__label {
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .pd-participant-info-card__value {
+      color: #111827;
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .pd-participant-note {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(251, 146, 60, 0.25);
+      background: rgba(255, 247, 237, 0.55);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      color: #9a3412;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-participant-status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pd-participant-status-card {
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      min-width: 0;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+    }
+
+    .pd-participant-status-card__label {
+      font-size: 12px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .pd-participant-status-card__value {
+      color: #111827;
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participant-status-card--strong {
+      background: var(--pd-brand-gradient-liquid);
+      border-color: transparent;
+      box-shadow: 0 12px 28px rgba(249, 115, 22, 0.22);
+    }
+
+    .pd-participant-status-card--strong .pd-participant-status-card__label {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .pd-participant-status-card--strong .pd-participant-status-card__value {
+      color: #ffffff;
+    }
+
+    .pd-participant-status-card--success {
+      background: rgba(236, 253, 245, 0.65);
+      border-color: rgba(187, 247, 208, 0.7);
+    }
+
+    .pd-participant-status-card--success .pd-participant-status-card__label {
+      color: #166534;
+    }
+
+    .pd-participant-status-card--warning {
+      background: rgba(255, 247, 237, 0.65);
+      border-color: rgba(253, 186, 116, 0.6);
+    }
+
+    .pd-participant-status-card--warning .pd-participant-status-card__label {
+      color: #9a3412;
+    }
+
+    .pd-participant-status-card--danger {
+      background: rgba(255, 241, 242, 0.65);
+      border-color: rgba(254, 205, 211, 0.7);
+    }
+
+    .pd-participant-status-card--danger .pd-participant-status-card__label {
+      color: #b91c1c;
+    }
+
+    .pd-analytics-dashboard-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 24px !important;
+    }
+
+    .pd-glass-card-premium {
+      background: rgba(255, 255, 255, 0.55) !important;
+      backdrop-filter: blur(24px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.5) !important;
+      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.06) !important;
+    }
+
+    .pd-participant-rank-block {
+      border-radius: 24px !important;
+      padding: 24px !important;
+      min-width: 0;
+    }
+
+    .pd-participant-rank-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      border: 1px solid rgba(251, 146, 60, 0.35);
+      background: rgba(255, 247, 237, 0.65);
+      color: var(--pd-brand-orange-strong);
+    }
+
+    .pd-participant-rank-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .pd-participant-rank-card {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border-radius: 18px;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .pd-participant-rank-card__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pd-participant-rank-card__title {
+      margin: 0;
+      color: #1e293b;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participant-rank-card__meta {
+      margin-top: 6px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .pd-participant-rank-card__metric {
+      text-align: right;
+      min-width: 92px;
+      flex: 0 0 auto;
+    }
+
+    .pd-participant-rank-card__metric-value {
+      color: #111827;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .pd-participant-rank-card__metric-label {
+      margin-top: 4px;
+      color: #6b7280;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .pd-participant-progress-ring {
+      --p: 0;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background:
+        radial-gradient(closest-side, rgba(255, 255, 255, 0.85) 72%, transparent 73% 100%),
+        conic-gradient(var(--pd-brand-orange-strong) calc(var(--p) * 1%), rgba(229, 231, 235, 0.6) 0);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.04);
+      transition: background 0.4s ease;
+    }
+
+    .pd-participant-progress-ring__inner {
+      display: grid;
+      gap: 2px;
+      place-items: center;
+      text-align: center;
+    }
+
+    .pd-participant-progress-ring__value {
+      color: #111827;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .pd-participant-progress-ring__label {
+      color: #6b7280;
+      font-size: 10px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+    }
+
+    .pd-participant-rank-card__bands {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .pd-participant-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .pd-participant-badge--alta {
+      background: #ecfdf5;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .pd-participant-badge--media,
+    .pd-participant-badge--média {
+      background: #fff7ed;
+      color: #9a3412;
+      border-color: #fdba74;
+    }
+
+    .pd-participant-badge--baixa {
+      background: #fff1f2;
+      color: #b91c1c;
+      border-color: #fecdd3;
+    }
+
+    .pd-participant-rank-card__text {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .pd-participant-trait-rows {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 24px !important;
+    }
+
+    .pd-participant-trait-row {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      padding: 14px 16px;
+      min-width: 0;
+    }
+
+    .pd-participant-trait-row__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .pd-participant-trait-row__title {
+      margin: 0;
+      color: #1e293b;
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participant-trait-row__meta {
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pd-participant-trait-row__bar-track {
+      width: 100% !important;
+      max-width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(226, 232, 240, 0.6);
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .pd-participant-trait-row__bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--pd-brand-gradient-liquid);
+      transition: width 0.4s ease;
+    }
+
+    .pd-participant-trait-row__text {
+      margin: 0;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .pd-participant-actions-primary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .pd-participant-actions-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pd-participant-action-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 14px;
+      border: 1px solid rgba(251, 146, 60, 0.35);
+      background: transparent;
+      box-shadow: none;
+      padding: 12px 18px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+      min-width: 0;
+      color: var(--pd-brand-orange-strong);
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .pd-participant-action-link:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 247, 237, 0.55);
+      border-color: var(--pd-brand-orange);
+    }
+
+    .pd-participant-action-link--primary {
+      flex: 1 1 260px;
+      border-color: transparent;
+      color: #ffffff;
+      background: var(--pd-brand-gradient-liquid);
+      box-shadow: 0 18px 34px rgba(249, 115, 22, 0.28);
+      padding: 16px 18px;
+      font-size: 15px;
+    }
+
+    .pd-participant-action-link--primary:hover {
+      box-shadow: 0 22px 40px rgba(249, 115, 22, 0.36);
+      background: var(--pd-brand-gradient-liquid);
+    }
+
+    .pd-participant-empty {
+      padding: 16px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .pd-analytics-dashboard-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .pd-participant-context-grid,
+      .pd-participant-status-grid,
+      .pd-participant-actions-grid,
+      .pd-participant-two-col-grid,
+      .pd-participant-trait-rows {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .pd-participant-hero__actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .pd-participant-btn {
+        width: 100%;
+      }
+
+      .pd-participant-rank-card__head {
+        flex-direction: column;
+      }
+
+      .pd-participant-rank-card__metric {
+        text-align: left;
+        min-width: 0;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block admin_page_header %}
+  <div class="pd-participant-hero">
+    <div class="pd-participant-hero__content">
+      <div class="pd-participant-kicker">Resultado Individual · Gestão</div>
+      <h1 class="pd-participant-title">{{ _participant_name }}</h1>
+      <p class="pd-participant-subtitle">
+        {{ page_subtitle }}
+      </p>
+    </div>
+
+    <div class="pd-participant-hero__actions">
+      {% if pdf_url is defined and pdf_url %}
+        <a href="{{ pdf_url }}" class="pd-participant-btn pd-participant-btn--primary">Baixar PDF</a>
+      {% endif %}
+      {% if premium_pdf_href %}
+        <a href="{{ premium_pdf_href }}" class="pd-participant-btn pd-participant-btn--primary">Baixar PDF — Profile DNA</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block admin_context_bar %}
+  <section class="pd-participant-context-grid">
+    <div class="pd-participant-context-card">
+      <div class="pd-participant-context-card__label">Participante</div>
+      <div class="pd-participant-context-card__value">{{ _participant_name }}</div>
+      <div class="pd-participant-context-card__meta">
+        {{ _cargo_label }} · {{ _tipo_aplicacao }} · {{ _participant_email }}
+      </div>
+    </div>
+
+    <div class="pd-participant-context-card">
+      <div class="pd-participant-context-card__label">Cliente em contexto</div>
+      <div class="pd-participant-context-card__value">{{ _cliente_label }}</div>
+      <div class="pd-participant-context-card__meta">
+        Rodada: {{ _rodada_label }}{% if _setor_label and _setor_label != "Não informado" %} · Setor: {{ _setor_label }}{% endif %}
+      </div>
+    </div>
+
+    <div class="pd-participant-context-card">
+      <div class="pd-participant-context-card__label">Rastreabilidade</div>
+      <div class="pd-participant-context-card__value">{{ _token_status_label }}</div>
+      <div class="pd-participant-context-card__meta">
+        Convite: {{ _invite_status_label }} · Abertura: {{ _opened_at_label }}
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block admin_content %}
+  <div class="pd-participant-page">
+    <section class="pd-participant-panel">
+      <div class="pd-participant-card-head">
+        <div>
+          <h2 class="pd-participant-card-title">Contexto do participante</h2>
+          <p class="pd-participant-card-text">
+            Consolidado operacional para leitura rápida do gestor, com foco em status da participação, dados de identificação e momento do fluxo.
+          </p>
+        </div>
+        <div class="pd-participant-card-chip">Leitura executiva</div>
+      </div>
+
+      <div class="pd-participant-two-col-grid">
+        <div class="pd-participant-info-card">
+          <div class="pd-participant-info-card__label">Status do participante</div>
+          <div class="pd-participant-info-card__value">{{ _completion_label }}</div>
+        </div>
+
+        <div class="pd-participant-info-card">
+          <div class="pd-participant-info-card__label">Progresso</div>
+          <div class="pd-participant-info-card__value">{{ _attempt_progress }}</div>
+        </div>
+
+        <div class="pd-participant-info-card">
+          <div class="pd-participant-info-card__label">Data de início</div>
+          <div class="pd-participant-info-card__value">{{ _data_inicio_label }}</div>
+        </div>
+
+        <div class="pd-participant-info-card">
+          <div class="pd-participant-info-card__label">Data de conclusão</div>
+          <div class="pd-participant-info-card__value">{{ _data_conclusao_label }}</div>
+        </div>
+
+        <div class="pd-participant-info-card">
+          <div class="pd-participant-info-card__label">Empresa</div>
+          <div class="pd-participant-info-card__value">{{ _participant_empresa }}</div>
+        </div>
+
+        <div class="pd-participant-info-card">
+          <div class="pd-participant-info-card__label">Tipo de aplicação</div>
+          <div class="pd-participant-info-card__value">{{ _tipo_aplicacao }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pd-participant-panel">
+      <div class="pd-participant-card-head">
+        <div>
+          <h2 class="pd-participant-card-title">Rastreabilidade do convite</h2>
+          <p class="pd-participant-card-text">
+            Confirma se o fluxo do participante está coerente com o convite administrativo emitido, sem expor informações técnicas sensíveis.
+          </p>
+        </div>
+        <div class="pd-participant-card-chip">Token / Convite</div>
+      </div>
+
+      <div class="pd-participant-status-grid">
+        <div class="pd-participant-status-card pd-participant-status-card--strong">
+          <div class="pd-participant-status-card__label">Conferência do token</div>
+          <div class="pd-participant-status-card__value">{{ _token_status_label }}</div>
+        </div>
+
+        <div class="pd-participant-status-card {% if _token_status_tone == 'success' %}pd-participant-status-card--success{% elif _token_status_tone == 'warning' %}pd-participant-status-card--warning{% elif _token_status_tone == 'danger' %}pd-participant-status-card--danger{% endif %}">
+          <div class="pd-participant-status-card__label">Status do convite</div>
+          <div class="pd-participant-status-card__value">{{ _invite_status_label }}</div>
+        </div>
+
+        <div class="pd-participant-status-card">
+          <div class="pd-participant-status-card__label">Primeira abertura</div>
+          <div class="pd-participant-status-card__value">{{ _opened_at_label }}</div>
+        </div>
+      </div>
+
+      <div class="pd-participant-note" style="margin-top:16px;">
+        <strong>Leitura gerencial:</strong>
+        {{ _traceability_note }}
+      </div>
+    </section>
+
+    <section class="pd-participant-panel">
+      <div class="pd-participant-card-head">
+        <div>
+          <h2 class="pd-participant-card-title">Entrega do resultado</h2>
+          <p class="pd-participant-card-text">
+            Visão rápida do que já pode ser consumido pelo gestor em termos de conclusão e material disponível.
+          </p>
+        </div>
+        <div class="pd-participant-card-chip">Disponibilidade</div>
+      </div>
+
+      <div class="pd-participant-status-grid">
+        <div class="pd-participant-status-card pd-participant-status-card--strong">
+          <div class="pd-participant-status-card__label">Situação atual</div>
+          <div class="pd-participant-status-card__value">{{ _completion_label }}</div>
+        </div>
+
+        <div class="pd-participant-status-card {% if _has_snapshot %}pd-participant-status-card--success{% else %}pd-participant-status-card--warning{% endif %}">
+          <div class="pd-participant-status-card__label">Relatório consolidado</div>
+          <div class="pd-participant-status-card__value">{{ _snapshot_label }}</div>
+        </div>
+
+        <div class="pd-participant-status-card {% if _has_pdf %}pd-participant-status-card--success{% else %}pd-participant-status-card--warning{% endif %}">
+          <div class="pd-participant-status-card__label">PDF disponível</div>
+          <div class="pd-participant-status-card__value">{{ _pdf_label }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pd-participant-panel">
+      <div class="pd-participant-card-head">
+        <div>
+          <h2 class="pd-participant-card-title">Ranking principal</h2>
+          <p class="pd-participant-card-text">
+            Leitura visual e objetiva das dimensões mais fortes, das forças ampliadas e dos pontos de atenção para apoiar decisão gerencial.
+          </p>
+        </div>
+        <div class="pd-participant-card-chip">Forças / Melhoria</div>
+      </div>
+
+      {% if has_ranking %}
+        <div class="pd-analytics-dashboard-grid">
+          <div class="pd-participant-rank-block pd-glass-card-premium">
+            <div class="pd-participant-rank-label">Forças Dominantes (TOP 5)</div>
+
+            {% if _ranking_top5 %}
+              <div class="pd-participant-rank-list">
+                {% for item in _ranking_top5 %}
+                  {% set _band_lower = item.get("band", "")|lower %}
+                  <article class="pd-participant-rank-card">
+                    <div class="pd-participant-rank-card__head">
+                      <div style="min-width:0;">
+                        <h3 class="pd-participant-rank-card__title">{{ item.get("display_name", "-") }}</h3>
+                        <div class="pd-participant-rank-card__meta">
+                          Área: {{ item.get("area", "Não informada") }} · Score {{ item.get("score_label", "-") }}
+                        </div>
+                      </div>
+
+                      <div class="pd-participant-progress-ring" style="--p: {{ item.get('percentage', 0) }};">
+                        <div class="pd-participant-progress-ring__inner">
+                          <div class="pd-participant-progress-ring__value">{{ item.get("percentage_label", "0%") }}</div>
+                          <div class="pd-participant-progress-ring__label">intensidade</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pd-participant-rank-card__bands">
+                      <span class="pd-participant-badge {% if 'alta' in _band_lower %}pd-participant-badge--alta{% elif 'baix' in _band_lower %}pd-participant-badge--baixa{% else %}pd-participant-badge--media{% endif %}">
+                        Faixa {{ item.get("band", "Não informada") }}
+                      </span>
+                      <span class="pd-participant-badge pd-participant-badge--media">
+                        Valor {{ item.get("score_label", "-") }}/10
+                      </span>
+                    </div>
+
+                    <p class="pd-participant-rank-card__text">{{ item.get("summary", "Sem descrição disponível.") }}</p>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="pd-participant-empty">Top 5 não disponível.</div>
+            {% endif %}
+          </div>
+
+          <div class="pd-participant-rank-block pd-glass-card-premium">
+            <div class="pd-participant-rank-label">Pontos de Melhoria</div>
+
+            {% if _ranking_bottom3 %}
+              <div class="pd-participant-rank-list">
+                {% for item in _ranking_bottom3 %}
+                  {% set _band_lower = item.get("band", "")|lower %}
+                  <article class="pd-participant-rank-card">
+                    <div class="pd-participant-rank-card__head">
+                      <div style="min-width:0;">
+                        <h3 class="pd-participant-rank-card__title">{{ item.get("display_name", "-") }}</h3>
+                        <div class="pd-participant-rank-card__meta">
+                          Área: {{ item.get("area", "Não informada") }} · Score {{ item.get("score_label", "-") }}
+                        </div>
+                      </div>
+
+                      <div class="pd-participant-progress-ring" style="--p: {{ item.get('percentage', 0) }};">
+                        <div class="pd-participant-progress-ring__inner">
+                          <div class="pd-participant-progress-ring__value">{{ item.get("percentage_label", "0%") }}</div>
+                          <div class="pd-participant-progress-ring__label">intensidade</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pd-participant-rank-card__bands">
+                      <span class="pd-participant-badge {% if 'alta' in _band_lower %}pd-participant-badge--alta{% elif 'baix' in _band_lower %}pd-participant-badge--baixa{% else %}pd-participant-badge--media{% endif %}">
+                        Faixa {{ item.get("band", "Não informada") }}
+                      </span>
+                      <span class="pd-participant-badge pd-participant-badge--media">
+                        Valor {{ item.get("score_label", "-") }}/10
+                      </span>
+                    </div>
+
+                    <p class="pd-participant-rank-card__text">{{ item.get("summary", "Sem descrição disponível.") }}</p>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="pd-participant-empty">Pontos de Melhoria não disponíveis.</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pd-participant-note" style="margin-top:16px;">
+          <strong>Como ler:</strong>
+          <strong>Forças Dominantes</strong> lista os 5 traços comportamentais de maior expressão no perfil, ordenados por intensidade;
+          <strong>Pontos de Melhoria</strong> destacam dimensões menos expressivas que podem merecer aprofundamento do gestor no contexto do cargo, da equipe e da rodada.
+        </div>
+      {% else %}
+        <div class="pd-participant-empty">
+          O ranking consolidado ainda não está disponível para este participante.
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="pd-participant-data-card">
+      <div class="pd-participant-card-head">
+        <div>
+          <h2 class="pd-participant-card-title">Interpretações por dimensão</h2>
+          <p class="pd-participant-card-text">
+            Consolida as interpretações oficiais já persistidas para apoio de leitura, sem recalcular nada e sem alterar o resultado do sistema.
+          </p>
+        </div>
+        <div class="pd-participant-card-chip">Interpretações</div>
+      </div>
+
+      {% if has_interpretations %}
+        <div class="pd-participant-trait-rows">
+          {% for letter, item in interpretations.items() %}
+            {% set _item_name = item.get("name") if item is mapping else "" %}
+            {% set _item_area = item.get("area") if item is mapping else "" %}
+            {% set _item_score = item.get("score") if item is mapping else "" %}
+            {% set _item_band = item.get("band_key") if item is mapping and item.get("band_key") else item.get("band") if item is mapping else "" %}
+            {% set _item_text = item.get("text") if item is mapping else "" %}
+            {% set _item_pct = (_item_score / 10 * 100) if _item_score is number else 0 %}
+            <article class="pd-participant-trait-row">
+              <div class="pd-participant-trait-row__head">
+                <h3 class="pd-participant-trait-row__title">
+                  {{ letter }}{% if _item_name %} — {{ _item_name }}{% endif %}
+                </h3>
+                <div class="pd-participant-trait-row__meta">
+                  {% if _item_area %}Área: {{ _item_area }}{% else %}Área não informada{% endif %}
+                  {% if _item_score != "" %} · Score {{ _item_score }}/10{% endif %}
+                </div>
+              </div>
+              <div class="pd-participant-trait-row__bar-track">
+                <div class="pd-participant-trait-row__bar-fill" style="width: {{ _item_pct }}%;"></div>
+              </div>
+              <p class="pd-participant-trait-row__text">
+                {{ _item_text if _item_text else "Sem interpretação disponível." }}
+              </p>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="pd-participant-empty">
+          As interpretações por dimensão ainda não estão disponíveis neste participante.
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="pd-participant-panel">
+      <div class="pd-participant-card-head">
+        <div>
+          <h2 class="pd-participant-card-title">Ações administrativas</h2>
+          <p class="pd-participant-card-text">
+            Atalhos operacionais para continuar a navegação contextual sem perder o escopo do cliente, da rodada e do participante.
+          </p>
+        </div>
+        <div class="pd-participant-card-chip">Navegação</div>
+      </div>
+
+      {% if (pdf_url is defined and pdf_url) or premium_pdf_href %}
+        <div class="pd-participant-actions-primary">
+          {% if pdf_url is defined and pdf_url %}
+            <a href="{{ pdf_url }}" class="pd-participant-action-link pd-participant-action-link--primary">
+              Baixar PDF do participante
+            </a>
+          {% endif %}
+
+          {% if premium_pdf_href %}
+            <a href="{{ premium_pdf_href }}" class="pd-participant-action-link pd-participant-action-link--primary">
+              Baixar PDF Teste de Perfil - Profile DNA
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="pd-participant-actions-grid">
+        <a href="{{ participants_href }}" class="pd-participant-action-link">
+          Voltar para participantes
+        </a>
+
+        <a href="{{ bi_overview_href }}" class="pd-participant-action-link">
+          Voltar para BI — Visão Geral
+        </a>
+
+        <a href="{{ comparativo_href }}" class="pd-participant-action-link">
+          Abrir BI — Comparativo
+        </a>
+
+        <a href="{{ dana_href }}" class="pd-participant-action-link">
+          Abrir DANA neste contexto
+        </a>
+
+        <a href="{{ cliente_url if cliente_url is defined and cliente_url else '/admin/dashboard' }}" class="pd-participant-action-link">
+          Voltar para cliente
+        </a>
+
+        <a href="{{ rodada_url if rodada_url is defined and rodada_url else participants_href }}" class="pd-participant-action-link">
+          Voltar para rodada
+        </a>
+      </div>
+    </section>
+  </div>
+{% endblock %}

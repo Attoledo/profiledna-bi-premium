@@ -1,0 +1,75 @@
+<section class="premium-section premium-force-page-break">
+  <div class="premium-kicker">Leitura completa</div>
+  <h2 class="premium-h2">Análise completa das dimensões</h2>
+  <p class="premium-text">
+    Cada competência abaixo foi consolidada a partir da base oficial do resultado, mantendo score, nível e interpretação já existentes no sistema.
+  </p>
+
+  {% for painel in paineis_area %}
+    <div class="premium-panel premium-avoid-break">
+      <div class="premium-panel-title">{{ painel.get("area_label", painel.get("area", "Área")) }}</div>
+
+      {% for item in painel.get("items", []) %}
+        {% set _band = (item.get("band", "") or "")|lower %}
+        {% set _name = item.get("name", "Dimensão") %}
+        {% set _score = item.get("score", 0) %}
+        {% set _text = item.get("text", "") %}
+        {% set _area = (painel.get("area_label", painel.get("area", "Área")) or "")|lower %}
+
+        <div class="premium-dimension premium-avoid-break">
+          <div class="premium-dimension-title">
+            <strong>{{ _name }}</strong>
+            <span class="premium-badge">{{ item.get("band", "Nível não disponível") }}</span>
+          </div>
+
+          <p class="premium-text"><strong>Nível identificado:</strong> {{ item.get("band", "Não disponível") }} · <strong>Score:</strong> {{ _score }}/10</p>
+
+          <div class="premium-pdi-block">
+            <strong>Leitura da competência</strong>
+            <p class="premium-text">{{ _text or "Leitura oficial não disponível para esta competência." }}</p>
+          </div>
+
+          <div class="premium-pdi-block">
+            <strong>Impactos positivos e reflexos no trabalho</strong>
+            <p class="premium-text">
+              {% if _band == "alto" %}
+                Quando {{ _name|lower }} aparece com força, tende a gerar impacto visível na forma de atuar, influenciando ritmo de resposta, consistência de entrega e presença profissional no contexto {{ _area }}.
+              {% elif _band == "médio" %}
+                Em nível médio, {{ _name|lower }} costuma aparecer de forma funcional e equilibrada, contribuindo para a rotina sem dominar toda a atuação. O ganho está em tornar essa competência mais consciente e estável.
+              {% else %}
+                Com baixa recorrência, {{ _name|lower }} pode limitar previsibilidade, fluidez ou efetividade em situações práticas. O ponto central aqui é construir repertório e segurança comportamental sem forçar artificialmente o estilo da pessoa.
+              {% endif %}
+            </p>
+          </div>
+
+          <div class="premium-pdi-block">
+            <strong>Possíveis dificuldades</strong>
+            <p class="premium-text">
+              {% if _band == "alto" %}
+                O principal risco é o uso excessivo ou pouco calibrado da força predominante, especialmente quando o contexto pede dosagem, escuta ou ajuste fino.
+              {% elif _band == "médio" %}
+                A dificuldade típica está na oscilação: a competência aparece, mas nem sempre com regularidade suficiente para sustentar padrão alto de performance.
+              {% else %}
+                A dificuldade mais provável é a baixa espontaneidade de uso em momentos de pressão, exigência ou interação mais complexa.
+              {% endif %}
+            </p>
+          </div>
+
+          <div class="premium-pdi-block">
+            <strong>Orientação para o gestor</strong>
+            <p class="premium-text">
+              Observe {{ _name|lower }} em exemplos concretos da rotina, como decisões, alinhamentos, feedbacks, priorização, relação com metas e respostas diante de exigências reais. O foco não deve ser julgamento abstrato, mas evidência prática de comportamento.
+            </p>
+          </div>
+
+          <div class="premium-pdi-block">
+            <strong>Tendência comportamental no dia a dia</strong>
+            <p class="premium-text">
+              A tendência mais provável é que {{ _name|lower }} influencie a forma como a pessoa organiza sua atuação, responde ao ambiente e sustenta sua presença profissional ao longo do tempo.
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</section>

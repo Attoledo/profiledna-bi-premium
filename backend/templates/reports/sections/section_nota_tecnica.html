@@ -1,0 +1,58 @@
+<div class="card">
+  <h3>9. Nota Técnica</h3>
+
+  {% set nota_tecnica = nota_tecnica if nota_tecnica is defined and nota_tecnica else {} %}
+  {% set texto = nota_tecnica.get("texto", "") %}
+  {% set texto_longo = nota_tecnica.get("texto_longo", "") %}
+  {% set metodo = nota_tecnica.get("metodo", "") %}
+  {% set escala = nota_tecnica.get("escala", "") %}
+  {% set criterio = nota_tecnica.get("criterio", "") %}
+
+  {% if texto or texto_longo or metodo or escala or criterio %}
+    {% if texto %}
+      <p>{{ texto }}</p>
+    {% endif %}
+
+    {% if texto_longo %}
+      <p>{{ texto_longo }}</p>
+    {% endif %}
+
+    {% if metodo or escala or criterio %}
+      <div class="card mini">
+        {% if metodo %}
+          <p><strong>Método:</strong> {{ metodo }}</p>
+        {% endif %}
+
+        {% if escala %}
+          <p><strong>Escala:</strong> {{ escala }}</p>
+        {% endif %}
+
+        {% if criterio %}
+          <p><strong>Critério:</strong> {{ criterio }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <p>
+      Este relatório foi gerado a partir de um instrumento estruturado com 100 questões dicotômicas
+      (A/B), processadas por motor determinístico de apuração conforme as regras do sistema.
+    </p>
+
+    <p>
+      As respostas são convertidas em contagens por dimensão, classificadas em faixas interpretativas
+      e consolidadas em rankings de maior e menor recorrência, preservando a lógica de leitura
+      definida para o produto.
+    </p>
+
+    <p>
+      O conteúdo apresentado deve ser utilizado como apoio à reflexão, desenvolvimento e tomada de
+      decisão, considerando sempre o contexto de aplicação e a análise complementar do avaliador,
+      gestor ou profissional responsável.
+    </p>
+
+    <p class="muted">
+      Este material não substitui avaliação técnica complementar, entrevista estruturada, análise de
+      contexto organizacional ou acompanhamento profissional quando aplicável.
+    </p>
+  {% endif %}
+</div>

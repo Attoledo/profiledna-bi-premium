@@ -1,0 +1,41 @@
+diff --git a/backend/repositories/attempt.py b/backend/repositories/attempt.py
+index 1423fee..65b9796 100644
+--- a/backend/repositories/attempt.py
++++ b/backend/repositories/attempt.py
+@@ -172,7 +172,7 @@ async def create_participant_and_attempt_from_invite(
+     rodada_id,
+     setor_id,
+     cargo: Optional[str],
+-    invite_id,
++    invite_id=None,
+     testdef_version: str = "v1",
+ ) -> Attempt:
+     """Cria Participant + Attempt usando o contexto vindo do Invite."""
+diff --git a/backend/routers/public.py b/backend/routers/public.py
+index 1666c9a..d292a4a 100644
+--- a/backend/routers/public.py
++++ b/backend/routers/public.py
+@@ -310,8 +310,8 @@ async def invite_start(
+ 
+ @router.get("/t/{token}/identificacao", response_class=HTMLResponse)
+ async def identificacao_get(request: Request, token: str):
+-    # Reusa a mesma tela inicial do invite (coleta nome/sobrenome/email)
+-    return templates.TemplateResponse("public/invite_start.html", {"request": request, "token": token, "error": None})
++    # SSOT: form deve postar em /t/{token}/identificacao
++    return templates.TemplateResponse("public/invite_start.html", {"request": request, "token": token, "error": None, "action_url": f"/t/{token}/identificacao"})
+ 
+ 
+ @router.post("/t/{token}/identificacao")
+diff --git a/backend/templates/public/invite_start.html b/backend/templates/public/invite_start.html
+index 210fef3..c60e56c 100644
+--- a/backend/templates/public/invite_start.html
++++ b/backend/templates/public/invite_start.html
+@@ -9,7 +9,7 @@
+       </div>
+     {% endif %}
+ 
+-    <form method="post" action="/t/{{ token }}" style="display:grid; gap:10px; padding:12px; border:1px solid #ddd; border-radius:10px;">
++    <form method="post" action="{{ action_url or ("/t/" ~ token) }}" style="display:grid; gap:10px; padding:12px; border:1px solid #ddd; border-radius:10px;">
+       <label style="display:grid; gap:6px;">
+         <span>Nome</span>
+         <input name="nome" required style="padding:10px; border:1px solid #ddd; border-radius:8px;" />

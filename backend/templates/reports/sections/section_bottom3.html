@@ -1,0 +1,32 @@
+<div class="card">
+    <h3>5. Oportunidades de Desenvolvimento (Bottom 3)</h3>
+  
+    {% set ranking = ranking if ranking is defined and ranking else {} %}
+    {% set interpretations = interpretations if interpretations is defined and interpretations else {} %}
+    {% set bottom3 = ranking.get("bottom3", []) %}
+  
+    {% if bottom3 %}
+      {% for letter in bottom3 %}
+        {% set item = interpretations.get(letter, {}) %}
+        <div class="card mini">
+          <h4>{{ letter }} — {{ item.get("name", "") or "Dimensão" }}</h4>
+  
+          <p class="muted">
+            {% if item.get("area") %}
+              Área: {{ item.get("area") }}
+            {% else %}
+              Área não informada
+            {% endif %}
+          </p>
+  
+          {% if item.get("text") %}
+            <p>{{ item.get("text") }}</p>
+          {% else %}
+            <p class="muted">Sem interpretação detalhada disponível.</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>As oportunidades de desenvolvimento serão exibidas aqui quando o ranking Bottom 3 estiver disponível.</p>
+    {% endif %}
+  </div>

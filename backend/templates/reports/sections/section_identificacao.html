@@ -1,0 +1,69 @@
+<div class="card">
+  <h3>1. Identificação</h3>
+
+  {% set participant = participant if participant is defined and participant else {} %}
+  {% set attempt = attempt if attempt is defined and attempt else {} %}
+
+  {% set nome_completo = participant.get("nome", "") %}
+  {% if participant.get("sobrenome") %}
+    {% set nome_completo = (nome_completo ~ " " ~ participant.get("sobrenome"))|trim %}
+  {% endif %}
+
+  <table style="width:100%; border-collapse:collapse; table-layout:fixed; margin-top:8px;">
+    <tbody>
+      <tr>
+        <td style="width:28%; padding:8px 10px 8px 0; vertical-align:top; font-weight:700; color:#111827; border-bottom:1px solid #e5e7eb;">
+          Nome
+        </td>
+        <td style="width:72%; padding:8px 0 8px 10px; vertical-align:top; color:#111827; border-bottom:1px solid #e5e7eb;">
+          {{ nome_completo or "Não informado" }}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="width:28%; padding:8px 10px 8px 0; vertical-align:top; font-weight:700; color:#111827; border-bottom:1px solid #e5e7eb;">
+          E-mail
+        </td>
+        <td style="width:72%; padding:8px 0 8px 10px; vertical-align:top; color:#111827; border-bottom:1px solid #e5e7eb;">
+          {{ participant.get("email", "") or "Não informado" }}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="width:28%; padding:8px 10px 8px 0; vertical-align:top; font-weight:700; color:#111827; border-bottom:1px solid #e5e7eb;">
+          Empresa
+        </td>
+        <td style="width:72%; padding:8px 0 8px 10px; vertical-align:top; color:#111827; border-bottom:1px solid #e5e7eb;">
+          {{ participant.get("empresa_nome", "") or "Não aplicável" }}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="width:28%; padding:8px 10px 8px 0; vertical-align:top; font-weight:700; color:#111827; border-bottom:1px solid #e5e7eb;">
+          Tipo de aplicação
+        </td>
+        <td style="width:72%; padding:8px 0 8px 10px; vertical-align:top; color:#111827; border-bottom:1px solid #e5e7eb;">
+          {{ participant.get("tipo_aplicacao", "") or "Não informado" }}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="width:28%; padding:8px 10px 8px 0; vertical-align:top; font-weight:700; color:#111827; border-bottom:1px solid #e5e7eb;">
+          Cargo
+        </td>
+        <td style="width:72%; padding:8px 0 8px 10px; vertical-align:top; color:#111827; border-bottom:1px solid #e5e7eb;">
+          {{ attempt.get("cargo", "") or "Não informado" }}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="width:28%; padding:8px 10px 0 0; vertical-align:top; font-weight:700; color:#111827;">
+          Data de conclusão
+        </td>
+        <td style="width:72%; padding:8px 0 0 10px; vertical-align:top; color:#111827;">
+          {{ attempt.get("data_conclusao", "") or "Não informada" }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

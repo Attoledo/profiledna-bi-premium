@@ -1,0 +1,502 @@
+[
+  {
+    "number": 1,
+    "option_a": "Gosto de fazer meu trabalho bem-feito.",
+    "option_b": "Gosto de me movimentar."
+  },
+  {
+    "number": 2,
+    "option_a": "Dizem que sou inflexível.",
+    "option_b": "Gosto de trabalhar em equipe."
+  },
+  {
+    "number": 3,
+    "option_a": "As pessoas costumam me ouvir.",
+    "option_b": "Dizem que sou muito cordial."
+  },
+  {
+    "number": 4,
+    "option_a": "Sempre admiro meus superiores.",
+    "option_b": "Não gosto de improvisar."
+  },
+  {
+    "number": 5,
+    "option_a": "Sou impulsivo.",
+    "option_b": "Não gosto de improvisar."
+  },
+  {
+    "number": 6,
+    "option_a": "Quando me tratam de forma injusta, discuto muito.",
+    "option_b": "Gosto de ter subordinados."
+  },
+  {
+    "number": 7,
+    "option_a": "Faço meu trabalho com pressa para terminar logo.",
+    "option_b": "Gosto de lidar com detalhes pequenos."
+  },
+  {
+    "number": 8,
+    "option_a": "Fico preocupado quando não gostam de mim.",
+    "option_b": "Sinto necessidade de terminar o que comecei."
+  },
+  {
+    "number": 9,
+    "option_a": "Gosto de ser o centro da atenção do grupo.",
+    "option_b": "Sinto-me bem fazendo um trabalho difícil."
+  },
+  {
+    "number": 10,
+    "option_a": "Nas horas vagas, gosto de fazer atividade física.",
+    "option_b": "Normalmente sou controlado."
+  },
+  {
+    "number": 11,
+    "option_a": "Gosto de fazer amigos.",
+    "option_b": "Não me aborreço com facilidade."
+  },
+  {
+    "number": 12,
+    "option_a": "Gosto de fazer um trabalho o mais rápido possível.",
+    "option_b": "Fico aborrecido quando não deixam os objetos em seus lugares."
+  },
+  {
+    "number": 13,
+    "option_a": "Gosto de novidades.",
+    "option_b": "Procuro terminar o que começo."
+  },
+  {
+    "number": 14,
+    "option_a": "Tomo decisões com rapidez.",
+    "option_b": "Interesso-me por detalhes."
+  },
+  {
+    "number": 15,
+    "option_a": "Sou muito franco.",
+    "option_b": "Sempre tento ser o melhor."
+  },
+  {
+    "number": 16,
+    "option_a": "Gosto de trabalhar em posição de comando.",
+    "option_b": "Gosto de pensar e planejar."
+  },
+  {
+    "number": 17,
+    "option_a": "Gosto quando meu superior gosta de mim.",
+    "option_b": "Gosto de mandar."
+  },
+  {
+    "number": 18,
+    "option_a": "Dedico-me ao trabalho com persistência.",
+    "option_b": "Faço amizade com facilidade."
+  },
+  {
+    "number": 19,
+    "option_a": "Gosto de instruções objetivas.",
+    "option_b": "Fico aborrecido quando, em grupo, não me dão atenção."
+  },
+  {
+    "number": 20,
+    "option_a": "Às vezes falo das vantagens do meu trabalho.",
+    "option_b": "As pessoas me entendem."
+  },
+  {
+    "number": 21,
+    "option_a": "Em qualquer atividade, sou esforçado.",
+    "option_b": "Prefiro prazos curtos para entregar resultados."
+  },
+  {
+    "number": 22,
+    "option_a": "Discuto pouco com meu superior.",
+    "option_b": "Faço concessões para participar da equipe."
+  },
+  {
+    "number": 23,
+    "option_a": "Dizem que sou um bom líder.",
+    "option_b": "Tenho habilidade manual."
+  },
+  {
+    "number": 24,
+    "option_a": "Sempre defendo meu ponto de vista.",
+    "option_b": "Gosto de ser notado pelo grupo."
+  },
+  {
+    "number": 25,
+    "option_a": "Tenho dificuldade para fazer amigos.",
+    "option_b": "Tenho dificuldade para tomar decisões."
+  },
+  {
+    "number": 26,
+    "option_a": "Gosto de aprender coisas novas.",
+    "option_b": "Na maioria das vezes, tomo decisões pelos outros."
+  },
+  {
+    "number": 27,
+    "option_a": "Gosto de fazer um trabalho o mais rápido possível.",
+    "option_b": "Gosto de planejar com antecedência."
+  },
+  {
+    "number": 28,
+    "option_a": "Gosto de agradar meus amigos.",
+    "option_b": "Procuro sempre me esforçar ao máximo."
+  },
+  {
+    "number": 29,
+    "option_a": "Gosto de me movimentar.",
+    "option_b": "Executo cada etapa com muita cautela."
+  },
+  {
+    "number": 30,
+    "option_a": "Gosto de ser convidado.",
+    "option_b": "Gosto de fazer uma coisa de cada vez."
+  },
+  {
+    "number": 31,
+    "option_a": "Gosto de pessoas.",
+    "option_b": "Gosto que cada coisa fique em seu lugar."
+  },
+  {
+    "number": 32,
+    "option_a": "Sou rápido na execução de um trabalho.",
+    "option_b": "Admiram minha paciência."
+  },
+  {
+    "number": 33,
+    "option_a": "Normalmente gosto de trabalho pesado.",
+    "option_b": "Consigo bons resultados com e por meio dos outros."
+  },
+  {
+    "number": 34,
+    "option_a": "Gosto de pensar bastante.",
+    "option_b": "Não sou temperamental."
+  },
+  {
+    "number": 35,
+    "option_a": "Sou minucioso no cumprimento das instruções.",
+    "option_b": "Sempre controlo o trabalho dos outros."
+  },
+  {
+    "number": 36,
+    "option_a": "Sempre respeito meu superior.",
+    "option_b": "Procuro fazer as coisas melhor do que os outros."
+  },
+  {
+    "number": 37,
+    "option_a": "Gosto de estudar o que deve ser feito.",
+    "option_b": "Sou muito organizado."
+  },
+  {
+    "number": 38,
+    "option_a": "Gosto de trabalho que não exija movimentação física.",
+    "option_b": "Penso demais para tomar decisões."
+  },
+  {
+    "number": 39,
+    "option_a": "Gosto de ter amigos.",
+    "option_b": "Prefiro trabalhar em equipe."
+  },
+  {
+    "number": 40,
+    "option_a": "Normalmente estou bem fisicamente.",
+    "option_b": "Gosto de planejar o que faço."
+  },
+  {
+    "number": 41,
+    "option_a": "Tenho muitos amigos.",
+    "option_b": "Penso e planejo com antecedência."
+  },
+  {
+    "number": 42,
+    "option_a": "Quando me ferem, eu reajo.",
+    "option_b": "Dizem que eu não fico satisfeito até resolver um trabalho."
+  },
+  {
+    "number": 43,
+    "option_a": "Gosto de fazer coisas pequenas.",
+    "option_b": "Gosto de organizar meu trabalho."
+  },
+  {
+    "number": 44,
+    "option_a": "Dizem que me dou bem com todos.",
+    "option_b": "Dizem que sou detalhista."
+  },
+  {
+    "number": 45,
+    "option_a": "Faço meu trabalho com atenção minuciosa.",
+    "option_b": "Sou muito controlado."
+  },
+  {
+    "number": 46,
+    "option_a": "Sou um trabalhador esforçado.",
+    "option_b": "Arrisco-me com facilidade."
+  },
+  {
+    "number": 47,
+    "option_a": "Consigo fazer com que as pessoas trabalhem intensamente.",
+    "option_b": "Sinto-me bem no trabalho."
+  },
+  {
+    "number": 48,
+    "option_a": "As pessoas costumam me seguir.",
+    "option_b": "Geralmente falo rápido."
+  },
+  {
+    "number": 49,
+    "option_a": "Sou rígido no cumprimento das normas.",
+    "option_b": "Sempre tento ser o melhor."
+  },
+  {
+    "number": 50,
+    "option_a": "Ajo com rapidez.",
+    "option_b": "Sou cordial e atencioso."
+  },
+  {
+    "number": 51,
+    "option_a": "Sou obediente.",
+    "option_b": "Tudo o que começo eu termino."
+  },
+  {
+    "number": 52,
+    "option_a": "Gosto de pensar muito antes de agir.",
+    "option_b": "Gosto de trabalhar com detalhes."
+  },
+  {
+    "number": 53,
+    "option_a": "Decido rápido.",
+    "option_b": "Gosto de executar as coisas rapidamente."
+  },
+  {
+    "number": 54,
+    "option_a": "Tenho dificuldade para fazer amigos.",
+    "option_b": "Não gosto de trabalhos que exijam movimentação."
+  },
+  {
+    "number": 55,
+    "option_a": "Dizem que sou criativo.",
+    "option_b": "Gosto de executar trabalhos que outros não conseguem fazer."
+  },
+  {
+    "number": 56,
+    "option_a": "Sou muito esforçado.",
+    "option_b": "Tenho muita paciência."
+  },
+  {
+    "number": 57,
+    "option_a": "Gosto de conversar com meu superior.",
+    "option_b": "Dou muita importância às normas."
+  },
+  {
+    "number": 58,
+    "option_a": "Gosto de ter coisas limpas e em ordem.",
+    "option_b": "Dizem que tenho muita paciência."
+  },
+  {
+    "number": 59,
+    "option_a": "Quando posso, sou criativo.",
+    "option_b": "Gosto de trabalhar em equipe."
+  },
+  {
+    "number": 60,
+    "option_a": "Sou atencioso com as pessoas da minha equipe.",
+    "option_b": "Quero que as pessoas me levem em consideração."
+  },
+  {
+    "number": 61,
+    "option_a": "Gosto de realizar trabalhos que outros não conseguiram fazer.",
+    "option_b": "Gosto de terminar o que comecei."
+  },
+  {
+    "number": 62,
+    "option_a": "Tenho muita paciência.",
+    "option_b": "Tenho dificuldade para me expressar quando estou com raiva."
+  },
+  {
+    "number": 63,
+    "option_a": "As pessoas me obedecem.",
+    "option_b": "Sou minucioso."
+  },
+  {
+    "number": 64,
+    "option_a": "Sempre sigo as ordens que me dão.",
+    "option_b": "Não escondo minha irritação."
+  },
+  {
+    "number": 65,
+    "option_a": "Sou muito obediente.",
+    "option_b": "Sou muito franco."
+  },
+  {
+    "number": 66,
+    "option_a": "Gosto de fazer um trabalho bem-feito.",
+    "option_b": "Gosto de me movimentar."
+  },
+  {
+    "number": 67,
+    "option_a": "Sinto-me realizado no trabalho.",
+    "option_b": "Acho que sei liderar."
+  },
+  {
+    "number": 68,
+    "option_a": "Gosto de variar na execução dos meus trabalhos.",
+    "option_b": "Sinto prazer em falar dos meus sucessos."
+  },
+  {
+    "number": 69,
+    "option_a": "Sou rápido para executar meu trabalho.",
+    "option_b": "Meus colegas dizem que sou incansável."
+  },
+  {
+    "number": 70,
+    "option_a": "Tenho facilidade para me entrosar.",
+    "option_b": "Sou muito afetivo."
+  },
+  {
+    "number": 71,
+    "option_a": "Prefiro mandar fazer.",
+    "option_b": "Gosto de terminar o trabalho que comecei."
+  },
+  {
+    "number": 72,
+    "option_a": "Gosto de chamar atenção.",
+    "option_b": "Gosto quando me pedem sugestões."
+  },
+  {
+    "number": 73,
+    "option_a": "Sempre sigo as normas.",
+    "option_b": "Tenho que concluir o que comecei."
+  },
+  {
+    "number": 74,
+    "option_a": "Sempre sei onde está o que guardei.",
+    "option_b": "Não gosto de pessoas rotineiras."
+  },
+  {
+    "number": 75,
+    "option_a": "Gosto que me expliquem o que devo fazer.",
+    "option_b": "Discuto muito pouco com meu superior."
+  },
+  {
+    "number": 76,
+    "option_a": "Gosto de liderar.",
+    "option_b": "Gosto de organizar meu trabalho."
+  },
+  {
+    "number": 77,
+    "option_a": "Não fico calado quando me ferem.",
+    "option_b": "Sinto-me parte da equipe."
+  },
+  {
+    "number": 78,
+    "option_a": "Sempre acompanho o trabalho dos outros.",
+    "option_b": "Tenho condições de decidir com rapidez."
+  },
+  {
+    "number": 79,
+    "option_a": "Gosto quando são amistosos e íntimos comigo.",
+    "option_b": "Gosto de ser notado no grupo."
+  },
+  {
+    "number": 80,
+    "option_a": "Sempre verifico o que os outros fazem.",
+    "option_b": "Gosto de fazer bem um trabalho."
+  },
+  {
+    "number": 81,
+    "option_a": "Movimento-me com facilidade.",
+    "option_b": "Sempre verifico meus arquivos."
+  },
+  {
+    "number": 82,
+    "option_a": "Arrisco-me com facilidade.",
+    "option_b": "Gosto que cada coisa fique em seu lugar."
+  },
+  {
+    "number": 83,
+    "option_a": "Em situações difíceis, penso melhor.",
+    "option_b": "Prefiro trabalhos que exijam pouca movimentação."
+  },
+  {
+    "number": 84,
+    "option_a": "Tenho dificuldade para terminar o que começo.",
+    "option_b": "Em grupo, sinto-me retraído."
+  },
+  {
+    "number": 85,
+    "option_a": "Sempre defendo meu bom nome.",
+    "option_b": "Fico satisfeito quando faço algo diferente."
+  },
+  {
+    "number": 86,
+    "option_a": "Sou minucioso no cumprimento das normas.",
+    "option_b": "Conto meus problemas íntimos aos amigos."
+  },
+  {
+    "number": 87,
+    "option_a": "Gosto de instruções detalhadas sobre meu trabalho.",
+    "option_b": "Não gosto de instruções detalhadas sobre meu trabalho."
+  },
+  {
+    "number": 88,
+    "option_a": "Quando os outros estão errados, eu sempre digo.",
+    "option_b": "Fico aborrecido quando não gostam de mim."
+  },
+  {
+    "number": 89,
+    "option_a": "Consigo bons resultados com e por meio dos outros.",
+    "option_b": "Acho que tenho bom controle emocional."
+  },
+  {
+    "number": 90,
+    "option_a": "Gosto de verificar tudo com muito cuidado.",
+    "option_b": "Não gosto de planejar muito."
+  },
+  {
+    "number": 91,
+    "option_a": "Gosto de estar com a equipe.",
+    "option_b": "Assumo responsabilidade pelos outros."
+  },
+  {
+    "number": 92,
+    "option_a": "Sou muito atencioso com minha equipe.",
+    "option_b": "Gosto de ser bem-sucedido."
+  },
+  {
+    "number": 93,
+    "option_a": "Gosto de variedade no meu trabalho.",
+    "option_b": "Gosto de atender aos meus amigos."
+  },
+  {
+    "number": 94,
+    "option_a": "Aborreço-me com facilidade.",
+    "option_b": "Sinto-me inseguro ao tomar certas decisões."
+  },
+  {
+    "number": 95,
+    "option_a": "Sempre faço o que me mandam.",
+    "option_b": "Sempre atendo aos meus amigos."
+  },
+  {
+    "number": 96,
+    "option_a": "Sinto muita vontade de terminar o que começo.",
+    "option_b": "Não gosto de ficar sem fazer nada no trabalho."
+  },
+  {
+    "number": 97,
+    "option_a": "Aceito sugestões das pessoas de quem gosto.",
+    "option_b": "Não gosto de trabalho rotineiro."
+  },
+  {
+    "number": 98,
+    "option_a": "Gosto de ter amigos mais próximos.",
+    "option_b": "Sinto-me à vontade dando sugestões aos outros."
+  },
+  {
+    "number": 99,
+    "option_a": "Sempre executo meu trabalho com muita dedicação.",
+    "option_b": "Gosto de trabalhos que exijam detalhes."
+  },
+  {
+    "number": 100,
+    "option_a": "Normalmente trabalho com intensidade.",
+    "option_b": "Gosto de pensar e planejar antes de agir."
+  }
+]

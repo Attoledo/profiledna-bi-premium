@@ -1,0 +1,2106 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ProfileDNA — Cliente</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+      :root {
+        /* Paleta oficial: degradê laranja->coral (onda do logo) + grafite/azul escuro (traço da onda) */
+        --pd-brand-orange: #fb923c;
+        --pd-brand-orange-strong: #f97316;
+        --pd-brand-coral: #ef4444;
+        --pd-brand-gradient: linear-gradient(90deg, var(--pd-brand-orange) 0%, var(--pd-brand-orange-strong) 50%, var(--pd-brand-coral) 100%);
+        --pd-brand-graphite: #1e293b;
+        --pd-brand-graphite-soft: #334155;
+        --pd-brand-navy: #0f172a;
+        --pd-brand-gradient-dark: linear-gradient(135deg, var(--pd-brand-graphite) 0%, var(--pd-brand-navy) 100%);
+        /* Mercúrio líquido translúcido: mesma rampa de cor da marca, com transparência para o efeito de vidro */
+        --pd-brand-gradient-liquid: linear-gradient(90deg, rgba(251, 146, 60, 0.85) 0%, rgba(249, 115, 22, 0.85) 50%, rgba(239, 68, 68, 0.85) 100%);
+      }
+
+      .pd-page-shell {
+        max-width: 1460px;
+        margin: 0 auto;
+        padding: 22px 22px 32px;
+      }
+
+      .pd-page-stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .pd-cliente-hero {
+        display: grid;
+        gap: 18px;
+        padding: 22px;
+        border-radius: 28px;
+        border: 1px solid #e5e7eb;
+        background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+        box-shadow: 0 10px 24px rgba(17, 24, 39, 0.04);
+      }
+
+      .pd-cliente-hero__top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .pd-cliente-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none;
+      }
+
+      .pd-cliente-brand__logo {
+        height: 72px !important;
+        max-height: 76px !important;
+        width: auto !important;
+        max-width: 140px !important;
+        object-fit: contain !important;
+        display: block;
+        flex: 0 0 auto;
+        background: transparent;
+        margin-top: -4px !important;
+        margin-bottom: -4px !important;
+      }
+
+      .pd-cliente-brand__text {
+        min-width: 0;
+      }
+
+      .pd-cliente-brand__title {
+        color: var(--pd-brand-graphite);
+        font-size: 18px;
+        line-height: 1.1;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+
+      .pd-cliente-hero__actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Botões: base + efeito líquido (gooey blob) no hover            */
+      /* -------------------------------------------------------------- */
+
+      .pd-cliente-btn {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 14px;
+        border: 1px solid #dbe1ea;
+        background: #ffffff;
+        color: var(--pd-brand-graphite);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 800;
+        box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, color .25s ease;
+        cursor: pointer;
+      }
+
+      .pd-cliente-btn::after {
+        content: "";
+        position: absolute;
+        inset: -10%;
+        background: var(--pd-brand-gradient);
+        opacity: 0;
+        transform: scale(0.35);
+        border-radius: 46% 54% 58% 42% / 48% 40% 60% 52%;
+        transition: transform .6s cubic-bezier(.22, 1, .36, 1),
+                    opacity .35s ease,
+                    border-radius .8s ease-in-out;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      .pd-cliente-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+        color: var(--pd-brand-graphite);
+        border-color: transparent;
+      }
+
+      .pd-cliente-btn:hover::after {
+        opacity: .16;
+        transform: scale(2.4);
+        border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+        animation: pd-blob-morph 5s ease-in-out infinite;
+      }
+
+      .pd-cliente-btn--primary {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #ffffff;
+        background: var(--pd-brand-gradient-liquid);
+        backdrop-filter: blur(10px) saturate(160%);
+        -webkit-backdrop-filter: blur(10px) saturate(160%);
+        box-shadow: 0 14px 30px rgba(239, 68, 68, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        transition: all .5s cubic-bezier(.4, 0, .2, 1);
+      }
+
+      /* Onda interna de mercúrio: brilho líquido que se expande sob o vidro no hover */
+      .pd-cliente-btn--primary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 60%);
+        opacity: .55;
+        transform: scale(1) translate(0, 0);
+        transition: transform .6s cubic-bezier(.4, 0, .2, 1), opacity .5s ease;
+        pointer-events: none;
+      }
+
+      .pd-cliente-btn--primary::after {
+        background: var(--pd-brand-gradient-dark);
+        opacity: 0;
+      }
+
+      .pd-cliente-btn--primary:hover {
+        color: #ffffff;
+        transform: translateY(-2px) scale(1.015);
+        box-shadow: 0 18px 36px rgba(239, 68, 68, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      }
+
+      .pd-cliente-btn--primary:hover::before {
+        transform: scale(1.4) translate(4%, -4%);
+        opacity: .85;
+      }
+
+      .pd-cliente-btn--primary:hover::after {
+        opacity: .18;
+        mix-blend-mode: overlay;
+      }
+
+      @keyframes pd-blob-morph {
+        0%, 100% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
+        33%      { border-radius: 58% 42% 35% 65% / 60% 38% 62% 40%; }
+        66%      { border-radius: 45% 55% 60% 40% / 35% 60% 40% 65%; }
+      }
+
+      /* Navegação superior direita: vidro translúcido + indicador gooey elástico (#pd-goo) */
+      .pd-cliente-btn--nav {
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
+        box-shadow: 0 8px 24px rgba(31, 38, 135, 0.06);
+      }
+
+      .pd-cliente-btn--nav::after {
+        transition: transform .45s cubic-bezier(.34, 1.56, .64, 1),
+                    opacity .35s ease,
+                    border-radius .45s cubic-bezier(.34, 1.56, .64, 1);
+      }
+
+      .pd-cliente-btn--nav:hover::after {
+        filter: url(#pd-goo);
+      }
+
+      .pd-cliente-btn--nav-active {
+        background: rgba(249, 115, 22, 0.12) !important;
+        border-color: rgba(249, 115, 22, 0.35) !important;
+        color: #c2410c !important;
+        font-weight: 900 !important;
+      }
+
+      .pd-cliente-hero__body {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .pd-cliente-hero__content {
+        max-width: 920px;
+        min-width: 0;
+      }
+
+      .pd-cliente-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid #fdba74;
+        background: #fff7ed;
+        color: #c2410c;
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 14px;
+      }
+
+      .pd-cliente-title {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+        color: var(--pd-brand-graphite);
+        font-weight: 900;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-cliente-subtitle {
+        margin: 14px 0 0;
+        max-width: 920px;
+        color: #6b7280;
+        font-size: 17px;
+        line-height: 1.65;
+      }
+
+      .pd-cliente-context-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .pd-cliente-context-card {
+        padding: 16px 18px;
+        border-radius: 18px;
+        border: 1px solid #dbe1ea;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+        min-width: 0;
+      }
+
+      .pd-cliente-context-card__label {
+        font-size: 11px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 900;
+        color: #9ca3af;
+        margin-bottom: 8px;
+      }
+
+      .pd-cliente-context-card__value {
+        color: var(--pd-brand-graphite);
+        font-size: 22px;
+        line-height: 1.2;
+        font-weight: 900;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-cliente-context-card__meta {
+        margin-top: 8px;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+      }
+
+      /* Grid mandatório: 4 colunas lógicas -> coluna principal ocupa 3 (75%),
+         sidebar ocupa 1 (25%), equivalente a `grid grid-cols-1 lg:grid-cols-4 gap-6`. */
+      .pd-top-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(300px, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .pd-main-stack,
+      .pd-right-stack {
+        display: grid;
+        gap: 18px;
+        min-width: 0;
+        align-content: start;
+      }
+
+      .pd-right-stack {
+        position: sticky;
+        top: 18px;
+      }
+
+      /* Apple Liquid Glass: cartões da sidebar com vidro translúcido + blur */
+      .pd-right-stack .pd-card {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+      }
+
+      .pd-card {
+        background: #ffffff;
+        border: 1px solid #dbe1ea;
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+        min-width: 0;
+      }
+
+      .pd-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .pd-card-title {
+        margin: 0;
+        color: var(--pd-brand-graphite);
+        font-size: 20px;
+        line-height: 1.15;
+        font-weight: 900;
+      }
+
+      .pd-card-text {
+        margin: 8px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+        max-width: 860px;
+      }
+
+      .pd-card-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid #fdba74;
+        background: #fff7ed;
+        color: #c2410c;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Navegação por abas                                              */
+      /* -------------------------------------------------------------- */
+
+      .pd-tabs-nav {
+        position: relative;
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        padding: 6px;
+        border-radius: 20px;
+        background: #ffffff;
+        border: 1px solid #dbe1ea;
+        box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+        overflow: hidden;
+      }
+
+      .pd-tabs-indicator {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        height: calc(100% - 12px);
+        width: 0;
+        border-radius: 14px;
+        background: var(--pd-brand-gradient);
+        box-shadow: 0 10px 22px rgba(249, 115, 22, 0.28);
+        filter: url(#pd-goo);
+        transition: left .45s cubic-bezier(.34, 1.56, .64, 1),
+                    width .45s cubic-bezier(.34, 1.56, .64, 1);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .pd-tab-btn {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border: none;
+        border-radius: 14px;
+        background: transparent;
+        color: var(--pd-brand-graphite-soft);
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        cursor: pointer;
+        transition: color .3s ease;
+        white-space: nowrap;
+      }
+
+      .pd-tab-btn:hover {
+        color: var(--pd-brand-orange-strong);
+      }
+
+      .pd-tab-btn.is-active {
+        color: #ffffff;
+      }
+
+      .pd-tab-btn.is-active:hover {
+        color: #ffffff;
+      }
+
+      .pd-tab-panel {
+        display: none;
+      }
+
+      .pd-tab-panel.is-active {
+        display: grid;
+        gap: 18px;
+        animation: pd-tab-fade-in .35s ease;
+      }
+
+      @keyframes pd-tab-fade-in {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .pd-summary-metrics,
+      .pd-operational-metrics {
+        display: grid;
+        gap: 12px;
+      }
+
+      .pd-summary-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-summary-metrics--grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      /* O card "Nome" ocupa a linha inteira; Status/Rodadas/Setores formam a segunda linha */
+      .pd-summary-metrics--grid > :first-child {
+        grid-column: 1 / -1;
+      }
+
+      /* Corrige overflow do rótulo e do número nos cards compactos da sidebar */
+      .pd-summary-metrics--grid .pd-metric-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 8px;
+        padding: 16px;
+        min-height: 104px;
+      }
+
+      .pd-summary-metrics--grid .pd-metric-card__value--xl {
+        font-size: 26px;
+      }
+
+      .pd-operational-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pd-metric-card {
+        border-radius: 22px;
+        padding: 16px;
+        min-width: 0;
+      }
+
+      .pd-metric-card--dark {
+        background: var(--pd-brand-gradient-dark);
+        border: 1px solid var(--pd-brand-navy);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.22);
+      }
+
+      .pd-metric-card--soft {
+        background: #fbfcfe;
+        border: 1px solid #dbe1ea;
+      }
+
+      .pd-metric-card--success {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+      }
+
+      .pd-metric-card--warning {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+      }
+
+      .pd-metric-card--brand {
+        background: var(--pd-brand-gradient);
+        border: 1px solid transparent;
+        box-shadow: 0 12px 24px rgba(239, 68, 68, 0.18);
+      }
+
+      .pd-metric-card__label {
+        font-size: 12px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+
+      .pd-metric-card--dark .pd-metric-card__label,
+      .pd-metric-card--brand .pd-metric-card__label {
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .pd-metric-card--soft .pd-metric-card__label {
+        color: #6b7280;
+      }
+
+      .pd-metric-card--success .pd-metric-card__label {
+        color: #047857;
+      }
+
+      .pd-metric-card--warning .pd-metric-card__label {
+        color: #9a3412;
+      }
+
+      .pd-metric-card__value {
+        color: #111827;
+        font-weight: 900;
+        line-height: 1.05;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-metric-card--dark .pd-metric-card__value,
+      .pd-metric-card--brand .pd-metric-card__value {
+        color: #ffffff;
+      }
+
+      .pd-metric-card__value--xl {
+        font-size: 34px;
+      }
+
+      .pd-metric-card__value--md {
+        font-size: 16px;
+        line-height: 1.3;
+      }
+
+      .pd-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .pd-info-card {
+        border: 1px solid #eef2f7;
+        border-radius: 18px;
+        background: #f9fafb;
+        padding: 16px;
+        min-width: 0;
+      }
+
+      .pd-info-card__label {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+        line-height: 1.2;
+        font-weight: 900;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .pd-info-card__value {
+        color: #111827;
+        font-size: 15px;
+        line-height: 1.55;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .pd-operational-box {
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        padding: 16px;
+        min-width: 0;
+      }
+
+      .pd-operational-box__top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .pd-operational-box__eyebrow {
+        font-size: 12px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-weight: 900;
+        margin-bottom: 6px;
+      }
+
+      .pd-operational-box__text {
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .pd-operational-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: end;
+      }
+
+      .pd-operational-field {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .pd-operational-field label {
+        font-size: 13px;
+        line-height: 1.2;
+        font-weight: 800;
+        color: #111827;
+      }
+
+      .pd-participants-rodada-select,
+      .pd-input,
+      .pd-textarea,
+      .pd-checkbox-input {
+        box-sizing: border-box;
+      }
+
+      .pd-participants-rodada-select,
+      .pd-input {
+        width: 100%;
+        min-width: 0;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid #dbe1ea;
+        background: #ffffff;
+        color: #111827;
+        padding: 0 12px;
+        outline: none;
+        transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+        font-size: 14px;
+      }
+
+      .pd-textarea {
+        width: 100%;
+        min-width: 0;
+        border-radius: 12px;
+        border: 1px solid #dbe1ea;
+        background: #ffffff;
+        color: #111827;
+        padding: 12px;
+        outline: none;
+        transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+        font-size: 14px;
+        min-height: 92px;
+        resize: vertical;
+      }
+
+      .pd-participants-rodada-select:focus,
+      .pd-input:focus,
+      .pd-textarea:focus {
+        border-color: var(--pd-brand-orange);
+        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.14);
+      }
+
+      .pd-operational-actions,
+      .pd-form-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .pd-link-card-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .pd-link-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #ffffff 0%, #fbfcfe 100%);
+        padding: 15px;
+        min-width: 0;
+      }
+
+      .pd-link-card__top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+
+      .pd-link-card__title {
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 1.25;
+        color: var(--pd-brand-graphite);
+        overflow-wrap: anywhere;
+      }
+
+      .pd-link-card__meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .pd-meta-pill {
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid #eef2f7;
+        background: #f9fafb;
+        min-width: 0;
+      }
+
+      .pd-meta-pill__label {
+        font-size: 11px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 900;
+        color: #9ca3af;
+        margin-bottom: 6px;
+      }
+
+      .pd-meta-pill__value {
+        color: #111827;
+        font-size: 15px;
+        line-height: 1.45;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-empty {
+        padding: 16px 18px;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        background: #f9fafb;
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Flatpickr — calendário estilo Apple / Glassmorphism             */
+      /* -------------------------------------------------------------- */
+
+      .flatpickr-calendar {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+        overflow: hidden;
+      }
+
+      .flatpickr-calendar.arrowTop:before,
+      .flatpickr-calendar.arrowTop:after {
+        display: none;
+      }
+
+      .flatpickr-months {
+        padding: 6px 0;
+      }
+
+      .flatpickr-months .flatpickr-month,
+      .flatpickr-months .flatpickr-prev-month,
+      .flatpickr-months .flatpickr-next-month {
+        color: var(--pd-brand-graphite);
+        fill: var(--pd-brand-graphite);
+      }
+
+      .flatpickr-current-month .flatpickr-monthDropdown-months,
+      .flatpickr-current-month input.cur-year {
+        font-weight: 800;
+        color: var(--pd-brand-graphite);
+      }
+
+      span.flatpickr-weekday {
+        color: var(--pd-brand-graphite-soft, #6b7280);
+        font-weight: 800;
+      }
+
+      .flatpickr-day {
+        border-radius: 10px;
+        color: var(--pd-brand-graphite);
+      }
+
+      .flatpickr-day.today {
+        border: 1px solid var(--pd-brand-orange-strong);
+      }
+
+      .flatpickr-day.today:hover,
+      .flatpickr-day.today:focus {
+        background: var(--pd-brand-gradient-liquid);
+        border-color: var(--pd-brand-orange-strong);
+        color: #ffffff;
+      }
+
+      .flatpickr-day.selected,
+      .flatpickr-day.selected:hover,
+      .flatpickr-day.startRange,
+      .flatpickr-day.startRange:hover,
+      .flatpickr-day.endRange,
+      .flatpickr-day.endRange:hover {
+        background: var(--pd-brand-gradient-liquid);
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+      }
+
+      .flatpickr-day.flatpickr-disabled,
+      .flatpickr-day.flatpickr-disabled:hover {
+        color: rgba(107, 114, 128, 0.35);
+      }
+
+      .flatpickr-day:hover {
+        background: rgba(251, 146, 60, 0.16);
+      }
+
+      /* -------------------------------------------------------------- */
+      /* BI — gráficos vivos (Visão Geral)                                */
+      /* -------------------------------------------------------------- */
+
+      .pd-bi-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      @media (min-width: 920px) {
+        .pd-bi-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .pd-bi-chart-card {
+        position: relative;
+        border-radius: 20px;
+        padding: 18px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        min-width: 0;
+      }
+
+      .pd-bi-chart-card__title {
+        margin: 0 0 4px;
+        color: var(--pd-brand-graphite);
+        font-size: 15px;
+        font-weight: 900;
+      }
+
+      .pd-bi-chart-card__subtitle {
+        margin: 0 0 12px;
+        color: #6b7280;
+        font-size: 12.5px;
+        line-height: 1.5;
+      }
+
+      .pd-bi-chart-card__canvas-wrap {
+        position: relative;
+        height: 260px;
+      }
+
+      .pd-bi-chart-card__empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 260px;
+        border-radius: 16px;
+        border: 1px dashed rgba(148, 163, 184, 0.55);
+        background: rgba(249, 250, 251, 0.6);
+        color: #6b7280;
+        font-size: 13.5px;
+        text-align: center;
+        padding: 18px;
+      }
+
+      .pd-bi-chart-card[data-state="loading"] .pd-bi-chart-card__canvas-wrap,
+      .pd-bi-chart-card[data-state="loading"] .pd-bi-chart-card__empty {
+        display: none;
+      }
+
+      .pd-bi-chart-card[data-state="empty"] .pd-bi-chart-card__canvas-wrap {
+        display: none;
+      }
+
+      .pd-bi-chart-card[data-state="ready"] .pd-bi-chart-card__empty,
+      .pd-bi-chart-card[data-state="loading"] .pd-bi-chart-card__loading {
+        display: none;
+      }
+
+      .pd-bi-chart-card__loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 260px;
+        color: #9ca3af;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .pd-bi-chart-card[data-state="ready"] .pd-bi-chart-card__loading,
+      .pd-bi-chart-card[data-state="empty"] .pd-bi-chart-card__loading {
+        display: none;
+      }
+
+      .pd-form-grid {
+        display: grid;
+        gap: 11px;
+      }
+
+      .pd-form-field {
+        display: block;
+      }
+
+      .pd-form-field > span {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 900;
+        color: #111827;
+      }
+
+      .pd-form-two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .pd-form-checkbox {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #111827;
+        font-size: 14px;
+        line-height: 1.4;
+        font-weight: 700;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .pd-form-checkbox input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: var(--pd-brand-orange-strong);
+      }
+
+      .pd-wrap-anywhere {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .pd-title-break {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .pd-full-mobile {
+        width: auto;
+      }
+
+      .pd-sidebar-eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 900;
+        color: var(--pd-brand-orange-strong);
+        margin: 0 0 6px;
+      }
+
+      @media (max-width: 1320px) {
+        .pd-top-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .pd-right-stack {
+          position: static;
+        }
+
+        .pd-summary-metrics--grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .pd-info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 920px) {
+        .pd-cliente-context-grid,
+        .pd-operational-metrics,
+        .pd-form-two-col,
+        .pd-link-card__meta-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .pd-summary-metrics--grid {
+          grid-template-columns: 1fr;
+        }
+
+        .pd-operational-controls {
+          grid-template-columns: 1fr;
+        }
+
+        .pd-tabs-nav {
+          flex-direction: column;
+        }
+
+        .pd-tabs-indicator {
+          display: none;
+        }
+
+        .pd-tab-btn.is-active {
+          color: #ffffff;
+          background: var(--pd-brand-gradient);
+          border-radius: 14px;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .pd-page-shell {
+          padding: 16px 16px 28px;
+        }
+
+        .pd-cliente-hero,
+        .pd-card {
+          padding: 18px;
+        }
+
+        .pd-cliente-hero__actions,
+        .pd-form-actions,
+        .pd-operational-actions {
+          width: 100%;
+          justify-content: stretch;
+        }
+
+        .pd-cliente-btn,
+        .pd-full-mobile {
+          width: 100% !important;
+        }
+      }
+    </style>
+  </head>
+  <body style="margin:0; background:#f3f5f9; color:#111827; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+    {% set csrf_token = csrf_token if csrf_token is defined else "" %}
+    {% set cliente = cliente if cliente is defined and cliente else None %}
+    {% set rodadas = rodadas if rodadas is defined and rodadas else [] %}
+    {% set setores = setores if setores is defined and setores else [] %}
+    {% set rodadas_count = rodadas_count if rodadas_count is defined else (rodadas|length) %}
+    {% set setores_count = setores_count if setores_count is defined else (setores|length) %}
+
+    {% set participants_total = participants_total if participants_total is defined else 0 %}
+    {% set participants_submitted_total = participants_submitted_total if participants_submitted_total is defined else 0 %}
+    {% set participants_in_progress_total = participants_in_progress_total if participants_in_progress_total is defined else 0 %}
+    {% set participants_url = participants_url if participants_url is defined and participants_url else "#" %}
+    {% set participants_by_rodada_options = participants_by_rodada_options if participants_by_rodada_options is defined and participants_by_rodada_options else [] %}
+
+    {% set cliente_nome = cliente.nome if cliente and cliente.nome is defined and cliente.nome else "-" %}
+    {% set cliente_ativo = cliente.ativo if cliente and cliente.ativo is defined else false %}
+    {% set cliente_razao = cliente.razao_social if cliente and cliente.razao_social is defined and cliente.razao_social else "-" %}
+    {% set cliente_cnpj = cliente.cnpj if cliente and cliente.cnpj is defined and cliente.cnpj else "-" %}
+    {% set cliente_endereco = cliente.endereco if cliente and cliente.endereco is defined and cliente.endereco else "-" %}
+    {% set cliente_setor_mercado = cliente.setor_mercado if cliente and cliente.setor_mercado is defined and cliente.setor_mercado else "-" %}
+    {% set cliente_responsavel = cliente.responsavel if cliente and cliente.responsavel is defined and cliente.responsavel else "-" %}
+    {% set cliente_setor_responsavel = cliente.setor_responsavel if cliente and cliente.setor_responsavel is defined and cliente.setor_responsavel else "-" %}
+    {% set cliente_email_responsavel = cliente.email_responsavel if cliente and cliente.email_responsavel is defined and cliente.email_responsavel else "-" %}
+
+    <!-- Filtro SVG gooey, usado no indicador líquido das abas -->
+    <svg aria-hidden="true" focusable="false" style="position:absolute; width:0; height:0; overflow:hidden;">
+      <defs>
+        <filter id="pd-goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="pd-goo-blur" />
+          <feColorMatrix in="pd-goo-blur" mode="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10" result="pd-goo-sharp" />
+          <feComposite in="SourceGraphic" in2="pd-goo-sharp" operator="atop" />
+        </filter>
+      </defs>
+    </svg>
+
+    <div class="pd-page-shell">
+      <div class="pd-page-stack">
+        <section class="pd-cliente-hero">
+          <div class="pd-cliente-hero__top">
+            <a href="/admin/dashboard" class="pd-cliente-brand">
+              <img
+                src="/static/img/official_logo.png"
+                alt="Profile DNA"
+                class="pd-cliente-brand__logo"
+                onerror="this.src='/static/img/dna-logo.png';"
+              />
+            </a>
+
+            <div class="pd-cliente-hero__actions">
+              <a href="/admin/dashboard" class="pd-cliente-btn pd-cliente-btn--nav">Dashboard</a>
+              <a href="/admin/clientes" class="pd-cliente-btn pd-cliente-btn--nav pd-cliente-btn--nav-active">Clientes</a>
+              <a href="/admin/bi/cliente/{{ cliente.id }}" class="pd-cliente-btn pd-cliente-btn--nav">BI — Visão Geral</a>
+              <a href="/admin/bi/comparativo?left_cliente_id={{ cliente.id }}&right_cliente_id={{ cliente.id }}" class="pd-cliente-btn pd-cliente-btn--nav">BI — Comparativo</a>
+              <a href="/admin/ai/analysis-inteligente?cliente_id={{ cliente.id }}" class="pd-cliente-btn pd-cliente-btn--primary">DANA</a>
+            </div>
+          </div>
+
+          <div class="pd-cliente-hero__body">
+            <div class="pd-cliente-hero__content">
+              <div class="pd-cliente-kicker">Cliente · Gestão Operacional</div>
+              <h1 class="pd-cliente-title">{{ cliente_nome }}</h1>
+              <p class="pd-cliente-subtitle">
+                Gestão operacional do cliente com visão consolidada de cadastro, rodadas, setores, participantes e acesso rápido aos módulos analíticos do ProfileDNA.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div class="pd-top-grid">
+          <div class="pd-main-stack">
+            <nav class="pd-tabs-nav" role="tablist" aria-label="Seções do cliente">
+              <span class="pd-tabs-indicator" aria-hidden="true"></span>
+              <button type="button" class="pd-tab-btn is-active" data-tab="overview" role="tab" aria-selected="true">Visão Geral</button>
+              <button type="button" class="pd-tab-btn" data-tab="rodadas-setores" role="tab" aria-selected="false">Rodadas &amp; Setores</button>
+              <button type="button" class="pd-tab-btn" data-tab="participantes" role="tab" aria-selected="false">Participantes</button>
+              <button type="button" class="pd-tab-btn" data-tab="cadastro" role="tab" aria-selected="false">Dados de Cadastro</button>
+            </nav>
+
+            <!-- ===================== ABA: VISÃO GERAL ===================== -->
+            <div class="pd-tab-panel is-active" data-tab-panel="overview">
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Visão geral do cliente</h2>
+                    <p class="pd-card-text">
+                      Contexto consolidado da conta operacional e dos indicadores de participação no ciclo atual.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip">Conta operacional</div>
+                </div>
+
+                <section class="pd-cliente-context-grid" style="margin-bottom:14px;">
+                  <div class="pd-cliente-context-card">
+                    <div class="pd-cliente-context-card__label">Cliente em análise</div>
+                    <div class="pd-cliente-context-card__value">{{ cliente_nome }}</div>
+                  </div>
+
+                  <div class="pd-cliente-context-card">
+                    <div class="pd-cliente-context-card__label">Status</div>
+                    <div class="pd-cliente-context-card__value">{% if cliente_ativo %}Ativo{% else %}Inativo{% endif %}</div>
+                  </div>
+
+                  <div class="pd-cliente-context-card">
+                    <div class="pd-cliente-context-card__label">Escopo atual</div>
+                    <div class="pd-cliente-context-card__value">Cliente consolidado</div>
+                  </div>
+                </section>
+
+                <div class="pd-operational-metrics">
+                  <div class="pd-metric-card pd-metric-card--dark">
+                    <div class="pd-metric-card__label">Total de participantes</div>
+                    <div class="pd-metric-card__value pd-metric-card__value--xl">{{ participants_total }}</div>
+                  </div>
+
+                  <div class="pd-metric-card pd-metric-card--success">
+                    <div class="pd-metric-card__label">Concluídos</div>
+                    <div class="pd-metric-card__value pd-metric-card__value--xl">{{ participants_submitted_total }}</div>
+                  </div>
+
+                  <div class="pd-metric-card pd-metric-card--warning">
+                    <div class="pd-metric-card__label">Em andamento</div>
+                    <div class="pd-metric-card__value pd-metric-card__value--xl">{{ participants_in_progress_total }}</div>
+                  </div>
+                </div>
+
+                <div class="pd-bi-grid">
+                  <div class="pd-bi-chart-card" data-state="loading" data-bi-chart="areas">
+                    <h3 class="pd-bi-chart-card__title">Distribuição por área</h3>
+                    <p class="pd-bi-chart-card__subtitle">
+                      Média consolidada das dimensões GERENCIAL, INTER PESSOAL e PESSOAL para os resultados deste cliente.
+                    </p>
+                    <div class="pd-bi-chart-card__loading">Carregando dados…</div>
+                    <div class="pd-bi-chart-card__empty">
+                      Ainda não há testes concluídos para gerar este gráfico.
+                    </div>
+                    <div class="pd-bi-chart-card__canvas-wrap">
+                      <canvas id="pdBiAreasChart"></canvas>
+                    </div>
+                  </div>
+
+                  <div class="pd-bi-chart-card" data-state="loading" data-bi-chart="dimensoes">
+                    <h3 class="pd-bi-chart-card__title">Dimensões mais incidentes</h3>
+                    <p class="pd-bi-chart-card__subtitle">
+                      Ranking dinâmico das dimensões com maior frequência no Top 5 dos participantes.
+                    </p>
+                    <div class="pd-bi-chart-card__loading">Carregando dados…</div>
+                    <div class="pd-bi-chart-card__empty">
+                      Ainda não há testes concluídos para gerar este gráfico.
+                    </div>
+                    <div class="pd-bi-chart-card__canvas-wrap">
+                      <canvas id="pdBiDimensionsChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- ================ ABA: RODADAS & SETORES ==================== -->
+            <div class="pd-tab-panel" data-tab-panel="rodadas-setores">
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <p class="pd-sidebar-eyebrow">Ação de criação</p>
+                    <h2 class="pd-card-title">Nova rodada</h2>
+                    <p class="pd-card-text">
+                      Abra uma nova rodada operacional para este cliente.
+                    </p>
+                  </div>
+                </div>
+
+                <form method="post" action="/admin/clientes/{{ cliente.id }}/rodadas#rodadas-setores">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+                  <div class="pd-form-grid">
+                    <label class="pd-form-field">
+                      <span>Nome da rodada</span>
+                      <input
+                        type="text"
+                        name="nome"
+                        required
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <div class="pd-form-two-col">
+                      <label class="pd-form-field">
+                        <span>Data de início</span>
+                        <input
+                          type="date"
+                          name="data_inicio"
+                          id="pdRodadaDataInicio"
+                          required
+                          class="pd-input"
+                        />
+                      </label>
+
+                      <label class="pd-form-field">
+                        <span>Data de encerramento</span>
+                        <input
+                          type="date"
+                          name="data_encerramento"
+                          id="pdRodadaDataEncerramento"
+                          class="pd-input"
+                        />
+                      </label>
+                    </div>
+
+                    <div class="pd-form-actions">
+                      <button type="submit" class="pd-cliente-btn pd-cliente-btn--primary pd-full-mobile">Criar rodada</button>
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Rodadas do cliente</h2>
+                    <p class="pd-card-text">
+                      Abra uma rodada para gerir convites e participantes.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip" style="border-color:#e5e7eb; background:#f9fafb; color:#6b7280;">
+                    Total: {{ rodadas_count }}
+                  </div>
+                </div>
+
+                {% if rodadas %}
+                  <div class="pd-link-card-grid">
+                    {% for rodada in rodadas %}
+                      <div class="pd-link-card">
+                        <div class="pd-link-card__top">
+                          <div style="min-width:0;">
+                            <div class="pd-link-card__title">
+                              {{ rodada.nome if rodada.nome is defined and rodada.nome else "-" }}
+                            </div>
+                            <div class="pd-wrap-anywhere" style="margin-top:5px; color:#6b7280; font-size:13px; line-height:1.45;">
+                              ID: {{ rodada.id }}
+                            </div>
+                          </div>
+
+                          <a
+                            href="/admin/rodadas/{{ rodada.id }}?cliente_id={{ cliente.id }}"
+                            class="pd-cliente-btn pd-full-mobile"
+                          >
+                            Abrir rodada
+                          </a>
+                        </div>
+
+                        <div class="pd-link-card__meta-grid">
+                          <div class="pd-meta-pill">
+                            <div class="pd-meta-pill__label">Data de início</div>
+                            <div class="pd-meta-pill__value">
+                              {{ rodada.data_inicio if rodada.data_inicio is defined and rodada.data_inicio else "-" }}
+                            </div>
+                          </div>
+
+                          <div class="pd-meta-pill">
+                            <div class="pd-meta-pill__label">Data de encerramento</div>
+                            <div class="pd-meta-pill__value">
+                              {{ rodada.data_encerramento if rodada.data_encerramento is defined and rodada.data_encerramento else "-" }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <form method="post" action="/admin/rodadas/{{ rodada.id }}/editar#rodadas-setores">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                          <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
+
+                          <div class="pd-form-two-col" style="grid-template-columns:minmax(260px, 1fr) 160px 160px auto;">
+                            <label class="pd-form-field">
+                              <span>Nome da rodada</span>
+                              <input
+                                type="text"
+                                name="nome"
+                                required
+                                value="{{ rodada.nome if rodada.nome is defined and rodada.nome else '' }}"
+                                class="pd-input"
+                              />
+                            </label>
+
+                            <label class="pd-form-field">
+                              <span>Data de início</span>
+                              <input
+                                type="text"
+                                name="data_inicio"
+                                required
+                                value="{{ rodada.data_inicio if rodada.data_inicio is defined and rodada.data_inicio else '' }}"
+                                class="pd-input"
+                              />
+                            </label>
+
+                            <label class="pd-form-field">
+                              <span>Data de encerramento</span>
+                              <input
+                                type="text"
+                                name="data_encerramento"
+                                value="{{ rodada.data_encerramento if rodada.data_encerramento is defined and rodada.data_encerramento else '' }}"
+                                class="pd-input"
+                              />
+                            </label>
+
+                            <div class="pd-form-actions" style="align-items:end;">
+                              <button type="submit" class="pd-cliente-btn pd-full-mobile">Salvar</button>
+                            </div>
+                          </div>
+                        </form>
+
+                        <form method="post" action="/admin/rodadas/{{ rodada.id }}/excluir#rodadas-setores" style="margin-top:10px;">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                          <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
+                          <button type="submit" class="pd-cliente-btn pd-full-mobile">Excluir rodada</button>
+                        </form>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="pd-empty">
+                    Nenhuma rodada cadastrada para este cliente.
+                  </div>
+                {% endif %}
+              </section>
+
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <p class="pd-sidebar-eyebrow">Ação de criação</p>
+                    <h2 class="pd-card-title">Novo setor</h2>
+                    <p class="pd-card-text">
+                      Cadastre um novo setor para organização dos convites e recortes.
+                    </p>
+                  </div>
+                </div>
+
+                <form method="post" action="/admin/clientes/{{ cliente.id }}/setores#rodadas-setores">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+                  <div class="pd-form-grid">
+                    <label class="pd-form-field">
+                      <span>Nome do setor</span>
+                      <input
+                        type="text"
+                        name="nome"
+                        required
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <div class="pd-form-actions">
+                      <button type="submit" class="pd-cliente-btn pd-cliente-btn--primary pd-full-mobile">Criar setor</button>
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Setores do cliente</h2>
+                    <p class="pd-card-text">
+                      Estrutura organizacional disponível para convites e recortes.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip" style="border-color:#e5e7eb; background:#f9fafb; color:#6b7280;">
+                    Total: {{ setores_count }}
+                  </div>
+                </div>
+
+                {% if setores %}
+                  <div class="pd-link-card-grid">
+                    {% for setor in setores %}
+                      <div class="pd-link-card">
+                        <div class="pd-link-card__top" style="margin-bottom:10px;">
+                          <div style="min-width:0;">
+                            <div class="pd-link-card__title">
+                              {{ setor.nome if setor.nome is defined and setor.nome else "-" }}
+                            </div>
+                            <div class="pd-wrap-anywhere" style="margin-top:5px; color:#6b7280; font-size:13px; line-height:1.45;">
+                              ID: {{ setor.id }}
+                            </div>
+                          </div>
+
+                          <span class="pd-card-chip">Setor</span>
+                        </div>
+
+                        <form method="post" action="/admin/setores/{{ setor.id }}/editar#rodadas-setores" style="margin-top:12px;">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                          <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
+
+                          <div class="pd-form-two-col" style="grid-template-columns:minmax(260px, 1fr) auto;">
+                            <label class="pd-form-field">
+                              <span>Nome do setor</span>
+                              <input
+                                type="text"
+                                name="nome"
+                                required
+                                value="{{ setor.nome if setor.nome is defined and setor.nome else '' }}"
+                                class="pd-input"
+                              />
+                            </label>
+
+                            <div class="pd-form-actions" style="align-items:end;">
+                              <button type="submit" class="pd-cliente-btn pd-full-mobile">Salvar</button>
+                            </div>
+                          </div>
+                        </form>
+
+                        <form method="post" action="/admin/setores/{{ setor.id }}/excluir#rodadas-setores" style="margin-top:10px;">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                          <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
+                          <button type="submit" class="pd-cliente-btn pd-full-mobile">Excluir setor</button>
+                        </form>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="pd-empty">
+                    Nenhum setor cadastrado para este cliente.
+                  </div>
+                {% endif %}
+              </section>
+            </div>
+
+            <!-- ===================== ABA: PARTICIPANTES ==================== -->
+            <div class="pd-tab-panel" data-tab-panel="participantes">
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Participantes do cliente</h2>
+                    <p class="pd-card-text">
+                      Visão operacional do cliente com acesso direto à lista contextual de participantes e aos recortes por rodada.
+                    </p>
+                  </div>
+                  <a href="{{ participants_url }}" class="pd-cliente-btn pd-full-mobile">Abrir participantes</a>
+                </div>
+
+                <div class="pd-operational-metrics" style="margin-bottom:14px;">
+                  <div class="pd-metric-card pd-metric-card--dark">
+                    <div class="pd-metric-card__label">Total de participantes</div>
+                    <div class="pd-metric-card__value pd-metric-card__value--xl">{{ participants_total }}</div>
+                  </div>
+
+                  <div class="pd-metric-card pd-metric-card--success">
+                    <div class="pd-metric-card__label">Concluídos</div>
+                    <div class="pd-metric-card__value pd-metric-card__value--xl">{{ participants_submitted_total }}</div>
+                  </div>
+
+                  <div class="pd-metric-card pd-metric-card--warning">
+                    <div class="pd-metric-card__label">Em andamento</div>
+                    <div class="pd-metric-card__value pd-metric-card__value--xl">{{ participants_in_progress_total }}</div>
+                  </div>
+                </div>
+
+                <div class="pd-operational-box">
+                  <div class="pd-operational-box__top">
+                    <div>
+                      <div class="pd-operational-box__eyebrow">Filtro rápido</div>
+                      <div class="pd-operational-box__text">
+                        Selecione uma rodada específica para abrir a lista contextual filtrada, ou mantenha “Todas as rodadas” para a visão consolidada do cliente.
+                      </div>
+                    </div>
+
+                    <div class="pd-card-chip" style="border-color:#e5e7eb; background:#f9fafb; color:#6b7280;">
+                      Navegação contextual
+                    </div>
+                  </div>
+
+                  <div class="pd-operational-controls">
+                    <div class="pd-operational-field">
+                      <label for="pd-participants-rodada-select">Rodada</label>
+                      <select id="pd-participants-rodada-select" class="pd-participants-rodada-select">
+                        <option value="{{ participants_url }}">Todas as rodadas</option>
+                        {% for item in participants_by_rodada_options %}
+                          <option value="{{ item.url }}">{{ item.nome }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="pd-operational-actions">
+                      <button
+                        type="button"
+                        class="pd-cliente-btn pd-cliente-btn--primary pd-full-mobile"
+                        onclick="window.location.href=document.getElementById('pd-participants-rodada-select').value;"
+                      >
+                        Abrir lista
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- =================== ABA: DADOS DE CADASTRO ================== -->
+            <div class="pd-tab-panel" data-tab-panel="cadastro">
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Resumo do cadastro</h2>
+                    <p class="pd-card-text">
+                      Dados cadastrais PJ vinculados a esta conta operacional.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip">Conta operacional</div>
+                </div>
+
+                <div class="pd-info-grid">
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">Razão social</div>
+                    <div class="pd-info-card__value">{{ cliente_razao }}</div>
+                  </div>
+
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">CNPJ</div>
+                    <div class="pd-info-card__value">{{ cliente_cnpj }}</div>
+                  </div>
+
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">Endereço</div>
+                    <div class="pd-info-card__value">{{ cliente_endereco }}</div>
+                  </div>
+
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">Setor de mercado</div>
+                    <div class="pd-info-card__value">{{ cliente_setor_mercado }}</div>
+                  </div>
+
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">Responsável</div>
+                    <div class="pd-info-card__value">{{ cliente_responsavel }}</div>
+                  </div>
+
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">Setor do responsável</div>
+                    <div class="pd-info-card__value">{{ cliente_setor_responsavel }}</div>
+                  </div>
+
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">E-mail do responsável</div>
+                    <div class="pd-info-card__value">{{ cliente_email_responsavel }}</div>
+                  </div>
+
+                  <div class="pd-info-card">
+                    <div class="pd-info-card__label">ID</div>
+                    <div class="pd-info-card__value">{{ cliente.id }}</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Editar cliente</h2>
+                    <p class="pd-card-text">
+                      Atualize os dados cadastrais sem alterar a estrutura operacional existente.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip" style="border-color:#e5e7eb; background:#f9fafb; color:#6b7280;">
+                    Edição
+                  </div>
+                </div>
+
+                <form method="post" action="/admin/clientes/{{ cliente.id }}/editar">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+                  <div class="pd-form-grid">
+                    <label class="pd-form-field">
+                      <span>Nome fantasia / nome curto</span>
+                      <input
+                        type="text"
+                        name="nome"
+                        required
+                        value="{{ cliente.nome if cliente and cliente.nome is defined and cliente.nome else '' }}"
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <label class="pd-form-field">
+                      <span>Razão social</span>
+                      <input
+                        type="text"
+                        name="razao_social"
+                        value="{{ cliente.razao_social if cliente and cliente.razao_social is defined and cliente.razao_social else '' }}"
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <label class="pd-form-field">
+                      <span>CNPJ</span>
+                      <input
+                        type="text"
+                        name="cnpj"
+                        value="{{ cliente.cnpj if cliente and cliente.cnpj is defined and cliente.cnpj else '' }}"
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <label class="pd-form-field">
+                      <span>Endereço</span>
+                      <textarea
+                        name="endereco"
+                        class="pd-textarea"
+                      >{{ cliente.endereco if cliente and cliente.endereco is defined and cliente.endereco else '' }}</textarea>
+                    </label>
+
+                    <label class="pd-form-field">
+                      <span>Setor de mercado</span>
+                      <input
+                        type="text"
+                        name="setor_mercado"
+                        value="{{ cliente.setor_mercado if cliente and cliente.setor_mercado is defined and cliente.setor_mercado else '' }}"
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <label class="pd-form-field">
+                      <span>Responsável</span>
+                      <input
+                        type="text"
+                        name="responsavel"
+                        value="{{ cliente.responsavel if cliente and cliente.responsavel is defined and cliente.responsavel else '' }}"
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <label class="pd-form-field">
+                      <span>Setor do responsável</span>
+                      <input
+                        type="text"
+                        name="setor_responsavel"
+                        value="{{ cliente.setor_responsavel if cliente and cliente.setor_responsavel is defined and cliente.setor_responsavel else '' }}"
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <label class="pd-form-field">
+                      <span>E-mail do responsável</span>
+                      <input
+                        type="email"
+                        name="email_responsavel"
+                        value="{{ cliente.email_responsavel if cliente and cliente.email_responsavel is defined and cliente.email_responsavel else '' }}"
+                        class="pd-input"
+                      />
+                    </label>
+
+                    <label class="pd-form-checkbox">
+                      <input
+                        type="checkbox"
+                        name="ativo"
+                        {% if cliente_ativo %}checked{% endif %}
+                      />
+                      <span>Cliente ativo</span>
+                    </label>
+
+                    <div class="pd-form-actions">
+                      <button type="submit" class="pd-cliente-btn pd-cliente-btn--primary pd-full-mobile">Salvar alterações</button>
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Status do cliente</h2>
+                    <p class="pd-card-text">
+                      Ative ou inative rapidamente o cliente sem alterar o cadastro principal.
+                    </p>
+                  </div>
+                </div>
+
+                <form method="post" action="/admin/clientes/{{ cliente.id }}/status">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                  <input type="hidden" name="ativo" value="{% if cliente_ativo %}0{% else %}1{% endif %}" />
+
+                  <div class="pd-form-actions">
+                    <button type="submit" class="pd-cliente-btn pd-full-mobile">
+                      {% if cliente_ativo %}Desativar cliente{% else %}Ativar cliente{% endif %}
+                    </button>
+                  </div>
+                </form>
+              </section>
+
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Excluir cliente</h2>
+                    <p class="pd-card-text">
+                      A exclusão só é permitida quando não existem rodadas, setores, convites ou attempts vinculados.
+                    </p>
+                  </div>
+                </div>
+
+                <form method="post" action="/admin/clientes/{{ cliente.id }}/excluir">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+                  <div class="pd-form-actions">
+                    <button type="submit" class="pd-cliente-btn pd-full-mobile">Excluir cliente</button>
+                  </div>
+                </form>
+              </section>
+            </div>
+          </div>
+
+          <!-- ============================ SIDEBAR ============================ -->
+          <div class="pd-right-stack">
+            <section class="pd-card">
+              <div class="pd-card-head">
+                <div>
+                  <p class="pd-sidebar-eyebrow">Resumo estático</p>
+                  <h2 class="pd-card-title">Resumo do cliente</h2>
+                </div>
+              </div>
+
+              <div class="pd-summary-metrics pd-summary-metrics--grid">
+                <div class="pd-metric-card pd-metric-card--dark">
+                  <div class="pd-metric-card__label">Nome</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--md pd-wrap-anywhere">
+                    {{ cliente_nome }}
+                  </div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--warning">
+                  <div class="pd-metric-card__label">Status</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--md">
+                    {% if cliente_ativo %}Ativo{% else %}Inativo{% endif %}
+                  </div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--brand">
+                  <div class="pd-metric-card__label">Rodadas</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--xl">{{ rodadas_count }}</div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--soft">
+                  <div class="pd-metric-card__label">Setores</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--xl">{{ setores_count }}</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var buttons = Array.prototype.slice.call(document.querySelectorAll('.pd-tab-btn'));
+        var panels = Array.prototype.slice.call(document.querySelectorAll('.pd-tab-panel'));
+        var indicator = document.querySelector('.pd-tabs-indicator');
+
+        function moveIndicator(btn) {
+          if (!indicator || !btn) return;
+          indicator.style.left = btn.offsetLeft + 'px';
+          indicator.style.width = btn.offsetWidth + 'px';
+        }
+
+        function activate(tab) {
+          buttons.forEach(function (b) {
+            var active = b.dataset.tab === tab;
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+            if (active) moveIndicator(b);
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle('is-active', p.dataset.tabPanel === tab);
+          });
+        }
+
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () {
+            activate(b.dataset.tab);
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState(null, '', '#' + b.dataset.tab);
+            } else {
+              window.location.hash = b.dataset.tab;
+            }
+          });
+        });
+
+        var validTabs = buttons.map(function (b) { return b.dataset.tab; });
+        var hashTab = (window.location.hash || '').replace('#', '');
+
+        if (hashTab && validTabs.indexOf(hashTab) !== -1) {
+          activate(hashTab);
+        }
+
+        var initial = document.querySelector('.pd-tab-btn.is-active');
+        window.requestAnimationFrame(function () { moveIndicator(initial); });
+
+        window.addEventListener('resize', function () {
+          moveIndicator(document.querySelector('.pd-tab-btn.is-active'));
+        });
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var dataInicioInput = document.getElementById('pdRodadaDataInicio');
+        var dataEncerramentoInput = document.getElementById('pdRodadaDataEncerramento');
+
+        if (!dataInicioInput || !dataEncerramentoInput) return;
+
+        var hoje = new Date();
+        var hojeIso = hoje.getFullYear()
+          + '-' + String(hoje.getMonth() + 1).padStart(2, '0')
+          + '-' + String(hoje.getDate()).padStart(2, '0');
+
+        dataInicioInput.setAttribute('min', hojeIso);
+
+        dataInicioInput.addEventListener('change', function () {
+          if (dataInicioInput.value) {
+            dataEncerramentoInput.setAttribute('min', dataInicioInput.value);
+          }
+        });
+
+        if (typeof flatpickr !== 'undefined') {
+          var fpEncerramento = flatpickr(dataEncerramentoInput, {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            disableMobile: true,
+          });
+
+          var fpInicio = flatpickr(dataInicioInput, {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            minDate: 'today',
+            disableMobile: true,
+            onChange: function (selectedDates, dateStr) {
+              if (dateStr) {
+                fpEncerramento.set('minDate', dateStr);
+              }
+            },
+          });
+        }
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var areasCard = document.querySelector('[data-bi-chart="areas"]');
+        var dimensionsCard = document.querySelector('[data-bi-chart="dimensoes"]');
+
+        if (!areasCard && !dimensionsCard) return;
+
+        var brandColors = [
+          'rgba(251, 146, 60, 0.75)',
+          'rgba(249, 115, 22, 0.75)',
+          'rgba(239, 68, 68, 0.75)',
+          'rgba(30, 41, 59, 0.65)',
+          'rgba(100, 116, 139, 0.6)'
+        ];
+        var brandBorder = 'rgba(249, 115, 22, 0.9)';
+
+        function setState(card, state) {
+          if (card) card.setAttribute('data-state', state);
+        }
+
+        function renderAreasChart(radarArea) {
+          if (!areasCard) return;
+
+          var details = (radarArea && radarArea.details) || [];
+          var hasData = !!(radarArea && radarArea.has_data) && details.length > 0;
+
+          if (!hasData || typeof Chart === 'undefined') {
+            setState(areasCard, 'empty');
+            return;
+          }
+
+          var canvas = document.getElementById('pdBiAreasChart');
+          if (!canvas) return;
+
+          new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+              labels: details.map(function (item) { return item.area; }),
+              datasets: [{
+                label: 'Média por área (0-10)',
+                data: details.map(function (item) {
+                  return item.average_score === null || item.average_score === undefined
+                    ? 0
+                    : item.average_score;
+                }),
+                backgroundColor: brandColors,
+                borderColor: 'rgba(255, 255, 255, 0.85)',
+                borderWidth: 2
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 14, font: { weight: '600' } } },
+                tooltip: {
+                  callbacks: {
+                    label: function (ctx) {
+                      var value = ctx.parsed;
+                      return ctx.label + ': ' + value.toFixed(2) + ' / 10';
+                    }
+                  }
+                }
+              },
+              cutout: '62%'
+            }
+          });
+
+          setState(areasCard, 'ready');
+        }
+
+        function renderDimensionsChart(top5Frequency) {
+          if (!dimensionsCard) return;
+
+          var rows = Array.isArray(top5Frequency) ? top5Frequency.slice(0, 8) : [];
+          var hasData = rows.length > 0;
+
+          if (!hasData || typeof Chart === 'undefined') {
+            setState(dimensionsCard, 'empty');
+            return;
+          }
+
+          var canvas = document.getElementById('pdBiDimensionsChart');
+          if (!canvas) return;
+
+          new Chart(canvas, {
+            type: 'bar',
+            data: {
+              labels: rows.map(function (row) {
+                return row.dimension_label || row.dimension_key || row.dimension || '-';
+              }),
+              datasets: [{
+                label: 'Ocorrências no Top 5',
+                data: rows.map(function (row) { return row.count || 0; }),
+                backgroundColor: 'rgba(249, 115, 22, 0.7)',
+                borderColor: brandBorder,
+                borderWidth: 1,
+                borderRadius: 8
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              indexAxis: 'y',
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function (ctx) {
+                      var row = rows[ctx.dataIndex] || {};
+                      var pct = row.pct_label || '';
+                      return ctx.parsed.x + ' ocorrência(s)' + (pct ? ' · ' + pct : '');
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: { beginAtZero: true, ticks: { precision: 0 } }
+              }
+            }
+          });
+
+          setState(dimensionsCard, 'ready');
+        }
+
+        var clienteId = {{ cliente.id | string | tojson }};
+        if (!clienteId) return;
+
+        fetch('/admin/bi/cliente/' + encodeURIComponent(clienteId) + '/data', {
+          headers: { 'Accept': 'application/json' },
+          credentials: 'same-origin'
+        })
+          .then(function (response) {
+            if (!response.ok) throw new Error('bi_data_request_failed');
+            return response.json();
+          })
+          .then(function (data) {
+            if (!data || !data.has_data) {
+              setState(areasCard, 'empty');
+              setState(dimensionsCard, 'empty');
+              return;
+            }
+            renderAreasChart(data.radar_area);
+            renderDimensionsChart(data.top5_frequency);
+          })
+          .catch(function () {
+            setState(areasCard, 'empty');
+            setState(dimensionsCard, 'empty');
+          });
+      })();
+    </script>
+  </body>
+</html>

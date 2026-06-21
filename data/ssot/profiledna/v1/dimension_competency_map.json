@@ -1,0 +1,122 @@
+[
+  {
+    "letter": "A",
+    "name": "Atitude Analítica",
+    "area": "GERENCIAL",
+    "competency_rh": "Pensamento analítico / tomada de decisão baseada em dados"
+  },
+  {
+    "letter": "B",
+    "name": "Organização",
+    "area": "GERENCIAL",
+    "competency_rh": "Planejamento e gestão de prioridades"
+  },
+  {
+    "letter": "C",
+    "name": "Controle",
+    "area": "GERENCIAL",
+    "competency_rh": "Governança, acompanhamento e qualidade"
+  },
+  {
+    "letter": "D",
+    "name": "Liderança",
+    "area": "GERENCIAL",
+    "competency_rh": "Liderança e direcionamento"
+  },
+  {
+    "letter": "E",
+    "name": "Necessidade de se Comunicar",
+    "area": "INTER PESSOAL",
+    "competency_rh": "Comunicação e influência"
+  },
+  {
+    "letter": "F",
+    "name": "Decisão de Risco",
+    "area": "GERENCIAL",
+    "competency_rh": "Gestão de risco e autonomia decisória"
+  },
+  {
+    "letter": "G",
+    "name": "Ritmo de Execução",
+    "area": "PESSOAL",
+    "competency_rh": "Gestão de energia e ritmo de execução"
+  },
+  {
+    "letter": "H",
+    "name": "Esforço no Trabalho (Disciplina/Entrega)",
+    "area": "PESSOAL",
+    "competency_rh": "Disciplina e consistência"
+  },
+  {
+    "letter": "I",
+    "name": "Relação com Autoridade",
+    "area": "PESSOAL",
+    "competency_rh": "Maturidade organizacional / gestão de hierarquia"
+  },
+  {
+    "letter": "J",
+    "name": "Apego às Técnicas (Processos/Metodologia)",
+    "area": "GERENCIAL",
+    "competency_rh": "Orientação a processos / conformidade"
+  },
+  {
+    "letter": "K",
+    "name": "Obstinação (Persistência/Firmeza)",
+    "area": "PESSOAL",
+    "competency_rh": "Resiliência e persistência (com flexibilidade)"
+  },
+  {
+    "letter": "L",
+    "name": "Detalhismo",
+    "area": "GERENCIAL",
+    "competency_rh": "Qualidade e atenção a detalhes"
+  },
+  {
+    "letter": "M",
+    "name": "Confrontação Pessoal (Assertividade/Conflito)",
+    "area": "INTER PESSOAL",
+    "competency_rh": "Gestão de conflitos / assertividade"
+  },
+  {
+    "letter": "N",
+    "name": "Repressão Emocional (Autocontrole/Expressão)",
+    "area": "INTER PESSOAL",
+    "competency_rh": "Autogestão emocional / equilíbrio"
+  },
+  {
+    "letter": "O",
+    "name": "Gosto pela Inovação",
+    "area": "PESSOAL",
+    "competency_rh": "Adaptabilidade e inovação"
+  },
+  {
+    "letter": "P",
+    "name": "Envolvimento Afetivo (Empatia/Vínculo)",
+    "area": "INTER PESSOAL",
+    "competency_rh": "Empatia e relacionamento"
+  },
+  {
+    "letter": "Q",
+    "name": "Ambição (Resultados/Carreira)",
+    "area": "PESSOAL",
+    "competency_rh": "Orientação a resultados / carreira"
+  },
+  {
+    "letter": "R",
+    "name": "Autoexposição (Presença/Posicionamento)",
+    "area": "PESSOAL",
+    "competency_rh": "Presença e posicionamento"
+  },
+  {
+    "letter": "S",
+    "name": "Sociabilidade",
+    "area": "INTER PESSOAL",
+    "competency_rh": "Comunicação e influência"
+  },
+  {
+    "letter": "T",
+    "name": "Inquietação Física (Energia/Movimento)",
+    "area": "PESSOAL",
+    "competency_rh": "Gestão de energia e ritmo de execução"
+  }
+]

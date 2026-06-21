@@ -1,0 +1,182 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ "main" ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  profiledna-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare CI env + folders
+        run: |
+          set -euo pipefail
+
+          mkdir -p runtime volumes/postgres volumes/reports
+
+          cat > runtime/.env <<'ENV'
+          # CI-only settings (no secrets)
+          POSTGRES_USER=profiledna
+          POSTGRES_PASSWORD=profiledna
+          POSTGRES_DB=profiledna
+
+          # App settings
+          DATABASE_URL=postgresql+asyncpg://profiledna:profiledna@db:5432/profiledna
+          SECRET_KEY=ci_secret_key_change_me
+          ENVIRONMENT=ci
+          DEBUG=false
+          AI_ENABLED=false
+          ADMIN_USERNAME=ci_admin
+          ADMIN_PASSWORD=ci_admin_password
+
+          # Optional (keep defaults in app if unused)
+          OPENAI_API_KEY=
+          ENV
+
+          # Compat: alguns compose/overrides referenciam env_file dentro de compose/
+          mkdir -p compose/runtime
+          cp runtime/.env compose/runtime/.env
+          echo "OK: wrote runtime/.env and compose/runtime/.env"
+          mkdir -p runtime compose/runtime
+          echo "OK: wrote runtime/.env and compose/runtime/.env"
+
+          echo "OK: wrote runtime/.env + ensured volumes dirs"
+
+      - name: Build & Up (docker compose)
+        run: |
+          set -euo pipefail
+          docker compose --project-directory compose -f compose/docker-compose.ci.yml up -d --build api_v2 db
+
+      - name: Wait for api_v2 healthy (with healthcheck debug)
+        run: |
+          set -euo pipefail
+
+          C="compose-api_v2-1"
+          echo "== docker ps =="
+          docker ps -a || true
+
+          for i in $(seq 1 60); do
+            st="$(docker inspect -f '{{.State.Health.Status}}' "$C" 2>/dev/null || true)"
+            echo "try=$i api_v2_health=$st"
+
+            if [ "$st" = "healthy" ]; then
+              echo "OK: api_v2 healthy"
+              exit 0
+            fi
+
+            if [ "$st" = "unhealthy" ]; then
+              echo "== HEALTHCHECK DETAILS (docker inspect) =="
+              docker inspect -f '{{json .State.Health}}' "$C" || true
+              echo
+              echo "== LOGS api_v2 (tail 200) =="
+              docker logs --tail 200 "$C" || true
+              echo
+              echo "ERRO: api_v2 ficou unhealthy (healthcheck failing)"
+              exit 1
+            fi
+
+            # starting/empty -> aguarda um pouco
+            sleep 2
+          done
+
+          echo "ERRO: api_v2 não ficou healthy (timeout)"
+          echo "== HEALTHCHECK DETAILS (docker inspect) =="
+          docker inspect -f '{{json .State.Health}}' "$C" || true
+          echo
+          echo "== LOGS api_v2 (tail 200) =="
+          docker logs --tail 200 "$C" || true
+          exit 1
+
+      - name: Run DB migrations (alembic upgrade head) + DB proof
+        run: |
+          set -euo pipefail
+          set -x
+
+          API="compose-api_v2-1"
+          DB="compose-db-1"
+
+          echo "== (1) alembic upgrade head (inside $API) =="
+          docker exec "$API" bash -lc "cd /app && alembic upgrade head"
+
+          echo
+          echo "== (2) PROVA: tabela clientes existe? (inside $DB) =="
+          docker exec "$DB" psql -U profiledna -d profiledna -c "SELECT to_regclass('public.clientes') AS clientes_table;"
+
+          echo
+          echo "== (3) PROVA: listar tabelas (inside $DB) =="
+          docker exec "$DB" psql -U profiledna -d profiledna -c '\dt'
+
+          echo "OK: migrations + DB proof done"
+
+
+      - name: Run domain defaults seed (admin/cliente/setor/rodada)
+        run: |
+          set -euo pipefail
+          set -x
+          API="compose-api_v2-1"
+          echo "== Seeding domain defaults inside $API =="
+          docker exec "$API" bash -lc "cd /app && python scripts/seed_domain_defaults.py"
+          echo "OK: domain defaults seeded"
+
+      - name: Gate SSOT no-legacy (CI mode)
+        env:
+          DOMAIN: http://127.0.0.1:18081
+          RESOLVE_OPT: ""
+        run: |
+          set -euo pipefail
+          bash scripts/gate_ssot_no_legacy.sh
+
+      - name: E2E full smoke (CI mode) (debug)
+        env:
+          DOMAIN: http://127.0.0.1:18081
+          RESOLVE_OPT: ""
+        run: |
+          set -euo pipefail
+          set -x
+
+          echo "== preflight curl =="
+          curl -fsS http://127.0.0.1:18081/health || true
+
+          echo "== run e2e with bash -x =="
+          if ! bash -x tests/e2e/test_e2e_full_smoke.sh; then
+            echo
+            echo "== E2E FAILED: docker ps =="
+            docker ps -a || true
+
+            echo
+            echo "== E2E FAILED: api logs (tail 300) =="
+            docker logs --tail 300 compose-api_v2-1 || true
+
+            echo
+            echo "== E2E FAILED: db logs (tail 200) =="
+            docker logs --tail 200 compose-db-1 || true
+
+            echo
+            echo "== E2E FAILED: try calling /health and /openapi.json =="
+            curl -fsS http://127.0.0.1:18081/health || true
+            curl -fsS http://127.0.0.1:18081/openapi.json | head -c 1000 || true
+            echo
+
+            exit 1
+          fi
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          docker ps -a || true
+          docker logs --tail 200 compose-api_v2-1 || true
+          docker logs --tail 200 compose-db-1 || true
+
+      - name: Teardown
+        if: always()
+        run: |
+          docker compose --project-directory compose -f compose/docker-compose.ci.yml down -v || true

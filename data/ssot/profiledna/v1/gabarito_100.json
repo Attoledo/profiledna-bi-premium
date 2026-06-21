@@ -1,0 +1,502 @@
+[
+  {
+    "number": 1,
+    "letter_if_A": "L",
+    "letter_if_B": "T"
+  },
+  {
+    "number": 2,
+    "letter_if_A": "J",
+    "letter_if_B": "S"
+  },
+  {
+    "number": 3,
+    "letter_if_A": "D",
+    "letter_if_B": "E"
+  },
+  {
+    "number": 4,
+    "letter_if_A": "I",
+    "letter_if_B": "R"
+  },
+  {
+    "number": 5,
+    "letter_if_A": "F",
+    "letter_if_B": "A"
+  },
+  {
+    "number": 6,
+    "letter_if_A": "M",
+    "letter_if_B": "C"
+  },
+  {
+    "number": 7,
+    "letter_if_A": "G",
+    "letter_if_B": "L"
+  },
+  {
+    "number": 8,
+    "letter_if_A": "P",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 9,
+    "letter_if_A": "R",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 10,
+    "letter_if_A": "T",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 11,
+    "letter_if_A": "E",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 12,
+    "letter_if_A": "G",
+    "letter_if_B": "B"
+  },
+  {
+    "number": 13,
+    "letter_if_A": "O",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 14,
+    "letter_if_A": "F",
+    "letter_if_B": "L"
+  },
+  {
+    "number": 15,
+    "letter_if_A": "M",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 16,
+    "letter_if_A": "D",
+    "letter_if_B": "A"
+  },
+  {
+    "number": 17,
+    "letter_if_A": "I",
+    "letter_if_B": "C"
+  },
+  {
+    "number": 18,
+    "letter_if_A": "H",
+    "letter_if_B": "E"
+  },
+  {
+    "number": 19,
+    "letter_if_A": "J",
+    "letter_if_B": "R"
+  },
+  {
+    "number": 20,
+    "letter_if_A": "R",
+    "letter_if_B": "E"
+  },
+  {
+    "number": 21,
+    "letter_if_A": "H",
+    "letter_if_B": "G"
+  },
+  {
+    "number": 22,
+    "letter_if_A": "I",
+    "letter_if_B": "S"
+  },
+  {
+    "number": 23,
+    "letter_if_A": "D",
+    "letter_if_B": "T"
+  },
+  {
+    "number": 24,
+    "letter_if_A": "M",
+    "letter_if_B": "R"
+  },
+  {
+    "number": 25,
+    "letter_if_A": "F",
+    "letter_if_B": "E"
+  },
+  {
+    "number": 26,
+    "letter_if_A": "O",
+    "letter_if_B": "C"
+  },
+  {
+    "number": 27,
+    "letter_if_A": "G",
+    "letter_if_B": "A"
+  },
+  {
+    "number": 28,
+    "letter_if_A": "P",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 29,
+    "letter_if_A": "T",
+    "letter_if_B": "A"
+  },
+  {
+    "number": 30,
+    "letter_if_A": "S",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 31,
+    "letter_if_A": "E",
+    "letter_if_B": "B"
+  },
+  {
+    "number": 32,
+    "letter_if_A": "G",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 33,
+    "letter_if_A": "H",
+    "letter_if_B": "D"
+  },
+  {
+    "number": 34,
+    "letter_if_A": "A",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 35,
+    "letter_if_A": "J",
+    "letter_if_B": "C"
+  },
+  {
+    "number": 36,
+    "letter_if_A": "I",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 37,
+    "letter_if_A": "A",
+    "letter_if_B": "B"
+  },
+  {
+    "number": 38,
+    "letter_if_A": "F",
+    "letter_if_B": "T"
+  },
+  {
+    "number": 39,
+    "letter_if_A": "P",
+    "letter_if_B": "S"
+  },
+  {
+    "number": 40,
+    "letter_if_A": "T",
+    "letter_if_B": "A"
+  },
+  {
+    "number": 41,
+    "letter_if_A": "E",
+    "letter_if_B": "A"
+  },
+  {
+    "number": 42,
+    "letter_if_A": "M",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 43,
+    "letter_if_A": "L",
+    "letter_if_B": "B"
+  },
+  {
+    "number": 44,
+    "letter_if_A": "E",
+    "letter_if_B": "L"
+  },
+  {
+    "number": 45,
+    "letter_if_A": "L",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 46,
+    "letter_if_A": "H",
+    "letter_if_B": "F"
+  },
+  {
+    "number": 47,
+    "letter_if_A": "D",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 48,
+    "letter_if_A": "D",
+    "letter_if_B": "G"
+  },
+  {
+    "number": 49,
+    "letter_if_A": "J",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 50,
+    "letter_if_A": "G",
+    "letter_if_B": "E"
+  },
+  {
+    "number": 51,
+    "letter_if_A": "I",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 52,
+    "letter_if_A": "A",
+    "letter_if_B": "L"
+  },
+  {
+    "number": 53,
+    "letter_if_A": "F",
+    "letter_if_B": "G"
+  },
+  {
+    "number": 54,
+    "letter_if_A": "T",
+    "letter_if_B": "E"
+  },
+  {
+    "number": 55,
+    "letter_if_A": "O",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 56,
+    "letter_if_A": "H",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 57,
+    "letter_if_A": "I",
+    "letter_if_B": "J"
+  },
+  {
+    "number": 58,
+    "letter_if_A": "B",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 59,
+    "letter_if_A": "O",
+    "letter_if_B": "S"
+  },
+  {
+    "number": 60,
+    "letter_if_A": "S",
+    "letter_if_B": "R"
+  },
+  {
+    "number": 61,
+    "letter_if_A": "Q",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 62,
+    "letter_if_A": "N",
+    "letter_if_B": "M"
+  },
+  {
+    "number": 63,
+    "letter_if_A": "D",
+    "letter_if_B": "L"
+  },
+  {
+    "number": 64,
+    "letter_if_A": "J",
+    "letter_if_B": "M"
+  },
+  {
+    "number": 65,
+    "letter_if_A": "I",
+    "letter_if_B": "M"
+  },
+  {
+    "number": 66,
+    "letter_if_A": "L",
+    "letter_if_B": "T"
+  },
+  {
+    "number": 67,
+    "letter_if_A": "H",
+    "letter_if_B": "D"
+  },
+  {
+    "number": 68,
+    "letter_if_A": "O",
+    "letter_if_B": "R"
+  },
+  {
+    "number": 69,
+    "letter_if_A": "G",
+    "letter_if_B": "H"
+  },
+  {
+    "number": 70,
+    "letter_if_A": "S",
+    "letter_if_B": "P"
+  },
+  {
+    "number": 71,
+    "letter_if_A": "C",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 72,
+    "letter_if_A": "R",
+    "letter_if_B": "C"
+  },
+  {
+    "number": 73,
+    "letter_if_A": "J",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 74,
+    "letter_if_A": "B",
+    "letter_if_B": "O"
+  },
+  {
+    "number": 75,
+    "letter_if_A": "J",
+    "letter_if_B": "I"
+  },
+  {
+    "number": 76,
+    "letter_if_A": "D",
+    "letter_if_B": "B"
+  },
+  {
+    "number": 77,
+    "letter_if_A": "M",
+    "letter_if_B": "S"
+  },
+  {
+    "number": 78,
+    "letter_if_A": "C",
+    "letter_if_B": "F"
+  },
+  {
+    "number": 79,
+    "letter_if_A": "P",
+    "letter_if_B": "R"
+  },
+  {
+    "number": 80,
+    "letter_if_A": "C",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 81,
+    "letter_if_A": "T",
+    "letter_if_B": "B"
+  },
+  {
+    "number": 82,
+    "letter_if_A": "F",
+    "letter_if_B": "B"
+  },
+  {
+    "number": 83,
+    "letter_if_A": "T",
+    "letter_if_B": "F"
+  },
+  {
+    "number": 84,
+    "letter_if_A": "R",
+    "letter_if_B": "K"
+  },
+  {
+    "number": 85,
+    "letter_if_A": "M",
+    "letter_if_B": "O"
+  },
+  {
+    "number": 86,
+    "letter_if_A": "J",
+    "letter_if_B": "P"
+  },
+  {
+    "number": 87,
+    "letter_if_A": "J",
+    "letter_if_B": "O"
+  },
+  {
+    "number": 88,
+    "letter_if_A": "M",
+    "letter_if_B": "P"
+  },
+  {
+    "number": 89,
+    "letter_if_A": "D",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 90,
+    "letter_if_A": "B",
+    "letter_if_B": "G"
+  },
+  {
+    "number": 91,
+    "letter_if_A": "S",
+    "letter_if_B": "C"
+  },
+  {
+    "number": 92,
+    "letter_if_A": "S",
+    "letter_if_B": "Q"
+  },
+  {
+    "number": 93,
+    "letter_if_A": "O",
+    "letter_if_B": "P"
+  },
+  {
+    "number": 94,
+    "letter_if_A": "F",
+    "letter_if_B": "N"
+  },
+  {
+    "number": 95,
+    "letter_if_A": "I",
+    "letter_if_B": "P"
+  },
+  {
+    "number": 96,
+    "letter_if_A": "K",
+    "letter_if_B": "H"
+  },
+  {
+    "number": 97,
+    "letter_if_A": "I",
+    "letter_if_B": "O"
+  },
+  {
+    "number": 98,
+    "letter_if_A": "P",
+    "letter_if_B": "C"
+  },
+  {
+    "number": 99,
+    "letter_if_A": "H",
+    "letter_if_B": "L"
+  },
+  {
+    "number": 100,
+    "letter_if_A": "H",
+    "letter_if_B": "A"
+  }
+]

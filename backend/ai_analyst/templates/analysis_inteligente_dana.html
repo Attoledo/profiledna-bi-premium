@@ -1,0 +1,1062 @@
+{% extends "admin/base_admin.html" %}
+
+{% set context_payload = context_payload if context_payload is defined and context_payload else {} %}
+{% set query = query if query is defined and query else {} %}
+{% set messages = messages if messages is defined and messages else [] %}
+
+{% set scope = context_payload.get("scope", {}) if context_payload is mapping and context_payload.get("scope") is mapping else {} %}
+{% set search = context_payload.get("search", {}) if context_payload is mapping and context_payload.get("search") is mapping else {} %}
+{% set cliente = context_payload.get("cliente", {}) if context_payload is mapping and context_payload.get("cliente") is mapping else {} %}
+{% set attempt = context_payload.get("attempt", {}) if context_payload is mapping and context_payload.get("attempt") is mapping else {} %}
+{% set bi = context_payload.get("bi", {}) if context_payload is mapping and context_payload.get("bi") is mapping else {} %}
+{% set meta = context_payload.get("meta", {}) if context_payload is mapping and context_payload.get("meta") is mapping else {} %}
+{% set docsia = context_payload.get("docsia", {}) if context_payload is mapping and context_payload.get("docsia") is mapping else {} %}
+
+{% set cliente_data = cliente.get("cliente", {}) if cliente is mapping and cliente.get("cliente") is mapping else {} %}
+{% set attempt_participant = attempt.get("participant", {}) if attempt is mapping and attempt.get("participant") is mapping else {} %}
+{% set attempt_data = attempt.get("attempt", {}) if attempt is mapping and attempt.get("attempt") is mapping else {} %}
+{% set computed_result_ctx = attempt.get("computed_result", {}) if attempt is mapping and attempt.get("computed_result") is mapping else {} %}
+{% set report_snapshot_ctx = attempt.get("report_snapshot", {}) if attempt is mapping and attempt.get("report_snapshot") is mapping else {} %}
+
+{% set cliente_display_name = scope.get("cliente_display_name") or cliente.get("display_name") or cliente_data.get("nome") or cliente_data.get("razao_social") or "-" %}
+{% set participante_display_name = scope.get("participante_display_name") or attempt.get("display_name") or attempt_participant.get("display_name") or "-" %}
+{% set participant_options = search.get("participant_options", []) if search is mapping else [] %}
+{% set rodadas = cliente.get("rodadas", []) if cliente is mapping else [] %}
+{% set setores = cliente.get("setores", []) if cliente is mapping else [] %}
+{% set selected_attempt_id = scope.get("attempt_id") or query.get("attempt_id") or "" %}
+{% set selected_cliente_id = scope.get("cliente_id") or query.get("cliente_id") or "" %}
+{% set selected_rodada_id = query.get("rodada_id", "") %}
+{% set selected_setor_id = query.get("setor_id", "") %}
+{% set selected_cargo = query.get("cargo", "") %}
+{% set selected_tipo_aplicacao = query.get("tipo_aplicacao", "") %}
+{% set selected_status = query.get("status", "") %}
+{% set selected_term = query.get("term", "") %}
+{% set selected_date_from = query.get("date_from", "") %}
+{% set selected_date_to = query.get("date_to", "") %}
+{% set selected_only_completed = true if query.get("only_completed") else false %}
+
+{% set has_attempt = true if attempt.get("has_attempt") else false %}
+{% set has_cliente = true if cliente.get("has_cliente") else false %}
+{% set has_bi_context = true if bi.get("has_bi_context") else false %}
+{% set cliente_fixed = true if meta.get("cliente_fixed") else false %}
+{% set docsia_enabled = true if docsia.get("enabled") else false %}
+{% set docsia_matches_returned = docsia.get("matches_returned", 0) %}
+{% set search_participantes = meta.get("search_participantes", 0) %}
+{% set prompt_suggestions = [
+  "Me ajude a entender melhor esse perfil",
+  "Como transformar isso em um PDI?",
+  "Como devo acompanhar essa pessoa?",
+  "O que observar nas próximas semanas?"
+] %}
+
+{% set recent_threads = [] %}
+{% if messages %}
+  {% for item in messages[:8] %}
+    {% set item_attempt_id = item.attempt_id if item is defined and item.attempt_id is defined and item.attempt_id else "" %}
+    {% set item_title = item.question_sanitized if item is defined and item.question_sanitized is defined and item.question_sanitized else "Interação DANA" %}
+    {% set item_mode = item.query_mode if item is defined and item.query_mode is defined and item.query_mode else "cliente" %}
+    {% set thread_href = "/admin/ai/analysis-inteligente?cliente_id=" ~ (selected_cliente_id or "") %}
+    {% if item_attempt_id %}
+      {% set thread_href = thread_href ~ "&attempt_id=" ~ item_attempt_id %}
+    {% endif %}
+    {% if selected_rodada_id %}
+      {% set thread_href = thread_href ~ "&rodada_id=" ~ selected_rodada_id %}
+    {% endif %}
+    {% if selected_setor_id %}
+      {% set thread_href = thread_href ~ "&setor_id=" ~ selected_setor_id %}
+    {% endif %}
+    {% if selected_cargo %}
+      {% set thread_href = thread_href ~ "&cargo=" ~ selected_cargo %}
+    {% endif %}
+    {% if selected_tipo_aplicacao %}
+      {% set thread_href = thread_href ~ "&tipo_aplicacao=" ~ selected_tipo_aplicacao %}
+    {% endif %}
+    {% if selected_status %}
+      {% set thread_href = thread_href ~ "&status=" ~ selected_status %}
+    {% endif %}
+    {% if selected_only_completed %}
+      {% set thread_href = thread_href ~ "&only_completed=true" %}
+    {% endif %}
+    {% set _ = recent_threads.append({
+      "title": item_title,
+      "href": thread_href,
+      "is_active": (selected_attempt_id and item_attempt_id and selected_attempt_id == item_attempt_id),
+      "mode": item_mode,
+      "created_at": item.created_at if item is defined and item.created_at is defined else None
+    }) %}
+  {% endfor %}
+{% endif %}
+
+{% set page_title = "DANA — Assistente Analítica" %}
+{% set page_subtitle = "Análise inteligente com contexto oficial do cliente, participante, BI consolidado e histórico auditável de interação." %}
+{% set active_nav = "dana" %}
+{% set primary_action_href = "" %}
+{% set primary_action_label = "" %}
+{% set secondary_action_href = "/admin/dashboard" %}
+{% set secondary_action_label = "Dashboard" %}
+
+{% block title %}ProfileDNA — DANA{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <style>
+    .pd-dana-page {
+      display: grid;
+      gap: 20px;
+    }
+
+    .pd-dana-hero {
+      display: grid;
+      gap: 16px;
+      padding: 6px 0 2px;
+    }
+
+    .pd-dana-hero__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .pd-dana-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+
+    .pd-dana-title {
+      margin: 0;
+      color: #111827;
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+    }
+
+    .pd-dana-subtitle {
+      margin: 12px 0 0;
+      color: #6b7280;
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 960px;
+    }
+
+    .pd-dana-hero__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pd-dana-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .pd-dana-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+    }
+
+    .pd-dana-btn--primary {
+      border-color: transparent;
+      color: #ffffff;
+      background: linear-gradient(90deg, #f39c4a 0%, #f97316 48%, #ef4444 100%);
+      box-shadow: 0 18px 34px rgba(249, 115, 22, 0.22);
+    }
+
+    .pd-dana-btn--dark {
+      border-color: transparent;
+      color: #ffffff;
+      background: #111827;
+    }
+
+    .pd-dana-hero-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pd-dana-meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      color: #374151;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .pd-dana-context-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .pd-dana-context-card,
+    .pd-dana-sidebar,
+    .pd-dana-main,
+    .pd-dana-section-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+      min-width: 0;
+    }
+
+    .pd-dana-context-card__label {
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .pd-dana-context-card__value {
+      color: #111827;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-dana-context-card__meta {
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-dana-shell {
+      display: grid;
+      grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pd-dana-sidebar {
+      display: grid;
+      gap: 16px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .pd-dana-sidebar__head {
+      display: grid;
+      gap: 12px;
+    }
+
+    .pd-dana-sidebar__section-title,
+    .pd-dana-main__section-title {
+      margin: 0;
+      color: #111827;
+      font-size: 18px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .pd-dana-sidebar__section-text,
+    .pd-dana-main__section-text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-dana-new-chat {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 46px;
+      width: 100%;
+      border-radius: 16px;
+      border: none;
+      color: #ffffff;
+      text-decoration: none;
+      background: linear-gradient(90deg, #f39c4a 0%, #f97316 48%, #ef4444 100%);
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: 0 18px 34px rgba(249, 115, 22, 0.22);
+    }
+
+    .pd-dana-sidebar-block {
+      display: grid;
+      gap: 12px;
+    }
+
+    .pd-dana-sidebar-block__eyebrow {
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      color: #9ca3af;
+    }
+
+    .pd-dana-thread-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .pd-dana-thread-item {
+      display: block;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #111827;
+      text-decoration: none;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .pd-dana-thread-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+      border-color: #fdba74;
+    }
+
+    .pd-dana-thread-item.is-active {
+      border-color: #fdba74;
+      background: #fff7ed;
+      box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.08);
+    }
+
+    .pd-dana-thread-item__title {
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 800;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .pd-dana-thread-item__meta {
+      margin-top: 6px;
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .pd-dana-sidebar-note {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #fee2e2;
+      background: linear-gradient(135deg, #fff7ed 0%, #fff1f2 100%);
+      color: #7c2d12;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-dana-main {
+      display: grid;
+      gap: 18px;
+    }
+
+    .pd-dana-main-top {
+      display: grid;
+      gap: 14px;
+    }
+
+    .pd-dana-conversation-card {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid #dbe1ea;
+      background: linear-gradient(180deg, #fff7ed 0%, #ffffff 100%);
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+    }
+
+    .pd-dana-conversation-card__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .pd-dana-conversation-card__title {
+      margin: 0;
+      color: #111827;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .pd-dana-online-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid #d1fae5;
+      background: #ecfdf5;
+      color: #065f46;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .pd-dana-welcome {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border-radius: 20px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+    }
+
+    .pd-dana-welcome__title {
+      margin: 0;
+      color: #111827;
+      font-size: 15px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+
+    .pd-dana-welcome__text {
+      margin: 0;
+      color: #374151;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .pd-dana-quick-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pd-dana-quick-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #374151;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .pd-dana-board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pd-dana-left-stack,
+    .pd-dana-right-stack {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .pd-dana-section-card__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .pd-dana-section-card__title {
+      margin: 0;
+      color: #111827;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .pd-dana-section-card__text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .pd-dana-section-card__chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pd-dana-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pd-dana-field {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .pd-dana-field--full {
+      grid-column: 1 / -1;
+    }
+
+    .pd-dana-field label,
+    .pd-dana-field span {
+      color: #111827;
+      font-size: 13px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .pd-dana-input,
+    .pd-dana-select,
+    .pd-dana-textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.4;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .pd-dana-textarea {
+      min-height: 110px;
+      padding: 12px 14px;
+      resize: vertical;
+    }
+
+    .pd-dana-input:focus,
+    .pd-dana-select:focus,
+    .pd-dana-textarea:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+    }
+
+    .pd-dana-input:disabled,
+    .pd-dana-select:disabled,
+    .pd-dana-textarea:disabled {
+      background: #f3f4f6;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .pd-dana-field small {
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .pd-dana-checkbox-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-height: 46px;
+    }
+
+    .pd-dana-actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .pd-dana-status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pd-dana-status-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #f9fafb;
+      padding: 14px 16px;
+      min-width: 0;
+    }
+
+    .pd-dana-status-card__label {
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .pd-dana-status-card__value {
+      color: #111827;
+      font-size: 18px;
+      line-height: 1.3;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-dana-status-card__text {
+      margin-top: 6px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .pd-dana-chat-slot {
+      display: grid;
+      gap: 14px;
+    }
+
+    .pd-dana-empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px dashed #d1d5db;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1320px) {
+      .pd-dana-context-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pd-dana-board {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .pd-dana-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-dana-sidebar {
+        position: static;
+      }
+
+      .pd-dana-status-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .pd-dana-context-grid,
+      .pd-dana-filter-grid,
+      .pd-dana-status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-dana-hero__actions,
+      .pd-dana-actions-row {
+        width: 100%;
+      }
+
+      .pd-dana-btn {
+        width: 100%;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block admin_page_header %}
+  <div class="pd-dana-hero">
+    <div class="pd-dana-hero__top">
+      <div>
+        <div class="pd-dana-kicker">DANA · Assistente Analítica</div>
+        <h1 class="pd-dana-title">Análise Inteligente Dana</h1>
+        <p class="pd-dana-subtitle">
+          Ambiente principal de interação entre o gestor/admin e a DANA para leitura de resultados individuais oficiais,
+          BI do cliente e contexto analítico reproduzível, sempre dentro do cliente selecionado.
+        </p>
+
+        <div class="pd-dana-hero-meta" style="margin-top:14px;">
+          <span class="pd-dana-meta-chip">Admin: {{ admin.username if admin is defined and admin.username is defined else "-" }}</span>
+          <span class="pd-dana-meta-chip">Cliente: {{ cliente_display_name }}</span>
+          <span class="pd-dana-meta-chip">Participante: {{ participante_display_name if participante_display_name != "-" else "não selecionado" }}</span>
+        </div>
+      </div>
+
+      <div class="pd-dana-hero__actions">
+        <a href="/admin/dashboard" class="pd-dana-btn">Dashboard</a>
+        <a href="/admin/bi/overview{% if selected_cliente_id %}?cliente_id={{ selected_cliente_id }}{% endif %}" class="pd-dana-btn">BI — Visão Geral</a>
+        <a href="/admin/bi/comparativo{% if selected_cliente_id %}?left_cliente_id={{ selected_cliente_id }}&right_cliente_id={{ selected_cliente_id }}{% endif %}" class="pd-dana-btn">BI — Comparativo</a>
+        <a href="/admin/participants{% if selected_cliente_id %}?cliente_id={{ selected_cliente_id }}{% if selected_rodada_id %}&rodada_id={{ selected_rodada_id }}{% endif %}{% endif %}" class="pd-dana-btn">Participantes</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block admin_context_bar %}{% endblock %}
+
+{% block admin_content %}
+  <div class="pd-dana-page">
+    <div class="pd-dana-shell">
+      <aside class="pd-dana-sidebar">
+        <div class="pd-dana-sidebar__head">
+          <a
+            href="/admin/ai/analysis-inteligente?cliente_id={{ selected_cliente_id }}"
+            class="pd-dana-new-chat"
+          >
+            ＋ Nova conversa
+          </a>
+
+          <div class="pd-dana-sidebar-note">
+            A DANA sempre interpreta o cliente em contexto e, quando selecionado, o participante atual.
+            O histórico abaixo serve como continuidade de análise e rastreabilidade gerencial.
+          </div>
+        </div>
+
+        <section class="pd-dana-sidebar-block">
+          <div class="pd-dana-sidebar-block__eyebrow">Recentes</div>
+
+          {% if recent_threads %}
+            <div class="pd-dana-thread-list">
+              {% for thread in recent_threads %}
+                <a href="{{ thread.href }}" class="pd-dana-thread-item{% if thread.is_active %} is-active{% endif %}">
+                  <div class="pd-dana-thread-item__title">{{ thread.title }}</div>
+                  <div class="pd-dana-thread-item__meta">
+                    {% if thread.mode == "participante" %}
+                      Perfil individual
+                    {% else %}
+                      Contexto de cliente
+                    {% endif %}
+                    {% if thread.created_at %}
+                      · {{ thread.created_at }}
+                    {% endif %}
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="pd-dana-empty">
+              Ainda não há conversas recentes registradas para este escopo.
+            </div>
+          {% endif %}
+        </section>
+
+        <section class="pd-dana-sidebar-block">
+          <div class="pd-dana-sidebar-block__eyebrow">Atalhos</div>
+          <div class="pd-dana-thread-list">
+            <a href="/admin/dashboard" class="pd-dana-thread-item">
+              <div class="pd-dana-thread-item__title">Voltar ao Dashboard</div>
+              <div class="pd-dana-thread-item__meta">Navegação principal do admin</div>
+            </a>
+
+            <a href="/admin/bi/overview{% if selected_cliente_id %}?cliente_id={{ selected_cliente_id }}{% endif %}" class="pd-dana-thread-item">
+              <div class="pd-dana-thread-item__title">Revisar BI do cliente</div>
+              <div class="pd-dana-thread-item__meta">Leitura consolidada do recorte atual</div>
+            </a>
+
+            <a href="/admin/participants{% if selected_cliente_id %}?cliente_id={{ selected_cliente_id }}{% if selected_rodada_id %}&rodada_id={{ selected_rodada_id }}{% endif %}{% endif %}" class="pd-dana-thread-item">
+              <div class="pd-dana-thread-item__title">Abrir participantes</div>
+              <div class="pd-dana-thread-item__meta">Lista administrativa do cliente</div>
+            </a>
+          </div>
+        </section>
+      </aside>
+
+      <section class="pd-dana-main">
+        <div class="pd-dana-board">
+          <div class="pd-dana-left-stack">
+            <section class="pd-dana-section-card">
+              <div class="pd-dana-section-card__head">
+                <div>
+                  <h2 class="pd-dana-section-card__title">Escopo e filtros da DANA</h2>
+                  <p class="pd-dana-section-card__text">
+                    Ajuste o contexto analítico mantendo o cliente em foco e refinando participante, rodada, setor e recorte complementar.
+                  </p>
+                </div>
+                <div class="pd-dana-section-card__chip">Contexto</div>
+              </div>
+
+              <form method="get" action="/admin/ai/analysis-inteligente">
+                <input type="hidden" name="cliente_id" value="{{ selected_cliente_id }}" />
+
+                <div class="pd-dana-filter-grid">
+                  <div class="pd-dana-field pd-dana-field--full">
+                    <label for="cliente_id_locked">Cliente</label>
+                    <input
+                      id="cliente_id_locked"
+                      class="pd-dana-input"
+                      type="text"
+                      value="{{ cliente_display_name }}"
+                      disabled
+                    />
+                    <small>Cliente principal vindo do contexto administrativo.</small>
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="attempt_id">Participante</label>
+                    <select id="attempt_id" name="attempt_id" class="pd-dana-select">
+                      <option value="">Selecione</option>
+                      {% for option in participant_options %}
+                        <option value="{{ option.get('attempt_id', '') }}" {% if query.get("attempt_id") == option.get("attempt_id") %}selected{% endif %}>
+                          {{ option.get("participant_display_name") or "Participante" }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                    <small>Lista restrita aos participantes do cliente em contexto.</small>
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="rodada_id">Rodada</label>
+                    <select id="rodada_id" name="rodada_id" class="pd-dana-select">
+                      <option value="">Selecione</option>
+                      {% for option in rodadas %}
+                        <option value="{{ option.get('id', '') }}" {% if query.get("rodada_id") == option.get("id") %}selected{% endif %}>
+                          {{ option.get("nome") or "-" }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="setor_id">Setor</label>
+                    <select id="setor_id" name="setor_id" class="pd-dana-select">
+                      <option value="">Selecione</option>
+                      {% for option in setores %}
+                        <option value="{{ option.get('id', '') }}" {% if query.get("setor_id") == option.get("id") %}selected{% endif %}>
+                          {{ option.get("nome") or "-" }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="cargo">Cargo</label>
+                    <input
+                      id="cargo"
+                      name="cargo"
+                      class="pd-dana-input"
+                      type="text"
+                      value="{{ selected_cargo }}"
+                      placeholder="Filtrar por cargo"
+                    />
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="tipo_aplicacao">Tipo de aplicação</label>
+                    <input
+                      id="tipo_aplicacao"
+                      name="tipo_aplicacao"
+                      class="pd-dana-input"
+                      type="text"
+                      value="{{ selected_tipo_aplicacao }}"
+                      placeholder="Ex.: empresa"
+                    />
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="status">Status</label>
+                    <input
+                      id="status"
+                      name="status"
+                      class="pd-dana-input"
+                      type="text"
+                      value="{{ selected_status }}"
+                      placeholder="Ex.: SUBMITTED"
+                    />
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="term">Busca complementar</label>
+                    <input
+                      id="term"
+                      name="term"
+                      class="pd-dana-input"
+                      type="text"
+                      value="{{ selected_term }}"
+                      placeholder="Filtrar participante, e-mail ou cargo"
+                    />
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="date_from">Data inicial</label>
+                    <input
+                      id="date_from"
+                      name="date_from"
+                      class="pd-dana-input"
+                      type="date"
+                      value="{{ selected_date_from }}"
+                    />
+                  </div>
+
+                  <div class="pd-dana-field">
+                    <label for="date_to">Data final</label>
+                    <input
+                      id="date_to"
+                      name="date_to"
+                      class="pd-dana-input"
+                      type="date"
+                      value="{{ selected_date_to }}"
+                    />
+                  </div>
+
+                  <div class="pd-dana-field pd-dana-field--full">
+                    <div class="pd-dana-checkbox-row">
+                      <input
+                        id="only_completed"
+                        name="only_completed"
+                        type="checkbox"
+                        value="true"
+                        {% if selected_only_completed %}checked{% endif %}
+                      />
+                      <label for="only_completed" style="margin:0;">Somente concluídos</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pd-dana-actions-row">
+                  <button type="submit" class="pd-dana-btn pd-dana-btn--primary">Atualizar contexto da DANA</button>
+                  <a href="/admin/ai/analysis-inteligente?cliente_id={{ selected_cliente_id }}" class="pd-dana-btn">Limpar filtros complementares</a>
+                </div>
+              </form>
+            </section>
+
+            {% set quick_filters_payload = {
+              "cliente_id": selected_cliente_id,
+              "rodada_id": selected_rodada_id,
+              "setor_id": selected_setor_id,
+              "cargo": selected_cargo,
+              "tipo_aplicacao": selected_tipo_aplicacao,
+              "status": selected_status,
+              "term": selected_term,
+              "date_from": selected_date_from,
+              "date_to": selected_date_to,
+              "only_completed": selected_only_completed
+            } %}
+
+            {% set quick_selected_participant_ids = [selected_attempt_id] if selected_attempt_id else [] %}
+            {% set quick_comparative_enabled = true if has_bi_context else false %}
+
+            <div class="pd-dana-conversation-card">
+              <div class="pd-dana-conversation-card__head">
+                <div>
+                  <h2 class="pd-dana-conversation-card__title">DANA · Assistente analítica</h2>
+                  <p class="pd-dana-main__section-text" style="margin-top:8px;">
+                    Falando sobre:
+                    <strong>{{ participante_display_name if participante_display_name != "-" else cliente_display_name }}</strong>
+                    {% if selected_cargo %} · {{ selected_cargo }}{% endif %}
+                  </p>
+                </div>
+
+                <span class="pd-dana-online-pill">Online</span>
+              </div>
+
+              <div class="pd-dana-welcome">
+                <p class="pd-dana-welcome__title">
+                  Olá 👋, sou a DANA, a sua especialista em desenvolvimento humano.
+                </p>
+                <p class="pd-dana-welcome__text">
+                  {% if has_attempt and participante_display_name != "-" %}
+                    Estou olhando o contexto oficial do participante <strong>{{ participante_display_name }}</strong>.
+                    Posso te ajudar a interpretar o resultado, montar PDI, preparar feedback ou orientar acompanhamento.
+                  {% else %}
+                    Estou olhando o contexto oficial do cliente <strong>{{ cliente_display_name }}</strong>.
+                    Posso te ajudar a interpretar tendências do BI, sinais de atenção, prioridades de desenvolvimento e comparações úteis para gestão.
+                  {% endif %}
+                </p>
+                <p class="pd-dana-welcome__text">Por onde quer começar?</p>
+              </div>
+
+              <div class="pd-dana-quick-actions">
+                {% for suggestion in prompt_suggestions %}
+                  <form method="post" action="/admin/ai/chat?cliente_id={{ selected_cliente_id }}" style="margin:0;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token if csrf_token is defined else '' }}" />
+                    <input type="hidden" name="cliente_id" value="{{ selected_cliente_id }}" />
+                    <input type="hidden" name="attempt_id" value="{{ selected_attempt_id }}" />
+                    <input type="hidden" name="filters_active" value='{{ quick_filters_payload | tojson }}' />
+                    <input type="hidden" name="docsia_enabled" value="{% if docsia_enabled %}true{% else %}false{% endif %}" />
+                    <input type="hidden" name="comparative_enabled" value="{% if quick_comparative_enabled %}true{% else %}false{% endif %}" />
+                    <input type="hidden" name="search_scope_enabled" value="true" />
+                    <input type="hidden" name="comparative" value="false" />
+                    <input type="hidden" name="selected_participant_ids" value='{{ quick_selected_participant_ids | tojson }}' />
+                    <button type="submit" name="question" value="{{ suggestion }}" class="pd-dana-quick-chip" style="cursor:pointer;">
+                      {{ suggestion }}
+                    </button>
+                  </form>
+                {% endfor %}
+              </div>
+            </div>
+
+            <section class="pd-dana-section-card">
+              <div class="pd-dana-section-card__head">
+                <div>
+                  <h2 class="pd-dana-section-card__title">Chat com a Dana</h2>
+                  <p class="pd-dana-section-card__text">
+                    Histórico, respostas e rastreabilidade da análise no escopo cliente/participante selecionado.
+                  </p>
+                </div>
+                <div class="pd-dana-section-card__chip">Conversa</div>
+              </div>
+
+              <div class="pd-dana-chat-slot">
+                {% include "ai_analyst/analysis_chat_panel.html" %}
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}

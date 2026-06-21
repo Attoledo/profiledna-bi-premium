@@ -1,0 +1,13 @@
+diff --git a/backend/repositories/attempt.py b/backend/repositories/attempt.py
+index 1423fee..65b9796 100644
+--- a/backend/repositories/attempt.py
++++ b/backend/repositories/attempt.py
+@@ -172,7 +172,7 @@ async def create_participant_and_attempt_from_invite(
+     rodada_id,
+     setor_id,
+     cargo: Optional[str],
+-    invite_id,
++    invite_id=None,
+     testdef_version: str = "v1",
+ ) -> Attempt:
+     """Cria Participant + Attempt usando o contexto vindo do Invite."""

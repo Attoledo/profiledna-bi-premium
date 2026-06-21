@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+
+{% block title %}ProfileDNA — Entrar no painel{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="/static/css/admin.css" />
+  <style>
+    .pd-login-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(243, 156, 74, 0.18), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(229, 75, 75, 0.10), transparent 30%),
+        linear-gradient(180deg, #fcfcfd 0%, #f6f7fb 100%);
+    }
+
+    .pd-login-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+    }
+
+    .pd-login-brand-panel {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(243, 156, 74, 0.22), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(229, 75, 75, 0.18), transparent 30%),
+        linear-gradient(180deg, #111827 0%, #182033 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px;
+      isolation: isolate;
+    }
+
+    .pd-login-brand-panel::before {
+      content: "";
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 420px;
+      height: 420px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(243, 156, 74, 0.20), rgba(229, 75, 75, 0.14));
+      filter: blur(28px);
+      z-index: -1;
+    }
+
+    .pd-login-brand-panel::after {
+      content: "";
+      position: absolute;
+      left: -80px;
+      bottom: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(243, 156, 74, 0.18), rgba(229, 75, 75, 0.10));
+      filter: blur(28px);
+      z-index: -1;
+    }
+
+    .pd-login-brand-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    .pd-login-brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 18px 42px rgba(17, 24, 39, 0.16);
+    }
+
+    .pd-login-brand-badge img {
+      height: 72px !important;
+      max-height: 76px !important;
+      width: auto !important;
+      max-width: 140px !important;
+      object-fit: contain !important;
+      display: block;
+    }
+
+    .pd-login-brand-copy {
+      max-width: 560px;
+    }
+
+    .pd-login-brand-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .pd-login-brand-chip__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f39c4a, #e54b4b);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+    }
+
+    .pd-login-brand-title {
+      margin: 20px 0 0;
+      font-size: clamp(34px, 4vw, 52px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .pd-login-brand-title .pd-login-brand-highlight {
+      background: linear-gradient(90deg, #f39c4a 0%, #e54b4b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .pd-login-brand-text {
+      margin: 18px 0 0;
+      font-size: 17px;
+      line-height: 1.72;
+      color: rgba(255, 255, 255, 0.76);
+      max-width: 540px;
+    }
+
+    .pd-login-brand-footer {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.48);
+    }
+
+    .pd-login-form-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 28px;
+    }
+
+    .pd-login-form-wrap {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .pd-login-mobile-brand {
+      display: none;
+      margin-bottom: 26px;
+    }
+
+    .pd-login-mobile-brand img {
+      height: 72px !important;
+      max-height: 76px !important;
+      width: auto !important;
+      max-width: 140px !important;
+      object-fit: contain !important;
+      display: block;
+    }
+
+    .pd-login-title {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .pd-login-subtitle {
+      margin: 10px 0 0;
+      font-size: 15px;
+      line-height: 1.65;
+      color: #6b7280;
+    }
+
+    .pd-login-form {
+      margin-top: 30px;
+    }
+
+    .pd-login-fieldset {
+      display: grid;
+      gap: 18px;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .pd-login-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .pd-login-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .pd-login-input-wrap {
+      position: relative;
+    }
+
+    .pd-login-input-icon {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: #9ca3af;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .pd-login-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 16px 0 46px;
+      border-radius: 14px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      font-size: 15px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+      box-sizing: border-box;
+    }
+
+    .pd-login-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .pd-login-input:focus {
+      border-color: rgba(243, 156, 74, 0.72);
+      box-shadow: 0 0 0 4px rgba(243, 156, 74, 0.14);
+      background: #ffffff;
+    }
+
+    .pd-login-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pd-login-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #6b7280;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .pd-login-checkbox input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: #111827;
+    }
+
+    .pd-login-link {
+      color: #111827;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .pd-login-link:hover {
+      text-decoration: underline;
+    }
+
+    .pd-login-alert {
+      margin-bottom: 18px;
+      border-radius: 16px;
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      color: #991b1b;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .pd-login-submit {
+      width: 100%;
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 52px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 14px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #f39c4a 0%, #e54b4b 100%);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      box-shadow: 0 18px 36px rgba(229, 75, 75, 0.24);
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+
+    .pd-login-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 40px rgba(229, 75, 75, 0.28);
+    }
+
+    .pd-login-submit:active {
+      transform: translateY(0);
+    }
+
+    .pd-login-submit__arrow {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .pd-login-note {
+      margin: 22px 0 0;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1100px) {
+      .pd-login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-login-brand-panel {
+        display: none;
+      }
+
+      .pd-login-form-panel {
+        min-height: 100vh;
+        padding: 28px 20px;
+      }
+
+      .pd-login-mobile-brand {
+        display: block;
+      }
+
+      .pd-login-form-wrap {
+        max-width: 460px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .pd-login-title {
+        font-size: 30px;
+      }
+
+      .pd-login-form-panel {
+        padding: 24px 16px;
+      }
+
+      .pd-login-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block body_class %}pd-login-page{% endblock %}
+
+{% block content %}
+  <div class="pd-login-shell">
+    <section class="pd-login-brand-panel" aria-label="Apresentação do painel">
+      <div class="pd-login-brand-top">
+        <div class="pd-login-brand-badge">
+          <img
+            src="/static/img/official_logo.png"
+            alt="Profile DNA"
+            onerror="this.src='/static/img/dna-logo.png';"
+          />
+        </div>
+      </div>
+
+      <div class="pd-login-brand-copy">
+        <div class="pd-login-brand-chip">
+          <span class="pd-login-brand-chip__dot" aria-hidden="true"></span>
+          <span>ProfileDNA · Painel do operador</span>
+        </div>
+
+        <h1 class="pd-login-brand-title">
+          Mapeie o <span class="pd-login-brand-highlight">comportamento</span> de equipes inteiras com profundidade científica.
+        </h1>
+
+        <p class="pd-login-brand-text">
+          Acompanhe testes em tempo real, leia o resultado individual, analise o grupo no BI e use a DANA para transformar dados em ação.
+        </p>
+      </div>
+
+      <div class="pd-login-brand-footer">
+        Profile DNA · v2.0
+      </div>
+    </section>
+
+    <section class="pd-login-form-panel">
+      <div class="pd-login-form-wrap">
+        <div class="pd-login-mobile-brand">
+          <img
+            src="/static/img/official_logo.png"
+            alt="Profile DNA"
+            onerror="this.src='/static/img/dna-logo.png';"
+          />
+        </div>
+
+        <header>
+          <h1 class="pd-login-title">Entrar no painel</h1>
+          <p class="pd-login-subtitle">
+            Acesso restrito ao operador do painel.
+          </p>
+        </header>
+
+        <form method="post" action="/admin/login" class="pd-login-form">
+          {% if csrf_token is defined and csrf_token %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          {% endif %}
+
+          {% if error is defined and error %}
+            <div class="pd-login-alert" role="alert">
+              {{ error }}
+            </div>
+          {% endif %}
+
+          <fieldset class="pd-login-fieldset">
+            <label class="pd-login-field">
+              <span class="pd-login-label">E-mail</span>
+              <div class="pd-login-input-wrap">
+                <span class="pd-login-input-icon" aria-hidden="true">✉</span>
+                <input
+                  class="pd-login-input"
+                  type="text"
+                  name="username"
+                  value="{{ username if username is defined and username else '' }}"
+                  placeholder="operador@dnaagencia.com.br"
+                  autocomplete="username"
+                  required
+                />
+              </div>
+            </label>
+
+            <label class="pd-login-field">
+              <span class="pd-login-label">Senha</span>
+              <div class="pd-login-input-wrap">
+                <span class="pd-login-input-icon" aria-hidden="true">•</span>
+                <input
+                  class="pd-login-input"
+                  type="password"
+                  name="password"
+                  placeholder="Digite sua senha"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+            </label>
+
+            <div class="pd-login-row">
+              <label class="pd-login-checkbox">
+                <input type="checkbox" name="remember_me" value="1" checked />
+                <span>Manter conectado</span>
+              </label>
+
+              <a href="#" class="pd-login-link">Esqueci minha senha</a>
+            </div>
+
+            <button type="submit" class="pd-login-submit">
+              <span>Entrar no painel</span>
+              <span class="pd-login-submit__arrow" aria-hidden="true">→</span>
+            </button>
+          </fieldset>
+        </form>
+
+        <p class="pd-login-note">
+          Acesso protegido. Todas as ações são registradas para auditoria.
+        </p>
+      </div>
+    </section>
+  </div>
+{% endblock %}

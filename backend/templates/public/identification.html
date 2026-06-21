@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block body_class %}public-flow{% endblock %}
+{% block content %}
+<main class="public-shell">
+  <section class="public-stage">
+    <div class="public-card public-card--compact">
+      <div class="public-brand">
+        <div class="public-brand__logo">
+          <img src="/static/img/dna-logo.png" alt="Profile DNA">
+        </div>
+        <div>
+          <p class="public-brand__eyebrow">Identificação</p>
+          <h1 class="public-brand__title">Antes de iniciar, confirme seus dados</h1>
+          <p class="public-brand__subtitle">
+            Preencha as informações abaixo para começar o teste. Esse passo garante a correta identificação do participante.
+          </p>
+        </div>
+      </div>
+
+      {% if error %}
+        <p class="public-error">{{ error }}</p>
+      {% endif %}
+
+      <form method="post" action="{{ form_action }}" class="public-form public-form--narrow" novalidate>
+        <div class="public-grid public-grid--single">
+          <div class="public-form__group">
+            <label class="public-label" for="nome">Nome *</label>
+            <input
+              class="public-input"
+              id="nome"
+              name="nome"
+              type="text"
+              required
+              maxlength="255"
+              value="{{ form_values.nome if form_values else '' }}"
+              autocomplete="given-name"
+            />
+          </div>
+
+          <div class="public-form__group">
+            <label class="public-label" for="sobrenome">Sobrenome *</label>
+            <input
+              class="public-input"
+              id="sobrenome"
+              name="sobrenome"
+              type="text"
+              required
+              maxlength="255"
+              value="{{ form_values.sobrenome if form_values else '' }}"
+              autocomplete="family-name"
+            />
+          </div>
+        </div>
+
+        <div class="public-grid public-grid--single">
+          <div class="public-form__group">
+            <label class="public-label" for="email">E-mail *</label>
+            <input
+              class="public-input"
+              id="email"
+              name="email"
+              type="email"
+              required
+              maxlength="255"
+              value="{{ form_values.email if form_values else '' }}"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="public-form__group">
+            <label class="public-label" for="empresa_nome_display">Empresa</label>
+            <input
+              class="public-input"
+              id="empresa_nome_display"
+              type="text"
+              value="{{ empresa_nome or 'Empresa não identificada' }}"
+              readonly
+              aria-readonly="true"
+            />
+            <p class="public-help">
+              A empresa é vinculada automaticamente ao convite enviado pela DNA Agência.
+            </p>
+          </div>
+        </div>
+
+        <div class="public-actions">
+          <a class="public-btn public-btn--secondary" href="/t/{{ token }}">Voltar</a>
+          <button class="public-btn public-btn--primary" type="submit">Continuar</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+{% endblock %}

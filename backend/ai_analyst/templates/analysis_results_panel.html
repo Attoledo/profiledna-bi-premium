@@ -1,0 +1,568 @@
+{% set context_payload = context_payload if context_payload is defined and context_payload else {} %}
+
+{% set scope = context_payload.get("scope", {}) if context_payload is mapping and context_payload.get("scope") is mapping else {} %}
+{% set search = context_payload.get("search", {}) if context_payload is mapping and context_payload.get("search") is mapping else {} %}
+{% set cliente_ctx = context_payload.get("cliente", {}) if context_payload is mapping and context_payload.get("cliente") is mapping else {} %}
+{% set attempt_ctx = context_payload.get("attempt", {}) if context_payload is mapping and context_payload.get("attempt") is mapping else {} %}
+{% set computed_result_ctx = context_payload.get("computed_result", {}) if context_payload is mapping and context_payload.get("computed_result") is mapping else {} %}
+{% set report_snapshot_ctx = context_payload.get("report_snapshot", {}) if context_payload is mapping and context_payload.get("report_snapshot") is mapping else {} %}
+{% set bi_ctx = context_payload.get("bi", {}) if context_payload is mapping and context_payload.get("bi") is mapping else {} %}
+{% set meta = context_payload.get("meta", {}) if context_payload is mapping and context_payload.get("meta") is mapping else {} %}
+
+{% set cliente = cliente_ctx.get("cliente", {}) if cliente_ctx is mapping and cliente_ctx.get("cliente") is mapping else {} %}
+{% set participante = attempt_ctx.get("participant", {}) if attempt_ctx is mapping and attempt_ctx.get("participant") is mapping else {} %}
+{% set participante_selecionado = attempt_ctx.get("attempt", {}) if attempt_ctx is mapping and attempt_ctx.get("attempt") is mapping else {} %}
+
+{% set participantes = search.get("participantes", []) if search is mapping else [] %}
+{% set participant_options = search.get("participant_options", []) if search is mapping else [] %}
+
+{% set computed_payload = computed_result_ctx.get("payload", {}) if computed_result_ctx is mapping and computed_result_ctx.get("payload") is mapping else {} %}
+{% set report_payload = report_snapshot_ctx.get("payload", {}) if report_snapshot_ctx is mapping and report_snapshot_ctx.get("payload") is mapping else {} %}
+
+{% set bi_payload = bi_ctx.get("payload", {}) if bi_ctx is mapping and bi_ctx.get("payload") is mapping else {} %}
+{% set overview_cards = bi_payload.get("overview_cards", []) if bi_payload is mapping else [] %}
+{% set dimension_table = bi_payload.get("dimension_table", []) if bi_payload is mapping else [] %}
+{% set top5_frequency = bi_payload.get("top5_frequency", []) if bi_payload is mapping else [] %}
+{% set bottom3_frequency = bi_payload.get("bottom3_frequency", []) if bi_payload is mapping else [] %}
+
+{% set cliente_id = scope.get("cliente_id") if scope is mapping else None %}
+{% set rodada_id = scope.get("rodada_id") if scope is mapping else None %}
+{% set setor_id = scope.get("setor_id") if scope is mapping else None %}
+{% set tipo_aplicacao = scope.get("tipo_aplicacao") if scope is mapping else None %}
+{% set status = scope.get("status") if scope is mapping else None %}
+{% set only_completed = scope.get("only_completed") if scope is mapping else False %}
+
+{% set cliente_nome = cliente_ctx.get("display_name") if cliente_ctx is mapping else None %}
+{% set participante_nome = participante.get("display_name") if participante is mapping else None %}
+
+<div style="display:grid; gap:16px;">
+
+  <section
+    style="
+      border:1px solid #e5e7eb;
+      border-radius:20px;
+      background:#ffffff;
+      padding:16px;
+    "
+  >
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+      <div>
+        <h3 style="margin:0; font-size:20px; line-height:1.15; color:#111827;">Cliente em contexto</h3>
+        <p style="margin:8px 0 0; color:#6b7280; font-size:14px; line-height:1.55;">
+          Esta análise está organizada no contexto do cliente selecionado.
+        </p>
+      </div>
+
+      <div
+        style="
+          display:inline-flex;
+          align-items:center;
+          gap:8px;
+          padding:8px 12px;
+          border-radius:999px;
+          background:#fff1e8;
+          border:1px solid #fed7aa;
+          color:#c2410c;
+          font-size:12px;
+          font-weight:800;
+          text-transform:uppercase;
+          letter-spacing:.04em;
+        "
+      >
+        {% if meta.get("cliente_fixed") %}Cliente fixo{% else %}Escopo global{% endif %}
+      </div>
+    </div>
+
+    {% if cliente_ctx.get("has_cliente") and cliente %}
+      <div
+        style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+          gap:12px;
+        "
+      >
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">
+            Cliente
+          </div>
+          <div style="font-size:16px; font-weight:900; color:#111827; line-height:1.35; overflow-wrap:anywhere;">
+            {{ cliente_nome or cliente.get("nome") or cliente.get("razao_social") or "-" }}
+          </div>
+          <div style="margin-top:6px; color:#6b7280; font-size:12px; line-height:1.5; overflow-wrap:anywhere;">
+            UUID: {{ cliente.get("id") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">
+            Razão social
+          </div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ cliente.get("razao_social") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">
+            CNPJ
+          </div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ cliente.get("cnpj") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">
+            Mercado
+          </div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ cliente.get("setor_mercado") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">
+            Responsável
+          </div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ cliente.get("responsavel") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">
+            E-mail responsável
+          </div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ cliente.get("email_responsavel") or "-" }}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div style="padding:14px; border:1px dashed #d1d5db; border-radius:14px; background:#fff; color:#6b7280; font-size:14px;">
+        Nenhum cliente em contexto no momento.
+      </div>
+    {% endif %}
+  </section>
+
+  <section
+    style="
+      border:1px solid #e5e7eb;
+      border-radius:20px;
+      background:#ffffff;
+      padding:16px;
+    "
+  >
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+      <div>
+        <h3 style="margin:0; font-size:20px; line-height:1.15; color:#111827;">Participantes do cliente</h3>
+        <p style="margin:8px 0 0; color:#6b7280; font-size:14px; line-height:1.55;">
+          A DANA trabalha apenas com participantes vinculados ao cliente em contexto.
+        </p>
+      </div>
+
+      <div
+        style="
+          display:inline-flex;
+          align-items:center;
+          gap:8px;
+          padding:8px 12px;
+          border-radius:999px;
+          background:#f9fafb;
+          border:1px solid #e5e7eb;
+          color:#6b7280;
+          font-size:12px;
+          font-weight:800;
+        "
+      >
+        {{ meta.get("search_participantes", 0) }} participante(s)
+      </div>
+    </div>
+
+    {% if participant_options %}
+      <div style="display:grid; gap:10px;">
+        {% for item in participant_options %}
+          {% set option_attempt_id = item.get("attempt_id") if item is mapping else None %}
+          <a
+            href="/admin/ai/analysis-inteligente?cliente_id={{ cliente_id or '' }}{% if option_attempt_id %}&attempt_id={{ option_attempt_id }}{% endif %}{% if rodada_id %}&rodada_id={{ rodada_id }}{% endif %}{% if setor_id %}&setor_id={{ setor_id }}{% endif %}{% if tipo_aplicacao %}&tipo_aplicacao={{ tipo_aplicacao }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if only_completed %}&only_completed=true{% endif %}"
+            style="
+              display:block;
+              text-decoration:none;
+              border:1px solid {% if scope.get('attempt_id') == option_attempt_id %}#fdba74{% else %}#e5e7eb{% endif %};
+              border-radius:16px;
+              background:{% if scope.get('attempt_id') == option_attempt_id %}#fff7ed{% else %}#f9fafb{% endif %};
+              padding:14px;
+              box-shadow:{% if scope.get('attempt_id') == option_attempt_id %}0 0 0 1px rgba(249,115,22,.08){% else %}none{% endif %};
+            "
+          >
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+              <div style="min-width:0;">
+                <div style="font-size:16px; font-weight:900; color:#111827; line-height:1.3; overflow-wrap:anywhere;">
+                  {{ item.get("participant_display_name") or "Participante" }}
+                </div>
+
+                <div style="margin-top:6px; color:#374151; font-size:13px; line-height:1.5; overflow-wrap:anywhere;">
+                  {% if item.get("cargo") %}Cargo: {{ item.get("cargo") }}{% else %}Cargo: -{% endif %}
+                  {% if item.get("status") %} • Status: {{ item.get("status") }}{% endif %}
+                </div>
+
+                <div style="margin-top:6px; color:#6b7280; font-size:12px; line-height:1.5; overflow-wrap:anywhere;">
+                  UUID do participante selecionável: {{ option_attempt_id or "-" }}
+                </div>
+              </div>
+
+              <div
+                style="
+                  display:inline-flex;
+                  align-items:center;
+                  justify-content:center;
+                  padding:8px 12px;
+                  border-radius:999px;
+                  background:#111827;
+                  color:#fff;
+                  font-size:12px;
+                  font-weight:800;
+                  white-space:nowrap;
+                "
+              >
+                {% if scope.get("attempt_id") == option_attempt_id %}Selecionado{% else %}Selecionar{% endif %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% elif participantes %}
+      <div style="display:grid; gap:10px;">
+        {% for item in participantes %}
+          <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+            <div style="font-size:16px; font-weight:900; color:#111827; line-height:1.3;">
+              {{ item.get("participant_display_name") or "-" }}
+            </div>
+            <div style="margin-top:6px; color:#374151; font-size:13px; line-height:1.5;">
+              Cargo: {{ item.get("cargo") or "-" }}
+              {% if item.get("tipo_aplicacao") %} • Tipo: {{ item.get("tipo_aplicacao") }}{% endif %}
+            </div>
+            <div style="margin-top:6px; color:#6b7280; font-size:12px; line-height:1.5; overflow-wrap:anywhere;">
+              UUID do participante selecionável: {{ item.get("attempt_id") or "-" }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="padding:14px; border:1px dashed #d1d5db; border-radius:14px; background:#fff; color:#6b7280; font-size:14px;">
+        Não há participantes encontrados no cliente e recorte atuais.
+      </div>
+    {% endif %}
+  </section>
+
+  <section
+    style="
+      border:1px solid #e5e7eb;
+      border-radius:20px;
+      background:#ffffff;
+      padding:16px;
+    "
+  >
+    <div style="margin-bottom:12px;">
+      <h3 style="margin:0; font-size:20px; line-height:1.15; color:#111827;">Participante selecionado</h3>
+      <p style="margin:8px 0 0; color:#6b7280; font-size:14px; line-height:1.55;">
+        Dados principais do participante atualmente em análise.
+      </p>
+    </div>
+
+    {% if attempt_ctx.get("has_attempt") and participante and participante_selecionado %}
+      <div
+        style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+          gap:12px;
+        "
+      >
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Participante</div>
+          <div style="font-size:16px; font-weight:900; color:#111827; line-height:1.35; overflow-wrap:anywhere;">
+            {{ participante_nome or "-" }}
+          </div>
+          <div style="margin-top:6px; color:#6b7280; font-size:12px; line-height:1.5; overflow-wrap:anywhere;">
+            UUID técnico: {{ participante_selecionado.get("id") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">E-mail</div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ participante.get("email") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Cargo</div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ participante_selecionado.get("cargo") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Tipo de aplicação</div>
+          <div style="font-size:14px; color:#111827; line-height:1.55; overflow-wrap:anywhere;">
+            {{ participante.get("tipo_aplicacao") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Status</div>
+          <div style="font-size:14px; color:#111827; line-height:1.55;">
+            {{ participante_selecionado.get("status") or "-" }}
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+          <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Progresso</div>
+          <div style="font-size:14px; color:#111827; line-height:1.55;">
+            {{ participante_selecionado.get("progress") or 0 }}%
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div style="padding:14px; border:1px dashed #d1d5db; border-radius:14px; background:#fff; color:#6b7280; font-size:14px;">
+        Nenhum participante foi selecionado ainda. Escolha um participante na lista acima.
+      </div>
+    {% endif %}
+  </section>
+
+  <section
+    style="
+      border:1px solid #e5e7eb;
+      border-radius:20px;
+      background:#ffffff;
+      padding:16px;
+    "
+  >
+    <div style="margin-bottom:12px;">
+      <h3 style="margin:0; font-size:20px; line-height:1.15; color:#111827;">Resultado individual oficial</h3>
+      <p style="margin:8px 0 0; color:#6b7280; font-size:14px; line-height:1.55;">
+        Resultado consolidado do participante selecionado, com base nos dados oficiais já gerados pelo sistema.
+      </p>
+    </div>
+
+    {% if computed_result_ctx.get("has_computed_result") and computed_payload %}
+      <div style="display:grid; gap:12px;">
+        <div
+          style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+            gap:12px;
+          "
+        >
+          <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+            <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Top 3</div>
+            <div style="font-size:14px; color:#111827; line-height:1.6;">
+              {% set top3 = computed_payload.get("top3", []) if computed_payload is mapping else [] %}
+              {% if top3 %}
+                {{ top3 | join(", ") }}
+              {% else %}
+                -
+              {% endif %}
+            </div>
+          </div>
+
+          <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+            <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Top 5</div>
+            <div style="font-size:14px; color:#111827; line-height:1.6;">
+              {% set top5 = computed_payload.get("top5", []) if computed_payload is mapping else [] %}
+              {% if top5 %}
+                {{ top5 | join(", ") }}
+              {% else %}
+                -
+              {% endif %}
+            </div>
+          </div>
+
+          <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+            <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">Bottom 3</div>
+            <div style="font-size:14px; color:#111827; line-height:1.6;">
+              {% set bottom3 = computed_payload.get("bottom3", []) if computed_payload is mapping else [] %}
+              {% if bottom3 %}
+                {{ bottom3 | join(", ") }}
+              {% else %}
+                -
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {% set scores = computed_payload.get("scores", {}) if computed_payload is mapping and computed_payload.get("scores") is mapping else {} %}
+        {% if scores %}
+          <div style="border:1px solid #e5e7eb; border-radius:16px; background:#fbfcfe; overflow:auto;">
+            <table style="width:100%; border-collapse:collapse; min-width:720px;">
+              <thead>
+                <tr style="background:#f9fafb;">
+                  <th style="text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em;">Dimensão</th>
+                  <th style="text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em;">Score</th>
+                  <th style="text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em;">Faixa</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% set bands = computed_payload.get("bands", {}) if computed_payload is mapping and computed_payload.get("bands") is mapping else {} %}
+                {% for key, value in scores.items() %}
+                  <tr style="background:#ffffff;">
+                    <td style="padding:12px; border-bottom:1px solid #eef2f7; font-size:14px; color:#111827; line-height:1.5;">
+                      {{ key }}
+                    </td>
+                    <td style="padding:12px; border-bottom:1px solid #eef2f7; font-size:14px; color:#111827; line-height:1.5;">
+                      {{ value }}
+                    </td>
+                    <td style="padding:12px; border-bottom:1px solid #eef2f7; font-size:14px; color:#111827; line-height:1.5;">
+                      {{ bands.get(key) if bands is mapping else "-" }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {% if report_snapshot_ctx.get("has_report_snapshot") and report_payload %}
+          <div style="border:1px solid #e5e7eb; border-radius:16px; background:#fff; padding:14px;">
+            <div style="font-size:13px; font-weight:800; color:#111827; margin-bottom:8px;">Prévia do relatório final oficial</div>
+            <div style="color:#4b5563; font-size:14px; line-height:1.6; white-space:pre-wrap;">
+              {{ report_payload.get("preview") or "Prévia não disponível." }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div style="padding:14px; border:1px dashed #d1d5db; border-radius:14px; background:#fff; color:#6b7280; font-size:14px;">
+        Ainda não há resultado individual oficial disponível para o participante selecionado.
+      </div>
+    {% endif %}
+  </section>
+
+  <section
+    style="
+      border:1px solid #e5e7eb;
+      border-radius:20px;
+      background:#ffffff;
+      padding:16px;
+    "
+  >
+    <div style="margin-bottom:12px;">
+      <h3 style="margin:0; font-size:20px; line-height:1.15; color:#111827;">BI oficial do cliente/recorte</h3>
+      <p style="margin:8px 0 0; color:#6b7280; font-size:14px; line-height:1.55;">
+        Indicadores oficiais já consolidados do recorte atual do cliente.
+      </p>
+    </div>
+
+    {% if bi_ctx.get("has_bi_context") %}
+      <div style="display:grid; gap:12px;">
+        {% if overview_cards %}
+          <div
+            style="
+              display:grid;
+              grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+              gap:12px;
+            "
+          >
+            {% for card in overview_cards %}
+              <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+                <div style="font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">
+                  {{ card.get("title") or card.get("label") or "Indicador" }}
+                </div>
+                <div style="font-size:18px; font-weight:900; color:#111827; line-height:1.3;">
+                  {{ card.get("value") or "-" }}
+                </div>
+                <div style="margin-top:6px; font-size:13px; color:#6b7280; line-height:1.5;">
+                  {{ card.get("description") or card.get("subtitle") or "" }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if dimension_table %}
+          <div style="border:1px solid #e5e7eb; border-radius:16px; background:#fbfcfe; overflow:auto;">
+            <table style="width:100%; border-collapse:collapse; min-width:760px;">
+              <thead>
+                <tr style="background:#f9fafb;">
+                  <th style="text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em;">Dimensão</th>
+                  <th style="text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em;">Área</th>
+                  <th style="text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em;">Média</th>
+                  <th style="text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:.04em;">Faixa</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in dimension_table[:12] %}
+                  <tr style="background:#ffffff;">
+                    <td style="padding:12px; border-bottom:1px solid #eef2f7; font-size:14px; color:#111827; line-height:1.5;">
+                      {{ row.get("dimension_label") or row.get("label") or row.get("dimension") or "-" }}
+                    </td>
+                    <td style="padding:12px; border-bottom:1px solid #eef2f7; font-size:14px; color:#111827; line-height:1.5;">
+                      {{ row.get("area") or "-" }}
+                    </td>
+                    <td style="padding:12px; border-bottom:1px solid #eef2f7; font-size:14px; color:#111827; line-height:1.5;">
+                      {{ row.get("average_score_label") or row.get("average_label") or row.get("value") or "-" }}
+                    </td>
+                    <td style="padding:12px; border-bottom:1px solid #eef2f7; font-size:14px; color:#111827; line-height:1.5;">
+                      {{ row.get("band") or row.get("faixa") or "-" }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div style="padding:14px; border:1px dashed #d1d5db; border-radius:14px; background:#fff; color:#6b7280; font-size:14px;">
+            Não há tabela dimensional disponível no BI deste recorte.
+          </div>
+        {% endif %}
+
+        {% if top5_frequency or bottom3_frequency %}
+          <div
+            style="
+              display:grid;
+              grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+              gap:12px;
+            "
+          >
+            <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+              <div style="font-size:13px; font-weight:800; color:#111827; margin-bottom:8px;">Top 5 mais frequentes</div>
+              {% if top5_frequency %}
+                <div style="display:grid; gap:8px;">
+                  {% for item in top5_frequency[:5] %}
+                    <div style="font-size:14px; color:#111827; line-height:1.5;">
+                      {{ item.get("label") or item.get("dimension") or "-" }}
+                      <span style="color:#6b7280;">— {{ item.get("count") or 0 }}</span>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div style="color:#6b7280; font-size:14px;">Sem dados.</div>
+              {% endif %}
+            </div>
+
+            <div style="border:1px solid #e5e7eb; border-radius:16px; background:#f9fafb; padding:14px;">
+              <div style="font-size:13px; font-weight:800; color:#111827; margin-bottom:8px;">Bottom 3 mais frequentes</div>
+              {% if bottom3_frequency %}
+                <div style="display:grid; gap:8px;">
+                  {% for item in bottom3_frequency[:5] %}
+                    <div style="font-size:14px; color:#111827; line-height:1.5;">
+                      {{ item.get("label") or item.get("dimension") or "-" }}
+                      <span style="color:#6b7280;">— {{ item.get("count") or 0 }}</span>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div style="color:#6b7280; font-size:14px;">Sem dados.</div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div style="padding:14px; border:1px dashed #d1d5db; border-radius:14px; background:#fff; color:#6b7280; font-size:14px;">
+        O BI oficial ainda não está disponível porque não há cliente/recorte suficiente selecionado.
+      </div>
+    {% endif %}
+  </section>
+
+</div>

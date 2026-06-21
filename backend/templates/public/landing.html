@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block body_class %}public-flow{% endblock %}
+{% block content %}
+<main class="public-shell">
+  <section class="public-stage">
+    <div class="public-card">
+      <div class="public-brand">
+        <div class="public-brand__logo">
+          <img src="/static/img/dna-logo.png" alt="DNA Agência">
+        </div>
+        <div>
+          <p class="public-brand__eyebrow">{{ subtitle or "Convite" }}</p>
+          <h1 class="public-brand__title">ProfileDNA</h1>
+          <p class="public-brand__subtitle">
+            Descubra seu estilo de comportamento e como você tende a agir no dia a dia.
+          </p>
+        </div>
+      </div>
+
+      <div class="public-kicker">Teste de Perfil DNA Agência</div>
+      <h2 class="public-title">Convite para iniciar sua avaliação comportamental</h2>
+      <p class="public-subtitle">
+        O Teste de Perfil da DNA Agência é uma ferramenta de autoconhecimento. Você responderá 100 perguntas rápidas,
+        escolhendo entre A ou B. Ao final, receberá um mapa do seu perfil com insights práticos sobre como você decide,
+        se comunica, trabalha e se relaciona.
+      </p>
+
+      <div class="public-grid" style="margin-top: 28px;">
+        <div class="public-subcard">
+          <h3>Como responder</h3>
+          <ul class="public-list">
+            <li>Não existe certo ou errado — escolha a alternativa que mais se parece com você.</li>
+            <li>Responda pensando no seu comportamento mais frequente, não em momentos excepcionais.</li>
+            <li>Responda com sinceridade e sem “pensar demais”.</li>
+            <li>Você poderá revisar suas respostas antes de enviar o teste.</li>
+          </ul>
+        </div>
+
+        <div class="public-grid public-grid--single" style="gap: 20px;">
+          <div class="public-subcard">
+            <h3>Tempo estimado</h3>
+            <p class="public-text">Tempo médio de preenchimento: 15 a 30 minutos.</p>
+          </div>
+
+          <div class="public-subcard">
+            <h3>Confidencialidade</h3>
+            <p class="public-text">
+              Seus dados e respostas serão utilizados apenas para gerar seu resultado e para acompanhamento pela DNA Agência
+              ou pela empresa aplicadora, conforme a finalidade do teste.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="public-actions" style="margin-top: 32px;">
+        <span class="public-footer-note">
+          Ao começar, você confirma que leu as orientações e concorda em responder de forma verdadeira.
+        </span>
+        <a class="public-btn public-btn--primary" href="{{ cta_href if cta_href else '/start' }}">Começar</a>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

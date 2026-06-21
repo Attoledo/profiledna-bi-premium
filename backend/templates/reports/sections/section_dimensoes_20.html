@@ -1,0 +1,34 @@
+<div class="card">
+    <h3>8. Dimensões Detalhadas (20)</h3>
+  
+    {% set interpretations = interpretations if interpretations is defined and interpretations else {} %}
+    {% set band_label_map = {"low":"Baixo","mid":"Médio","high":"Alto"} %}
+  
+    {% macro band_label(k) -%}
+      {{ band_label_map.get((k or "")|lower, (k or "")) }}
+    {%- endmacro %}
+  
+    {% if interpretations %}
+      {% for letter, item in interpretations.items() %}
+        <div class="card mini">
+          <h4>{{ letter }} — {{ item.get("name", "") or "Dimensão" }}</h4>
+  
+          <p class="muted">
+            Score: <strong>{{ item.get("score", "") }}</strong>
+            • Faixa: <strong>{{ band_label(item.get("band_key", "")) }}</strong>
+            {% if item.get("area") %}
+              • Área: {{ item.get("area") }}
+            {% endif %}
+          </p>
+  
+          {% if item.get("text") %}
+            <p>{{ item.get("text") }}</p>
+          {% else %}
+            <p class="muted">Sem interpretação detalhada disponível.</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>As 20 dimensões detalhadas serão exibidas aqui quando o payload do relatório estiver disponível.</p>
+    {% endif %}
+  </div>

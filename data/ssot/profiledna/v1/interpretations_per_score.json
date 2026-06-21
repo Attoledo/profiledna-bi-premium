@@ -1,0 +1,322 @@
+{
+  "A": {
+    "dimension_name": "ATITUDE ANALÍTICA",
+    "by_score": {
+      "0": "Executa mais do que planeja. É pratico. Não planeja, podendo ser fraco planejador mesmo a longo prazo.",
+      "1": "Executa mais do que planeja. É pratico. Não planeja, podendo ser fraco planejador mesmo a longo prazo.",
+      "2": "Tende mais para executar do que para planejar, a ser prático. Pode não planejar suficientemente.",
+      "3": "Apresenta equilíbrio entre o planejamento e a execução, maior tendência para a execução.",
+      "4": "Apresenta equilíbrio entre o planejamento e a execução. Planeja e executa.",
+      "5": "Apresenta equilíbrio entre o planejamento e a execução. Planeja e executa.",
+      "6": "Apresenta equilíbrio entre o planejamento e a execução. Planeja e executa.",
+      "7": "Apresenta equilíbrio entre planejamento e a execução; com maior tendência ao planejamento.",
+      "8": "Tende a planejar em excesso, preferindo planejamento a longo prazo.",
+      "9": "Tende a planejar em excesso, preferindo planejamento a longo prazo.",
+      "10": "Excessivamente planejador, preferindo planejamento a longo prazo, porém, por vezes fora da realidade."
+    }
+  },
+  "B": {
+    "dimension_name": "ORGANIZAÇÃO",
+    "by_score": {
+      "0": "Não dá muita importância à ordem das coisas (desorganizado).",
+      "1": "Não dá muita importância à ordem das coisas (desorganizado).",
+      "2": "Não dá muita importância à ordem das coisas, tende à desorganização.",
+      "3": "Apresenta boa organização, com tendência a ser desorganizado.",
+      "4": "Apresenta boa organização. Mantém as coisas nos devidos lugares.",
+      "5": "Apresenta boa organização. Mantém as coisas nos devidos lugares.",
+      "6": "Apresenta boa organização com tendência a organizar demais, podendo ser obstinado e rígido no que organiza, por vezes, prejudicando sua eficácia e eficiência.",
+      "7": "Apresenta boa organização com tendência a organizar demais, podendo ser obstinado e rígido no que organiza, por vezes, prejudicando sua eficácia e eficiência.",
+      "8": "Tende a ser por demais organizado, procurando manter as coisas limpas e ordenadas, guardando-as em seus lugares, a ponto de interferir em sua eficiência e eficácia.",
+      "9": "É por demais organizado (obsessivo), mantendo suas coisas limpas e ordenadas, a ponto de interferir e prejudicar seu trabalho.",
+      "10": "É por demais organizado (obsessivo), mantendo suas coisas limpas e ordenadas, a ponto de interferir e prejudicar seu trabalho."
+    }
+  },
+  "C": {
+    "dimension_name": "CONTROLE",
+    "by_score": {
+      "0": "Não assume a responsabilidade sobre o controle dos outros e nem do que faz. Não se sente bem controlando os outros e a si próprio.",
+      "1": "Não assume a responsabilidade sobre o controle dos outros e nem do que faz. Não se sente bem controlando os outros e a si próprio.",
+      "2": "Não consegue atingir bons resultados quando estes incluem controle sobre os outros e sobre si próprio.",
+      "3": "Apresenta alguma dificuldade em manter um bom controle sobre as pessoas (acompanhamento).",
+      "4": "Apresenta alguma dificuldade em manter um bom controle sobre as pessoas (acompanhamento).",
+      "5": "Apresenta equilíbrio entre o controle e a execução com tendência a, por vezes, não controlar (acompanhar) bem as pessoas.",
+      "6": "Apresenta equilíbrio entre o controle e a execução, com tendência a ajudar quem não se desempenha bem a reabilitar-se.",
+      "7": "Apresenta equilíbrio entre o controle e a execução, com tendência a ajudar quem não se desempenha bem a reabilitar-se.",
+      "8": "Apresenta equilíbrio entre controle e execução, ajudando quem não se desempenha bem a reabilitar-se. Tem tendência a controlar com rigor.",
+      "9": "Apresenta necessidade de manter um controle rígido (fiscalizador), ainda que goste de ajudar os outros. Tende a ser possessivo com as responsabilidades que lhe foram atribuídas, ficando inquieto quando não ocupa posição de comando.",
+      "10": "Mantém um controle rígido (fiscalizador), ajuda os outros, mas é muito possessivo com as responsabilidades que lhe foram atribuídas. Sente-se inquieto, quando não está na posição de comando."
+    }
+  },
+  "D": {
+    "dimension_name": "LIDERANÇA",
+    "by_score": {
+      "0": "Não se sente bem em posição de liderança. Prefere fazer, a mandar fazer pois confia mais em sua execução.",
+      "1": "Não se sente bem em posição de liderança. Prefere fazer, a mandar fazer pois confia mais em sua execução.",
+      "2": "Tende a não se sentir bem em posição de comando. Prefere fazer, a mandar fazer pois confia em sua execução.",
+      "3": "Tende a não se sentir bem na posição de liderança, pois tende a confiar mais em sua execução do que na dos outros.",
+      "4": "Tende a não se sentir bem na posição de liderança, pois tende a confiar mais em sua execução do que na dos outros.",
+      "5": "Apresenta boas condições para liderança, podendo alguns trabalhos preferir fazer a mandar fazer.",
+      "6": "Apresenta boas condições para liderar, sente-se com confiança e à vontade para apoiar seus subordinados.",
+      "7": "Apresenta boas condições para liderar, sente-se com confiança e à vontade para apoiar seus subordinados.",
+      "8": "Apresenta boas condições para liderar, sente-se com confiança e à vontade para apoiar seus subordinados com leve tendência a se preocupar mais do que devia com seu papel de líder.",
+      "9": "É confiante e sente-se à vontade para apoiar seus subordinados. Preocupa-se muito com o papel de líder, reforçando sua imagem, o que prejudica ocasionalmente sua própria liderança.",
+      "10": "É muito confiante e sente-se bem à vontade para apoiar seus subordinados. Muito preocupado em liderar, o que faz prejudicar sua liderança, pois por vezes sacrifica a eficiência. Preocupa-se com sua imagem de líder no grupo."
+    }
+  },
+  "E": {
+    "dimension_name": "NECESSIDADE DE SE COMUNICAR",
+    "by_score": {
+      "0": "Apresenta dificuldade nas comunicações, sendo introvertido. Pode se muito \"seco\" nas informações, dificultando o entendimento.",
+      "1": "Algumas dificuldades nas comunicações, sendo um pouco introvertido. Pode ser \"seco\" nas informações e dificultaro entendimento.",
+      "2": "Algumas dificuldades nas comunicações, sendo um pouco introvertido. Pode ser \"seco\" nas informações e dificultar o entendimento.",
+      "3": "Tende a ter dificuldade em se comunicar, podendo eventualmente dificultar o entendimento, porque inclina-se a se \"seco\" nas informações.",
+      "4": "Comunica-se bem, mas com tendência a sintetizar muito e ser \"seco\" nas informações, e ocasionalmente dificultar o entendimento.",
+      "5": "É comunicativo, mantém boas relações sociais, faz-se entender.",
+      "6": "É comunicativo, mantém boas relações sociais, faz-se entender.",
+      "7": "É bem comunicativo, mantém boas relações sociais, com tendência a ser prolixo (grosseiro/tenso).",
+      "8": "É muito comunicativo, mantém boas relações sociais. Pode ser muito prolixo (grosseiro/tenso) e se preocupar demais com os aspectos sociais.",
+      "9": "É muito comunicativo, mantém boas relações sociais. Pode ser muito prolixo (grosseiro/tenso) e se preocupar demais com os aspectos sociais.",
+      "10": "É muito comunicativo e sociável, porém e prolixo (grosseiro/tenso), podendo demorar nas comunicações, preocupa-se muito com os aspectos sociais."
+    }
+  },
+  "F": {
+    "dimension_name": "DECISÃO DE RISCO",
+    "by_score": {
+      "0": "Muito cauteloso, tem dificuldade em tomar decisões, pondera demais, lento. Tem mais facilidade com as decisões de rotina.",
+      "1": "Muito cauteloso, tem dificuldade em tomar decisões, pondera demais, lento. Tem mais facilidade com as decisões de rotina.",
+      "2": "Tende a ser cauteloso, a ter dificuldade em tomar decisões por ponderar muito, um pouco lento. Tem facilidade com as decisões de rotina.",
+      "3": "Tende a ser cauteloso, a ter dificuldade em tomar decisões por ponderar muito, um pouco lento. Tem facilidade com as decisões de rotina.",
+      "4": "Tende a ser um pouco cauteloso e a ponderar mais do que o necessário para tomar decisões. Ocasionalmente sente-se inseguro. Tem mais facilidade com as decisões de rotina.",
+      "5": "Tende a tomar decisões com rapidez ainda que, por vezes, um pouco inseguro.",
+      "6": "Toma decisões com rapidez e segurança, sabe quando correr riscos. Geralmente toma decisões a tempo e a hora.",
+      "7": "Toma decisões com rapidez e segurança, sabe quando correr riscos. Geralmente toma decisões a tempo e a hora.",
+      "8": "Toma decisões com rapidez e segurança, sabe quando correr riscos, mas tem tendência a toma-las precipitadamente. Pode se preocupar mais com a rapidez do que com a eficiência e eficácia e, por vezes exigir o mesmo dos outros.",
+      "9": "Toma decisões com muita rapidez, é afoito, aceita muito facilmente os riscos. Se preocupa mais com a rapidez do que com a eficiência e eficácia, exigindo o mesmo dos outros.",
+      "10": "Toma decisões com muita rapidez, é afoito, aceita muito facilmente os riscos. Se preocupa mais com a rapidez do que com a eficiência e eficácia, exigindo o mesmo dos outros."
+    }
+  },
+  "G": {
+    "dimension_name": "RITMO DE EXECUÇÃO",
+    "by_score": {
+      "0": "Raramente tem pressa, prefere prazos mais longos para a execução dos trabalhos. Não se preocupa com o tempo. Bastante calmo quanto à execução.",
+      "1": "Raramente tem pressa, prefere prazos mais longos para a execução dos trabalhos. Não se preocupa com o tempo. Bastante calmo quanto à execução.",
+      "2": "Tende a não se apressar na execução. Não se preocupa com o tempo, preferindo na maioria das vezes, prazos longos para a execução.",
+      "3": "Tende a não se apressar na execução. Não se preocupa com o tempo, preferindo na maioria das vezes, prazos longos para a execução.",
+      "4": "Tende a não ter pressa para executar um trabalho. Tende a preferir às vezes, prazos mais longos para executa-lo.",
+      "5": "Tende a não ter pressa para executar um trabalho. Tende a preferir às vezes, prazos mais longos para executa-lo.",
+      "6": "Apresenta equilíbrio entre o tempo de execução e a necessidade de entregar os resultados. Prefere prazos médios e/ou curtos para a execução dos trabalhos.",
+      "7": "Apresenta equilíbrio entre o tempo de execução e a necessidade de entregar os resultados. Prefere prazos médios e/ou curtos para a execução dos trabalhos.",
+      "8": "Apresenta equilíbrio entre o tempo de execução e a necessidade de entregar os resultados, com tendência  para ser rápido, preferindo prazos curtos para a execução dos trabalhos.",
+      "9": "Muito apressado para apresentar os resultados. Gosta de prazos curtos e por vezes pode sacrificar a eficiência e a eficácia.",
+      "10": "Muito apressado para entregar os resultados. Gosta de prazos curtos, podendo sacrificar a eficiência e a eficácia. Se irrita com o trabalho lento (seu e dos outros)."
+    }
+  },
+  "H": {
+    "dimension_name": "ESFORÇO NO TRABALHO",
+    "by_score": {
+      "0": "Não gosta de trabalho árduo, intenso. Gosto de simplificar ao máximo as coisas, podendo prejudicar os resultados.",
+      "1": "Não gosta de trabalho árduo, intenso. Gosto de simplificar ao máximo as coisas, podendo prejudicar os resultados.",
+      "2": "Tende a não se identificar com o trabalho árduo, intenso. Gosta de simplificar as coisas podendo ocasionalmente prejudicar os resultados.",
+      "3": "Tende a se identificar com o trabalho árduo, intenso. Gosta de trabalhar sentindo-se bem quando reconhecem seu trabalho.",
+      "4": "Tende a se identificar com o trabalho árduo, intenso. Gosta de trabalhar sentindo-se bem quando reconhecem seu trabalho.",
+      "5": "Identifica-se com o trabalho árduo, intenso. Gosta de trabalhar, sentindo-se bem quando reconhecem seu trabalho.",
+      "6": "Identifica-se com o trabalho árduo, intenso. Gosta de trabalhar, sentindo-se bem quando reconhecem seu trabalho. Tende a não gostar de ficar à toa no trabalho.",
+      "7": "Identifica-se com o trabalho árduo, intenso. Não gosta de ficar à toa, sentindo-se bem quando reconhecem seu trabalho. Pode criar trabalho desnecessário para si mesmo, com tendência à estafa.",
+      "8": "Identifica-se com o trabalho árduo, intenso. Não gosta de ficar à toa, sentindo-se bem quando reconhecem seu trabalho. Pode criar trabalho desnecessário para si mesmo, com tendência à estafa.",
+      "9": "Identifica-se muito com o trabalho árduo, intenso. Não gosta de ficar à toa, sentindo-se bem quando reconhecem seu trabalho. Normalmente cria trabalho desnecessário para si mesmo. Tendência à estafa.",
+      "10": "Identifica-se muito com o trabalho árduo, intenso. Não gosta de ficar à toa, sentindo-se bem quando reconhecem seu trabalho. Normalmente cria trabalho desnecessário para si mesmo. Tendência à estafa."
+    }
+  },
+  "I": {
+    "dimension_name": "RELAÇÃO COM AUTORIDADE",
+    "by_score": {
+      "0": "Prefere trabalhar independentemente da influência da autoridade. Sente-se motivado, não necessita de estímulos do superior. Pode contestar antecipadamente a autoridade e/ou mesmo opor-se, não se importando com os sentimentos dela a seu respeito.",
+      "1": "Prefere trabalhar independentemente da influência da autoridade. Sente-se motivado, não necessita de estímulos do superior. Pode contestar antecipadamente a autoridade e/ou mesmo opor-se, não se importando com os sentimentos dela a seu respeito.",
+      "2": "Tende a trabalhar sem influência da autoridade. Sente-se motivado, não necessita de estímulos do superior",
+      "3": "Apresenta equilíbrio entre respeito e admiração pela autoridade, com tendência a contesta-la antecipadamente.",
+      "4": "Apresenta equilíbrio entre respeito e admiração pela autoridade, com tendência a contesta-la antecipadamente.",
+      "5": "Apresenta equilíbrio entre respeito e admiração pela autoridade, contestando-a quando julga necessário.",
+      "6": "Apresenta equilíbrio entre respeito e admiração pela autoridade, contestando-a quando julga necessário.",
+      "7": "Apresenta equilíbrio entre respeito, admiração e lealdade para a autoridade, com tendência a não contesta-la.",
+      "8": "Apresenta muito respeito, admiração e lealdade para com a autoridade, preocupa-se com o que ela sente a seu respeito. Tende a não contestar o superior e pode ser submisso em relação a ele. Eventualmente pode reter informações por receio de não serem aceitas.",
+      "9": "Apresenta muito respeito, admiração e lealdade para com a autoridade, preocupa-se com o que ela sente a seu respeito. Não contesta o superior, sendo submisso ao mesmo. Normalmente retém informações por receio de não serem aceitas.",
+      "10": "Apresenta muito respeito, admiração e lealdade para com a autoridade, preocupa-se com o que ela sente a seu respeito. Não contesta o superior, sendo submisso ao mesmo. Normalmente retém informações por receio de não serem aceitas."
+    }
+  },
+  "J": {
+    "dimension_name": "APEGO AS TÉCNICAS",
+    "by_score": {
+      "0": "É flexível, preocupa-se em atingir os resultados e não com tarefa. Gosta que lhe digam o que fazer e não como fazer. Não gosta de seguir as normas, tal como foram estabelecidas.",
+      "1": "É flexível, preocupa-se em atingir os resultados e não com tarefa. Gosta que lhe digam o que fazer e não como fazer. Não gosta de seguir as normas, tal como foram estabelecidas.",
+      "2": "Tende a ser flexível, a se preocupar em atingir os resultados e não com tarefa. Prefere que lhe digam o que fazer e não como fazer, tendendo a não gostar das normas, tal como foram estabelecidas.",
+      "3": "Tende a ser, em princípio, pouco rígido com suas idéias e na aplicação das normas.",
+      "4": "Tende a ser, em princípio, pouco rígido com suas idéias e na aplicação das normas.",
+      "5": "Respeita, em princípio, as normas sendo um pouco rígido com suas idéias e na aplicação dos regulamentos. Tende a ser inflexível.",
+      "6": "Respeita, em princípio, as normas sendo um pouco rígido com suas idéias e na aplicação dos regulamentos. Tende a ser inflexível.",
+      "7": "Respeita, em princípio, as normas sendo rígido com suas idéias e na aplicação dos regulamentos, com tendência a defendê-los com inflexibilidade.",
+      "8": "Respeita, em princípio, as normas sendo rígido com suas idéias e na aplicação dos regulamentos, com tendência a defendê-los com inflexibilidade.",
+      "9": "Respeita por princípio as normas, sendo muito rígido com suas idéias e na aplicação dos regulamentos. É inflexível, defendendo as normas e idéias teimosamente. Pode ter conflito com as normas, mas as segue.",
+      "10": "Respeita por princípio as normas, sendo muito rígido com suas idéias e na aplicação dos regulamentos. É inflexível, defendendo as normas e idéias teimosamente. Pode ter conflito com as normas, mas as segue."
+    }
+  },
+  "K": {
+    "dimension_name": "OBSTINAÇÃO",
+    "by_score": {
+      "0": "Gosta de fazer várias coisas ao mesmo tempo. Quando delega, quer resultados, é dispersivo, podendo não terminar o que começa, ou ter dificuldade em estabelecer prioridade.",
+      "1": "Gosta de fazer várias coisas ao mesmo tempo. Quando delega, quer resultados.Tende a  ser dispersivo, podendo não terminar o que começa. Tende a ter dificuldades em estabelecer prioridades.",
+      "2": "Gosta de fazer várias coisas ao mesmo tempo. Quando delega, quer resultados.Tende a  ser dispersivo, podendo não terminar o que começa. Tende a ter dificuldades em estabelecer prioridades.",
+      "3": "Prefere trabalhar com várias coisas ao mesmo tempo. Estabelece prioridades, embora nem sempre as siga.",
+      "4": "Apresenta equilíbrio entre dispersividade e obsessividade, gosta de acabar o que começa. Estabelece prioridades e procura segui-las.",
+      "5": "Apresenta equilíbrio entre dispersividade e obsessividade, gosta de acabar o que começa. Estabelece prioridades e procura segui-las.",
+      "6": "Apresenta equilíbrio entre dispersividade e obsessividade, com maior tendência para ser obsessivo. Gosta de acabar o que começa.",
+      "7": "Apresenta tendência para obsessividade. Tem necessidade de acabar o que começa, gosta de fazer uma coisa de cada vez. Tende a ser obstinado no que está fazendo, podendo prejudicar a eficiência e eficácia. Não gosta de parar o que está fazendo.",
+      "8": "Apresenta tendência para obsessividade. Tem necessidade de acabar o que começa, gosta de fazer uma coisa de cada vez. Tende a ser obstinado no que está fazendo, podendo prejudicar a eficiência e eficácia. Não gosta de parar o que está fazendo.",
+      "9": "É obsessivo. Tem muita necessidade de acabar o que começou. Prefere uma tarefa de cada vez. É obstinado no que está fazendo, podendo prejudicar a eficiência e eficácia. Não gosta de parar o que está fazendo.",
+      "10": "É obsessivo. Tem muita necessidade de acabar o que começou. Prefere uma tarefa de cada vez. É obstinado no que está fazendo, podendo prejudicar a eficiência e eficácia. Não gosta de parar o que está fazendo."
+    }
+  },
+  "L": {
+    "dimension_name": "DETALHISMO",
+    "by_score": {
+      "0": "Não se preocupa com detalhes, não se sentindo seguro ou com necessidade para fazê-los. Normalmente delega bem e separa os detalhes necessários dos não necessários.",
+      "1": "Tende a não gostar de detalhes, não se sentindo com necessidade ou seguro para fazê-los. Normalmente delega bem e/ou separa os detalhes necessários dos não necessários.",
+      "2": "Tende a não gostar de detalhes, não se sentindo com necessidade ou seguro para fazê-los. Normalmente delega bem e/ou separa os detalhes necessários dos não necessários.",
+      "3": "Tende a gostar de detalhes, executando às vezes além do ponto de eficiência e eficácia. Alguma dificuldade em delega-los.",
+      "4": "Tende a gostar de detalhes, executando às vezes além do ponto de eficiência e eficácia. Alguma dificuldade em delega-los.",
+      "5": "Gosta de detalhes, é minucioso, executando por vezes tarefas desnecessárias e onerosas. Dificuldade em delega-los.",
+      "6": "Gosta de detalhes, é minucioso, executando por vezes tarefas desnecessárias e onerosas. Dificuldade em delega-los.",
+      "7": "Muito detalhista, minucioso, executa tarefas desnecessárias e onerosas. Normalmente não as delega. Executando-as, evitando a liderança. Tem dificuldade em separar os detalhes necessários dos não necessários.",
+      "8": "Muito detalhista, minucioso, executa tarefas desnecessárias e onerosas. Normalmente não as delega. Executando-as, evitando a liderança. Tem dificuldade em separar os detalhes necessários dos não necessários.",
+      "9": "Muito detalhista, minucioso, executa tarefas desnecessárias e onerosas. Normalmente não as delega. Executando-as, evitando a liderança. Tem dificuldade em separar os detalhes necessários dos não necessários.",
+      "10": "Muito detalhista, minucioso, executa, não delega tarefas desnecessárias e onerosas. Procura evitar as situações de liderança."
+    }
+  },
+  "M": {
+    "dimension_name": "CONFRONTAÇÃO INTERPESSOAL",
+    "by_score": {
+      "0": "Muito sensível, não gosta de ferir as pessoas. É introvertido, não demonstra seus sentimentos. Normalmente evita os conflitos, não os resolve.",
+      "1": "Muito sensível, não gosta de ferir as pessoas. É introvertido, não demonstra seus sentimentos. Normalmente evita os conflitos, não os resolve.",
+      "2": "Muito sensível, não gosta de ferir as pessoas. É introvertido, não demonstra seus sentimentos. Normalmente evita os conflitos, não os resolve.",
+      "3": "Tende a ser sensível, não gosta de ferir as pessoas. Tende a ser introvertido e a não mostrar seus sentimentos. Pode evitar os conflitos e não resolvê-los.",
+      "4": "Apresenta equilíbrio entre a agressividade e a passividade, com tendência para a passividade.",
+      "5": "Apresenta equilíbrio entre a agressividade e a passividade, sendo franco, procurando resolver os conflitos com diplomacia.",
+      "6": "Apresenta equilíbrio entre a agressividade e a passividade, sendo franco, procurando resolver os conflitos com diplomacia.",
+      "7": "Apresenta equilíbrio entre a agressividade e a passividade, sendo franco, procurando resolver os conflitos, com tendência a ser agressivo.",
+      "8": "Tende a ser agressivo, franco, porém resolve os conflitos, mas pode ferir as pessoas com sua franqueza, não sendo muito diplomático.",
+      "9": "É agressivo, franco, porém resolve os conflitos, podendo ferir  as pessoas com sua franqueza, não sendo diplomata. Sente-se atingido com facilidade.",
+      "10": "É agressivo, franco, porém resolve os conflitos, podendo ferir  as pessoas com sua franqueza, não sendo diplomata. Sente-se atingido com facilidade."
+    }
+  },
+  "N": {
+    "dimension_name": "REPRESSÃO EMOCIONAL",
+    "by_score": {
+      "0": "Muito dramático, se envolve emotivamente com o trabalho. Revela seus sentimentos, sendo muito excitável. Tem pouco controle das emoções (explosivo). Varia sua emotividade conforme a situação. Apresenta dificuldade no relacionamento.",
+      "1": "Tende a dramatizar e se envolver emotivamente no trabalho. Tende a revelar seus sentimentos, sendo excitável (explosivo). Tende a ter pouco controle das emoções. Pode variar sua emotividade conforme a situação e ter dificuldade no relacionamento.",
+      "2": "Tende a dramatizar e se envolver emotivamente no trabalho. Tende a revelar seus sentimentos, sendo excitável (explosivo). Tende a ter pouco controle das emoções. Pode variar sua emotividade conforme a situação e ter dificuldade no relacionamento.",
+      "3": "Apresenta algum equilíbrio emocional, com tendência a  ser explosivo.",
+      "4": "Apresenta bom equilíbrio emocional, mantendo a calma quando necessário, maduro emocionalmente.",
+      "5": "Apresenta bom equilíbrio emocional, mantendo a calma quando necessário, maduro emocionalmente.",
+      "6": "Apresenta bom equilíbrio emocional, mantendo a calma quando necessário, maduro emocionalmente.",
+      "7": "Apresenta bom equilíbrio emocional, com tendência a ser calmo demais (passivo)",
+      "8": "Controla as emoções com muita calma e firmeza podendo, por vezes, ser calmo demais e ser considerado passivo (não convincente). Pode prejudicar a sua eficiência e eficácia no relacionamento.",
+      "9": "Bastante controlado emotivamente, sendo tão calmo que por vezes se torna passivo (não convincente). Prejudica sua eficiência e eficácia no relacionamento.",
+      "10": "Bastante controlado emotivamente, sendo tão calmo que por vezes se torna passivo (não convincente). Prejudica sua eficiência e eficácia no relacionamento."
+    }
+  },
+  "O": {
+    "dimension_name": "GOSTO PELA INOVAÇÃO",
+    "by_score": {
+      "0": "Muito rotineiro, conservador, tem \"dificuldade\" em aceitar inovações. Acomodado.",
+      "1": "Muito rotineiro, conservador, tem \"dificuldade\" em aceitar inovações. Acomodado.",
+      "2": "Muito rotineiro, conservador, tem \"dificuldade\" em aceitar inovações. Acomodado.",
+      "3": "Tende a ser rotineiro e conservador, pode ter dificuldade em aceitar inovações. Tende a ser acomodado.",
+      "4": "Aceita as inovações com alguma reserva, não é rotineiro mas gosta de pensar sobre as inovações por mais tempo.",
+      "5": "Aceita bem as inovações, não raro as provoca. Não é rotineiro. Pensa o necessário para aplicar as inovações.",
+      "6": "Aceita com muita flexibilidade as inovações, sendo criativo e flexível com suas idéias inovadoras, com alguma tendência a ser apressado na aplicação das mudanças.",
+      "7": "Não gosta de rotina, muito criativo, flexível na aplicação de idéias novas, com tendência a ser por demais apressado na aplicação das mudanças.",
+      "8": "Não gosta de rotina, muito criativo, flexível na aplicação de idéias novas, com tendência a ser por demais apressado na aplicação das mudanças.",
+      "9": "Não gosta de rotina, muito criativo, flexível na aplicação de idéias novas, com tendência a ser por demais apressado na aplicação das mudanças.",
+      "10": "Não gosta de rotina, muito criativo, flexível na aplicação de idéias novas, sendo muito apressado em aplica-las. Normalmente é inquieto, incomodado e afoito às mudanças, mesmo antes de aplicadas no geral."
+    }
+  },
+  "P": {
+    "dimension_name": "ENVOLVIMENTO AFETIVO",
+    "by_score": {
+      "0": "Não gosta de intimidade, muito frio e calculista no seu relacionamento. É objetivo, analítico e procura ser imparcial, podendo exigir demais das pessoas mais intimas.",
+      "1": "Não gosta de intimidade, muito frio e calculista no seu relacionamento. É objetivo, analítico e procura ser imparcial, podendo exigir demais das pessoas mais intimas.",
+      "2": "Tende a não gostar de intimidade, tende a ser frio e calculista no seu relacionamento. Tende a ser objetivo, analítico e imparcial.",
+      "3": "Apresenta bom equilíbrio afetivo, não se envolvendo no seu relacionamento com os outros.",
+      "4": "Apresenta bom equilíbrio afetivo, não se envolvendo no seu relacionamento com os outros.",
+      "5": "Apresenta bom equilíbrio afetivo, mas com tendência a se envolver com os outros.",
+      "6": "Tende a ser afetivo, procurando conhecer os sentimentos dos outros, se envolvendo afetivamente, por vezes, com as pessoas. É muito caloroso e sincero com as pessoas.",
+      "7": "Tende a ser afetivo, procurando conhecer os sentimentos dos outros, se envolvendo afetivamente, por vezes, com as pessoas. É muito caloroso e sincero com as pessoas.",
+      "8": "Tende a ser afetivo, procurando conhecer os sentimentos dos outros, se envolvendo afetivamente, por vezes, com as pessoas. É muito caloroso e sincero com as pessoas.",
+      "9": "Se envolve com os sentimentos dos outros, é muito caloroso e sincero com as  pessoas. Muito susceptível, procurando perceber se o querem bem ou não. Tão preocupado com as reações intimas, sentimentos dos outros que, pode não ser eficiente como gerente.",
+      "10": "Se envolve com os sentimentos dos outros, é muito caloroso e sincero com as  pessoas. Muito susceptível, procurando perceber se o querem bem ou não. Tão preocupado com as reações intimas, sentimentos dos outros que, pode não ser eficiente como gerente."
+    }
+  },
+  "Q": {
+    "dimension_name": "AMBIÇÃO",
+    "by_score": {
+      "0": "Está decepcionado, é pouco exigente aceitando uma segunda posição, embora possa sentir-se em condições de ocupar uma primeira. Sente-se com poucos conhecimentos ou sem chance de promoção ou está acomodado em sua situação.",
+      "1": "Está decepcionado, é pouco exigente aceitando uma segunda posição, embora possa sentir-se em condições de ocupar uma primeira. Sente-se com poucos conhecimentos ou sem chance de promoção ou está acomodado em sua situação.",
+      "2": "Tende a ser pouco exigente, podendo aceitar uma segunda posição, embora possa sentir-se em condições para ocupar uma primeira. Está um pouco desmotivado.",
+      "3": "Tende a ser pouco exigente, podendo aceitar uma segunda posição, embora possa sentir-se em condições para ocupar uma primeira. Está um pouco desmotivado.",
+      "4": "Apresenta sinais de alguma decepção, mas não chega a estar desmotivado.",
+      "5": "Pessoa com ambição dentro das suas reais condições, vem conseguindo realizar a maioria das coisas que pretende. Gosta de desafios, procurando sobressair-se ante os demais.",
+      "6": "Pessoa com ambição dentro das suas reais condições, vem conseguindo realizar a maioria das coisas que pretende. Gosta de desafios, procurando sobressair-se ante os demais.",
+      "7": "Pessoa ambiciosa, com \"tendência\" a querer conquistar situações que por vezes podem não estar ao seu alcance. Está motivado, conseguindo realizar a maioria de suas pretensões. Gosta de desafios, procurando sobressair-se ante os demais.",
+      "8": "Pessoa muito ambiciosa, quer conquistar situações que podem não estar ao seu alcance. Muito rígido em suas pretensões. Gosta de desafios, porém tem expectativas altas. Seu superior poderá ter dificuldade em atendê-lo. Procura maiores conhecimentos, aumentando de salário e/ou promoção.",
+      "9": "Pessoa muito ambiciosa, quer conquistar situações que podem não estar ao seu alcance. Muito rígido em suas pretensões. Gosta de desafios, porém tem expectativas altas. Seu superior poderá ter dificuldade em atendê-lo. Procura maiores conhecimentos, aumentando de salário e/ou promoção.",
+      "10": "Pessoa muito ambiciosa, que por querer conquistar situações acima do seu alcance, se torna descontente. Gosta de desafios. Seu superior poderá ter dificuldade em atendê-lo, pois é muito exigente. Quer maiores conhecimentos, aumento de salário e/ou promoção."
+    }
+  },
+  "R": {
+    "dimension_name": "AUTO EXPOSIÇÃO",
+    "by_score": {
+      "0": "Muito tímido, modesto e reservado, com dificuldade de participar em grupos. Não gosta de fazer cenas, é sincero. Tem dificuldade em \"vender\" sua imagem.",
+      "1": "Tende à timidez e a ser reservado. Tem dificuldade em \"vender\" sua imagem. Apresenta alguma dificuldade em participar de grupos (reuniões).",
+      "2": "Tende à timidez e a ser reservado. Tem dificuldade em \"vender\" sua imagem. Apresenta alguma dificuldade em participar de grupos (reuniões).",
+      "3": "Pessoa com alguma tendência a ser tímido, \"vende\" sua imagem com muita reserva.",
+      "4": "Apresenta bom equilíbrio entre modéstia e exibicionismo. Sabe \"vender\" sua imagem tal qual ela é.",
+      "5": "Pessoa um pouco orgulhosa de si. Vende bem sua imagem, com pouca tendência ao exibicionismo.",
+      "6": "Pessoa que tem orgulho de si. Vende sua imagem com algum exibicionismo. Pode, por vezes fazer as coisas mais para \"aparecer\" do que para ser afetivo.",
+      "7": "Pessoa que tem orgulho de si. Vende sua imagem com algum exibicionismo. Pode, por vezes fazer as coisas mais para \"aparecer\" do que para ser afetivo.",
+      "8": "Pessoa orgulhosa de si, vende sua imagem de modo um tanto exagerado (exibicionismo). Faz coisas para \"aparecer\" e não para ser afetivo.",
+      "9": "Pessoa orgulhosa de si, vende sua imagem de modo um tanto exagerado (exibicionismo). Faz coisas para \"aparecer\" e não para ser afetivo.",
+      "10": "Pessoa orgulhosa de si, sendo exibicionista, gosta muito de \"aparecer\", dando mais atenção aos efeitos do que aos resultados, não se esforça para ser eficiente e eficaz."
+    }
+  },
+  "S": {
+    "dimension_name": "SOCIABILIDADE",
+    "by_score": {
+      "0": "Não gosta de convivência grupal, prefere trabalho isolado, não se deixa levar pela opinião do grupo. Não se preocupa com as necessidades e pretensões do grupo.",
+      "1": "Tende a não gostar de convivência grupal, pode preferir trabalho isolado. Normalmente não se deixa levar pela opinião do grupo. Tende a não se preocupar com as necessidades e pretensões do grupo.",
+      "2": "Aceita o trabalho em grupo. Normalmente não se deixa levar pelo opinião do grupo.",
+      "3": "Gosta de trabalhar em equipe, ouve as pessoas ponderando sobre as suas exigências e opiniões. Sabe quando fazer concessões.",
+      "4": "Gosta de trabalhar em equipe, ouve as pessoas ponderando sobre as suas exigências e opiniões. Sabe quando fazer concessões.",
+      "5": "Gosta de trabalhar em equipe, ouve as pessoas ponderando sobre as suas exigências e opiniões. Sabe quando fazer concessões.",
+      "6": "Gosta de trabalhar em equipe, ouve as pessoas, pondera sobre suas exigências e opiniões, com alguma tendência a se envolver com elas, podendo conceder a mais.",
+      "7": "Gosta muito de trabalhar em equipe, ouve as pessoas, tende a se envolver com as exigências e opiniões delas, fazendo concessões a mais do que devia. Apresenta alguma dependência e/ou lealdade para com o grupo e por isso, às vezes fecha os olhos para a produção pessoal.",
+      "8": "Gosta muito de trabalhar em equipe, ouve as pessoas, tende a se envolver com as exigências e opiniões delas, fazendo concessões a mais do que devia. Apresenta alguma dependência e/ou lealdade para com o grupo e por isso, às vezes fecha os olhos para a produção pessoal.",
+      "9": "Gosta muito de atuar em equipe, Muito envolvente com as pessoas, faz muitas concessões. Pode ter dependência e lealdade para com a equipe e pode fechar os olhos para a produção pessoal.",
+      "10": "Gosta muito de atuar em equipe, Muito envolvente com as pessoas, faz muitas concessões. Pode ter dependência e lealdade para com a equipe e pode fechar os olhos para a produção pessoal."
+    }
+  },
+  "T": {
+    "dimension_name": "INQUIETAÇÃO FÍSICA",
+    "by_score": {
+      "0": "Não gosta de trabalhos que exijam movimentação (sinal de cansaço).",
+      "1": "Tende a preferir trabalhos que não exijam movimentação.",
+      "2": "Tende a preferir trabalhos que não exijam movimentação.",
+      "3": "Gosta de trabalhos que exijam alguma movimentação.",
+      "4": "Gosta de trabalhos que exijam alguma movimentação.",
+      "5": "Apresenta equilíbrio entre o movimentar-se e o sentar-se.",
+      "6": "Apresenta equilíbrio entre o movimentar-se e o sentar-se.",
+      "7": "Pessoa com muita energia, prefere trabalhos que exijam movimentação. Tem habilidade manual. Pode se envolver, às vezes, com atividades físicas por dificuldade de concentração em outras atividades. Tem alguma dificuldade em ficar sentado muito tempo.",
+      "8": "Tem muita energia, gosta de movimentar-se fisicamente. Tem habilidade manual, porém tende a se envolver com atividades físicas e a não se concentrar em outras atividades. Não gosta de  ficar muito tempo sentado.",
+      "9": "Tem muita energia, gosta de movimentar-se fisicamente. Tem habilidade manual, porém tende a se envolver com atividades físicas e a não se concentrar em outras atividades. Não gosta de  ficar muito tempo sentado.",
+      "10": "Tem muita energia, gosta de movimentação física. Tem boa habilidade manual, porém se envolve tanto com as atividades físicas, que não se concentra em outras coisas. Quase não fica sentado."
+    }
+  }
+}

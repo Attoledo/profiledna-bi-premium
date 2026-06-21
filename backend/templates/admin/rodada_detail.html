@@ -1,0 +1,2146 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ProfileDNA — Rodada</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+      :root {
+        /* Paleta oficial: degradê laranja->coral (onda do logo) + grafite/azul escuro (traço da onda) */
+        --pd-brand-orange: #fb923c;
+        --pd-brand-orange-strong: #f97316;
+        --pd-brand-coral: #ef4444;
+        --pd-brand-gradient: linear-gradient(90deg, var(--pd-brand-orange) 0%, var(--pd-brand-orange-strong) 50%, var(--pd-brand-coral) 100%);
+        --pd-brand-graphite: #1e293b;
+        --pd-brand-graphite-soft: #334155;
+        --pd-brand-navy: #0f172a;
+        --pd-brand-gradient-dark: linear-gradient(135deg, var(--pd-brand-graphite) 0%, var(--pd-brand-navy) 100%);
+        --pd-brand-gradient-liquid: linear-gradient(90deg, rgba(251, 146, 60, 0.85) 0%, rgba(249, 115, 22, 0.85) 50%, rgba(239, 68, 68, 0.85) 100%);
+      }
+
+      .pd-page-shell {
+        max-width: 1460px;
+        margin: 0 auto;
+        padding: 22px 22px 32px;
+      }
+
+      .pd-page-stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .pd-cliente-hero {
+        display: grid;
+        gap: 18px;
+        padding: 22px;
+        border-radius: 28px;
+        border: 1px solid #e5e7eb;
+        background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+        box-shadow: 0 10px 24px rgba(17, 24, 39, 0.04);
+      }
+
+      .pd-cliente-hero__top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .pd-cliente-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none;
+      }
+
+      .pd-cliente-brand__logo {
+        height: 72px !important;
+        max-height: 76px !important;
+        width: auto !important;
+        max-width: 140px !important;
+        object-fit: contain !important;
+        display: block;
+        flex: 0 0 auto;
+        background: transparent;
+        margin-top: -4px !important;
+        margin-bottom: -4px !important;
+      }
+
+      .pd-cliente-brand__text {
+        min-width: 0;
+      }
+
+      .pd-cliente-brand__title {
+        color: var(--pd-brand-graphite);
+        font-size: 18px;
+        line-height: 1.1;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+
+      .pd-cliente-hero__actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Botões: base + efeito líquido (gooey blob) no hover            */
+      /* -------------------------------------------------------------- */
+
+      .pd-cliente-btn {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 14px;
+        border: 1px solid #dbe1ea;
+        background: #ffffff;
+        color: var(--pd-brand-graphite);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 800;
+        box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, color .25s ease;
+        cursor: pointer;
+      }
+
+      .pd-cliente-btn::after {
+        content: "";
+        position: absolute;
+        inset: -10%;
+        background: var(--pd-brand-gradient);
+        opacity: 0;
+        transform: scale(0.35);
+        border-radius: 46% 54% 58% 42% / 48% 40% 60% 52%;
+        transition: transform .6s cubic-bezier(.22, 1, .36, 1),
+                    opacity .35s ease,
+                    border-radius .8s ease-in-out;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      .pd-cliente-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+        color: var(--pd-brand-graphite);
+        border-color: transparent;
+      }
+
+      .pd-cliente-btn:hover::after {
+        opacity: .16;
+        transform: scale(2.4);
+        border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+        animation: pd-blob-morph 5s ease-in-out infinite;
+      }
+
+      .pd-cliente-btn--primary {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #ffffff;
+        background: var(--pd-brand-gradient-liquid);
+        backdrop-filter: blur(10px) saturate(160%);
+        -webkit-backdrop-filter: blur(10px) saturate(160%);
+        box-shadow: 0 14px 30px rgba(239, 68, 68, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        transition: all .5s cubic-bezier(.4, 0, .2, 1);
+      }
+
+      .pd-cliente-btn--primary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 60%);
+        opacity: .55;
+        transform: scale(1) translate(0, 0);
+        transition: transform .6s cubic-bezier(.4, 0, .2, 1), opacity .5s ease;
+        pointer-events: none;
+      }
+
+      .pd-cliente-btn--primary::after {
+        background: var(--pd-brand-gradient-dark);
+        opacity: 0;
+      }
+
+      .pd-cliente-btn--primary:hover {
+        color: #ffffff;
+        transform: translateY(-2px) scale(1.015);
+        box-shadow: 0 18px 36px rgba(239, 68, 68, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      }
+
+      .pd-cliente-btn--primary:hover::before {
+        transform: scale(1.4) translate(4%, -4%);
+        opacity: .85;
+      }
+
+      .pd-cliente-btn--primary:hover::after {
+        opacity: .18;
+        mix-blend-mode: overlay;
+      }
+
+      @keyframes pd-blob-morph {
+        0%, 100% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
+        33%      { border-radius: 58% 42% 35% 65% / 60% 38% 62% 40%; }
+        66%      { border-radius: 45% 55% 60% 40% / 35% 60% 40% 65%; }
+      }
+
+      /* Navegação superior direita: vidro translúcido + indicador gooey elástico (#pd-goo) */
+      .pd-cliente-btn--nav {
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
+        box-shadow: 0 8px 24px rgba(31, 38, 135, 0.06);
+      }
+
+      .pd-cliente-btn--nav::after {
+        transition: transform .45s cubic-bezier(.34, 1.56, .64, 1),
+                    opacity .35s ease,
+                    border-radius .45s cubic-bezier(.34, 1.56, .64, 1);
+      }
+
+      .pd-cliente-btn--nav:hover::after {
+        filter: url(#pd-goo);
+      }
+
+      .pd-cliente-btn--nav-active {
+        background: rgba(249, 115, 22, 0.12) !important;
+        border-color: rgba(249, 115, 22, 0.35) !important;
+        color: #c2410c !important;
+        font-weight: 900 !important;
+      }
+
+      .pd-cliente-hero__body {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .pd-cliente-hero__content {
+        max-width: 920px;
+        min-width: 0;
+      }
+
+      .pd-cliente-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid #fdba74;
+        background: #fff7ed;
+        color: #c2410c;
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 14px;
+      }
+
+      .pd-cliente-title {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+        color: var(--pd-brand-graphite);
+        font-weight: 900;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-cliente-subtitle {
+        margin: 14px 0 0;
+        max-width: 920px;
+        color: #6b7280;
+        font-size: 17px;
+        line-height: 1.65;
+      }
+
+      /* Grid mandatório: coluna principal 75%, sidebar de contexto 25% */
+      .pd-top-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(300px, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .pd-main-stack,
+      .pd-right-stack {
+        display: grid;
+        gap: 18px;
+        min-width: 0;
+        align-content: start;
+      }
+
+      .pd-right-stack {
+        position: sticky;
+        top: 18px;
+      }
+
+      /* Apple Liquid Glass: cartões da sidebar com vidro translúcido + blur */
+      .pd-right-stack .pd-card {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+      }
+
+      .pd-card {
+        background: #ffffff;
+        border: 1px solid #dbe1ea;
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+        min-width: 0;
+      }
+
+      .pd-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .pd-card-title {
+        margin: 0;
+        color: var(--pd-brand-graphite);
+        font-size: 20px;
+        line-height: 1.15;
+        font-weight: 900;
+      }
+
+      .pd-card-text {
+        margin: 8px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+        max-width: 860px;
+      }
+
+      .pd-card-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid #fdba74;
+        background: #fff7ed;
+        color: #c2410c;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Navegação por abas                                              */
+      /* -------------------------------------------------------------- */
+
+      .pd-tabs-nav {
+        position: relative;
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        padding: 6px;
+        border-radius: 20px;
+        background: #ffffff;
+        border: 1px solid #dbe1ea;
+        box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+        overflow: hidden;
+      }
+
+      .pd-tabs-indicator {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        height: calc(100% - 12px);
+        width: 0;
+        border-radius: 14px;
+        background: var(--pd-brand-gradient);
+        box-shadow: 0 10px 22px rgba(249, 115, 22, 0.28);
+        filter: url(#pd-goo);
+        transition: left .45s cubic-bezier(.34, 1.56, .64, 1),
+                    width .45s cubic-bezier(.34, 1.56, .64, 1);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .pd-tab-btn {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border: none;
+        border-radius: 14px;
+        background: transparent;
+        color: var(--pd-brand-graphite-soft);
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        cursor: pointer;
+        transition: color .3s ease;
+        white-space: nowrap;
+      }
+
+      .pd-tab-btn:hover {
+        color: var(--pd-brand-orange-strong);
+      }
+
+      .pd-tab-btn.is-active {
+        color: #ffffff;
+      }
+
+      .pd-tab-btn.is-active:hover {
+        color: #ffffff;
+      }
+
+      .pd-tab-panel {
+        display: none;
+      }
+
+      .pd-tab-panel.is-active {
+        display: grid;
+        gap: 18px;
+        animation: pd-tab-fade-in .35s ease;
+      }
+
+      @keyframes pd-tab-fade-in {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .pd-cliente-context-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .pd-cliente-context-card {
+        padding: 16px 18px;
+        border-radius: 18px;
+        border: 1px solid #dbe1ea;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+        min-width: 0;
+      }
+
+      .pd-cliente-context-card__label {
+        font-size: 11px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 900;
+        color: #9ca3af;
+        margin-bottom: 8px;
+      }
+
+      .pd-cliente-context-card__value {
+        color: var(--pd-brand-graphite);
+        font-size: 22px;
+        line-height: 1.2;
+        font-weight: 900;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-cliente-context-card__meta {
+        margin-top: 8px;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-summary-metrics,
+      .pd-operational-metrics {
+        display: grid;
+        gap: 12px;
+      }
+
+      .pd-summary-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-summary-metrics--grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pd-summary-metrics--grid > :first-child {
+        grid-column: 1 / -1;
+      }
+
+      .pd-summary-metrics--grid .pd-metric-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 8px;
+        padding: 16px;
+        min-height: 104px;
+      }
+
+      .pd-summary-metrics--grid .pd-metric-card__value--xl {
+        font-size: 26px;
+      }
+
+      .pd-metric-card {
+        border-radius: 22px;
+        padding: 16px;
+        min-width: 0;
+      }
+
+      .pd-metric-card--dark {
+        background: var(--pd-brand-gradient-dark);
+        border: 1px solid var(--pd-brand-navy);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.22);
+      }
+
+      .pd-metric-card--soft {
+        background: #fbfcfe;
+        border: 1px solid #dbe1ea;
+      }
+
+      .pd-metric-card--success {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+      }
+
+      .pd-metric-card--warning {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+      }
+
+      .pd-metric-card--brand {
+        background: var(--pd-brand-gradient);
+        border: 1px solid transparent;
+        box-shadow: 0 12px 24px rgba(239, 68, 68, 0.18);
+      }
+
+      .pd-metric-card__label {
+        font-size: 12px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+
+      .pd-metric-card--dark .pd-metric-card__label,
+      .pd-metric-card--brand .pd-metric-card__label {
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .pd-metric-card--soft .pd-metric-card__label {
+        color: #6b7280;
+      }
+
+      .pd-metric-card--success .pd-metric-card__label {
+        color: #047857;
+      }
+
+      .pd-metric-card--warning .pd-metric-card__label {
+        color: #9a3412;
+      }
+
+      .pd-metric-card__value {
+        color: #111827;
+        font-weight: 900;
+        line-height: 1.05;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-metric-card--dark .pd-metric-card__value,
+      .pd-metric-card--brand .pd-metric-card__value {
+        color: #ffffff;
+      }
+
+      .pd-metric-card__value--xl {
+        font-size: 34px;
+      }
+
+      .pd-metric-card__value--md {
+        font-size: 16px;
+        line-height: 1.3;
+      }
+
+      .pd-form-grid {
+        display: grid;
+        gap: 11px;
+      }
+
+      .pd-form-field {
+        display: block;
+      }
+
+      .pd-form-field > span {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 900;
+        color: #111827;
+      }
+
+      .pd-form-two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .pd-form-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .pd-input,
+      .pd-select {
+        width: 100%;
+        min-width: 0;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid #dbe1ea;
+        background: #ffffff;
+        color: #111827;
+        padding: 0 12px;
+        outline: none;
+        transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+
+      .pd-input:focus,
+      .pd-select:focus {
+        border-color: var(--pd-brand-orange);
+        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.14);
+      }
+
+      .pd-sidebar-eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 900;
+        color: var(--pd-brand-orange-strong);
+        margin: 0 0 6px;
+      }
+
+      .pd-wrap-anywhere {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .pd-full-mobile {
+        width: auto;
+      }
+
+      .pd-danger-zone {
+        padding-top: 14px;
+        border-top: 1px solid rgba(252, 165, 165, 0.45);
+      }
+
+      .pd-danger-zone__hint {
+        margin: 0 0 12px;
+        color: #9a3412;
+        font-size: 12.5px;
+        line-height: 1.6;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Filtros e paginação client-side (tabela de convites)            */
+      /* -------------------------------------------------------------- */
+
+      .pd-table-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .pd-filter-chips {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pd-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        height: 36px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(12px) saturate(180%);
+        -webkit-backdrop-filter: blur(12px) saturate(180%);
+        border: 1px solid rgba(251, 146, 60, 0.25);
+        font-size: 13px;
+        font-weight: 800;
+        color: #6b7280;
+        cursor: pointer;
+        transition: transform .14s ease, box-shadow .14s ease, background .14s ease, color .14s ease, border-color .14s ease;
+      }
+
+      .pd-filter-chip:hover {
+        transform: translateY(-1px);
+        border-color: var(--pd-brand-orange);
+      }
+
+      .pd-filter-chip.is-active {
+        background: var(--pd-brand-gradient-liquid);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25);
+      }
+
+      .pd-table-filters__select {
+        width: auto;
+        min-width: 160px;
+      }
+
+      .pd-table-filters__search {
+        width: auto;
+        min-width: 220px;
+        flex: 1 1 220px;
+      }
+
+      .pd-round-table th.pd-col-action,
+      .pd-round-table td.pd-col-action {
+        text-align: center;
+      }
+
+      .pd-round-table td.pd-col-action {
+        display: table-cell;
+      }
+
+      .pd-round-table td.pd-col-action > .pd-cliente-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .pd-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 16px;
+        padding: 10px 16px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(12px) saturate(180%);
+        -webkit-backdrop-filter: blur(12px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+
+      .pd-pagination__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 36px;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.65);
+        border: 1px solid rgba(251, 146, 60, 0.3);
+        color: var(--pd-brand-orange-strong);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform .14s ease, box-shadow .14s ease;
+      }
+
+      .pd-pagination__btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(249, 115, 22, 0.18);
+      }
+
+      .pd-pagination__btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .pd-pagination__info {
+        font-size: 13px;
+        font-weight: 800;
+        color: #6b7280;
+        min-width: 120px;
+        text-align: center;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Tabela de operação (Participantes / Convites)                   */
+      /* -------------------------------------------------------------- */
+
+      .pd-round-filter-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 16px;
+      }
+
+      .pd-round-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        background: #ffffff;
+      }
+
+      .pd-round-table {
+        width: 100%;
+        min-width: 880px;
+        border-collapse: collapse;
+      }
+
+      .pd-round-table thead th {
+        text-align: left;
+        padding: 14px 16px;
+        font-size: 12px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7280;
+        font-weight: 800;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f9fafb;
+        white-space: nowrap;
+      }
+
+      .pd-round-table tbody td {
+        padding: 14px 16px;
+        font-size: 14px;
+        line-height: 1.55;
+        color: #111827;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: top;
+      }
+
+      .pd-round-table tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .pd-round-table__main {
+        font-weight: 800;
+        color: #111827;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .pd-round-table__sub {
+        margin-top: 4px;
+        color: #6b7280;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .pd-round-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 28px;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        line-height: 1;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+        border: 1px solid #e5e7eb;
+        background: #f9fafb;
+        color: #374151;
+      }
+
+      .pd-round-badge--green {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+      }
+
+      .pd-round-badge--amber {
+        border-color: #fde68a;
+        background: #fffbeb;
+        color: #92400e;
+      }
+
+      .pd-round-badge--red {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+
+      .pd-empty {
+        padding: 16px 18px;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        background: #f9fafb;
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .pd-round-success {
+        padding: 16px 18px;
+        border-radius: 18px;
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+        display: grid;
+        gap: 10px;
+      }
+
+      .pd-round-success__title {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.2;
+        font-weight: 900;
+        color: #166534;
+      }
+
+      .pd-round-success__text {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .pd-round-success__code {
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid #bbf7d0;
+        background: #ffffff;
+        color: #166534;
+        font-size: 13px;
+        line-height: 1.6;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Central de disparos: WhatsApp + QR Code                         */
+      /* -------------------------------------------------------------- */
+
+      .pd-invite-share-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: stretch;
+        margin-top: 4px;
+      }
+
+      .pd-whatsapp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 18px;
+        min-height: 44px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(37, 211, 102, 0.35);
+        color: #166534;
+        font-size: 14px;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 24px rgba(37, 211, 102, 0.12);
+        transition: transform .18s ease, box-shadow .18s ease;
+        white-space: nowrap;
+      }
+
+      .pd-whatsapp-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 28px rgba(37, 211, 102, 0.2);
+      }
+
+      .pd-whatsapp-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: #25d366;
+        flex: 0 0 auto;
+      }
+
+      .pd-email-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 18px;
+        min-height: 44px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        color: #1d4ed8;
+        font-size: 14px;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+        transition: transform .18s ease, box-shadow .18s ease;
+        white-space: nowrap;
+      }
+
+      .pd-email-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 28px rgba(59, 130, 246, 0.2);
+      }
+
+      .pd-email-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: #2563eb;
+        flex: 0 0 auto;
+      }
+
+      .pd-whatsapp-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .pd-invite-share-hint {
+        margin: 4px 0 0;
+        font-size: 12px;
+        font-style: italic;
+        color: #6b7280;
+        max-width: 340px;
+        line-height: 1.4;
+      }
+
+      .pd-invite-qr-card {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 16px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+        margin-top: 6px;
+        width: fit-content;
+      }
+
+      .pd-invite-qr-card__label {
+        margin: 0;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 900;
+        color: #6b7280;
+      }
+
+      /* -------------------------------------------------------------- */
+      /* Flatpickr — calendário estilo Apple / Glassmorphism             */
+      /* -------------------------------------------------------------- */
+
+      .flatpickr-calendar {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+        overflow: hidden;
+      }
+
+      .flatpickr-calendar.arrowTop:before,
+      .flatpickr-calendar.arrowTop:after {
+        display: none;
+      }
+
+      .flatpickr-months {
+        padding: 6px 0;
+      }
+
+      .flatpickr-months .flatpickr-month,
+      .flatpickr-months .flatpickr-prev-month,
+      .flatpickr-months .flatpickr-next-month {
+        color: var(--pd-brand-graphite);
+        fill: var(--pd-brand-graphite);
+      }
+
+      .flatpickr-current-month .flatpickr-monthDropdown-months,
+      .flatpickr-current-month input.cur-year {
+        font-weight: 800;
+        color: var(--pd-brand-graphite);
+      }
+
+      span.flatpickr-weekday {
+        color: var(--pd-brand-graphite-soft, #6b7280);
+        font-weight: 800;
+      }
+
+      .flatpickr-day {
+        border-radius: 10px;
+        color: var(--pd-brand-graphite);
+      }
+
+      .flatpickr-day.today {
+        border: 1px solid var(--pd-brand-orange-strong);
+      }
+
+      .flatpickr-day.today:hover,
+      .flatpickr-day.today:focus {
+        background: var(--pd-brand-gradient-liquid);
+        border-color: var(--pd-brand-orange-strong);
+        color: #ffffff;
+      }
+
+      .flatpickr-day.selected,
+      .flatpickr-day.selected:hover,
+      .flatpickr-day.startRange,
+      .flatpickr-day.startRange:hover,
+      .flatpickr-day.endRange,
+      .flatpickr-day.endRange:hover {
+        background: var(--pd-brand-gradient-liquid);
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+      }
+
+      .flatpickr-day.flatpickr-disabled,
+      .flatpickr-day.flatpickr-disabled:hover {
+        color: rgba(107, 114, 128, 0.35);
+      }
+
+      .flatpickr-day:hover {
+        background: rgba(251, 146, 60, 0.16);
+      }
+
+      @media (max-width: 1320px) {
+        .pd-top-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .pd-right-stack {
+          position: static;
+        }
+      }
+
+      @media (max-width: 920px) {
+        .pd-cliente-context-grid,
+        .pd-form-two-col,
+        .pd-round-filter-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .pd-summary-metrics--grid {
+          grid-template-columns: 1fr;
+        }
+
+        .pd-tabs-nav {
+          flex-direction: column;
+        }
+
+        .pd-tabs-indicator {
+          display: none;
+        }
+
+        .pd-tab-btn.is-active {
+          color: #ffffff;
+          background: var(--pd-brand-gradient);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .pd-cliente-hero__actions {
+          width: 100%;
+        }
+
+        .pd-cliente-btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% set cliente = cliente if cliente is defined and cliente else None %}
+    {% set rodada = rodada if rodada is defined and rodada else None %}
+    {% set setores = setores if setores is defined and setores else [] %}
+    {% set invites = invites if invites is defined and invites else [] %}
+    {% set attempts = attempts if attempts is defined and attempts else [] %}
+    {% set csrf_token = csrf_token if csrf_token is defined else "" %}
+    {% set setor_id = setor_id if setor_id is defined and setor_id else "" %}
+    {% set created_invite_path = created_invite_path if (created_invite_path is defined and created_invite_path) else "" %}
+    {% set created_invite_id = created_invite_id if (created_invite_id is defined and created_invite_id) else "" %}
+
+    {% set cliente_nome = cliente.nome if cliente and cliente.nome is defined and cliente.nome else "Não informado" %}
+    {% set rodada_nome = rodada.nome if rodada and rodada.nome is defined and rodada.nome else "Não informado" %}
+    {% set rodada_inicio = rodada.data_inicio if rodada and rodada.data_inicio is defined and rodada.data_inicio else "Não informado" %}
+    {% set rodada_encerramento = rodada.data_encerramento if rodada and rodada.data_encerramento is defined and rodada.data_encerramento else "Em aberto" %}
+    {% set rodada_id_value = rodada.id if rodada and rodada.id is defined else "" %}
+    {% set cliente_id_value = cliente.id if cliente and cliente.id is defined else "" %}
+    {% set rodada_status_label = "Em aberto (sem encerramento definido)" if rodada_encerramento == "Em aberto" else "Prazo de encerramento definido" %}
+
+    {% set selected_setor_ns = namespace(nome="Todos os setores") %}
+    {% if setor_id %}
+      {% for item in setores %}
+        {% if item.id|string == setor_id|string %}
+          {% set selected_setor_ns.nome = item.nome if item.nome is defined and item.nome else "Setor selecionado" %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% set selected_setor_nome = selected_setor_ns.nome %}
+
+    <!-- Filtro SVG gooey, usado no indicador líquido das abas -->
+    <svg aria-hidden="true" focusable="false" style="position:absolute; width:0; height:0; overflow:hidden;">
+      <defs>
+        <filter id="pd-goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="pd-goo-blur" />
+          <feColorMatrix in="pd-goo-blur" mode="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10" result="pd-goo-sharp" />
+          <feComposite in="SourceGraphic" in2="pd-goo-sharp" operator="atop" />
+        </filter>
+      </defs>
+    </svg>
+
+    <div class="pd-page-shell">
+      <div class="pd-page-stack">
+        <section class="pd-cliente-hero">
+          <div class="pd-cliente-hero__top">
+            <a href="/admin/dashboard" class="pd-cliente-brand">
+              <img
+                src="/static/img/official_logo.png"
+                alt="Profile DNA"
+                class="pd-cliente-brand__logo"
+                onerror="this.src='/static/img/dna-logo.png';"
+              />
+            </a>
+
+            <div class="pd-cliente-hero__actions">
+              <a href="/admin/clientes" class="pd-cliente-btn pd-cliente-btn--nav pd-cliente-btn--nav-active">Clientes</a>
+              <a href="/admin/clientes/{{ cliente_id_value }}#rodadas-setores" class="pd-cliente-btn pd-cliente-btn--nav">Cliente</a>
+              <a href="/admin/participants?cliente_id={{ cliente_id_value }}&rodada_id={{ rodada_id_value }}" class="pd-cliente-btn pd-cliente-btn--nav">Participantes</a>
+              <a href="/admin/bi/cliente/{{ cliente_id_value }}?rodada_id={{ rodada_id_value }}" class="pd-cliente-btn pd-cliente-btn--primary">Abrir BI</a>
+              <a href="/admin/logout" class="pd-cliente-btn pd-cliente-btn--nav">Sair</a>
+            </div>
+          </div>
+
+          <div class="pd-cliente-hero__body">
+            <div class="pd-cliente-hero__content">
+              <div class="pd-cliente-kicker">Rodada · Gestão Operacional</div>
+              <h1 class="pd-cliente-title">{{ rodada_nome }}</h1>
+              <p class="pd-cliente-subtitle">
+                Gestão operacional da rodada, convites emitidos e participantes vinculados ao cliente
+                <strong>{{ cliente_nome }}</strong>, com leitura rápida do contexto e ações administrativas no mesmo fluxo.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div class="pd-top-grid">
+          <div class="pd-main-stack">
+            <nav class="pd-tabs-nav" role="tablist" aria-label="Seções da rodada">
+              <span class="pd-tabs-indicator" aria-hidden="true"></span>
+              <button type="button" class="pd-tab-btn is-active" data-tab="participantes" role="tab" aria-selected="true">Participantes</button>
+              <button type="button" class="pd-tab-btn" data-tab="convites" role="tab" aria-selected="false">Convites &amp; Links</button>
+              <button type="button" class="pd-tab-btn" data-tab="configuracoes" role="tab" aria-selected="false">Configurações da Rodada</button>
+            </nav>
+
+            <!-- ===================== ABA: PARTICIPANTES ===================== -->
+            <div class="pd-tab-panel is-active" data-tab-panel="participantes">
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Participantes da rodada</h2>
+                    <p class="pd-card-text">
+                      Lista operacional dos testes vinculados a esta rodada, com filtro opcional por setor
+                      e acesso direto ao resultado individual.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip">Testes</div>
+                </div>
+
+                {% if attempts %}
+                  <div class="pd-table-filters" data-attempts-filters>
+                    <input
+                      type="text"
+                      class="pd-input pd-table-filters__search"
+                      data-nome-filter
+                      placeholder="Buscar por nome..."
+                      autocomplete="off"
+                    />
+                    <div class="pd-filter-chips">
+                      <button type="button" class="pd-filter-chip is-active" data-status-filter="todos">Todos</button>
+                      <button type="button" class="pd-filter-chip" data-status-filter="concluido">Concluídos</button>
+                      <button type="button" class="pd-filter-chip" data-status-filter="andamento">Em andamento</button>
+                    </div>
+                    <select class="pd-select pd-table-filters__select" data-setor-filter>
+                      <option value="">Todos os setores</option>
+                    </select>
+                    <select class="pd-select pd-table-filters__select" data-cargo-filter>
+                      <option value="">Todos os cargos</option>
+                    </select>
+                  </div>
+
+                  <div class="pd-round-table-wrap">
+                    <table class="pd-round-table">
+                      <thead>
+                        <tr>
+                          <th>Participante</th>
+                          <th>Setor / Cargo</th>
+                          <th>Status</th>
+                          <th>Progresso</th>
+                          <th>Início</th>
+                          <th class="pd-col-action">Ação</th>
+                        </tr>
+                      </thead>
+                      <tbody data-attempts-tbody>
+                        {% for attempt in attempts %}
+                          {% set participant = attempt.participant if attempt.participant is defined and attempt.participant else None %}
+                          {% set p_nome = participant.nome if participant and participant.nome is defined and participant.nome else "" %}
+                          {% set p_sobrenome = participant.sobrenome if participant and participant.sobrenome is defined and participant.sobrenome else "" %}
+                          {% set p_email = participant.email if participant and participant.email is defined and participant.email else "Não informado" %}
+                          {% set p_empresa = participant.empresa_nome if participant and participant.empresa_nome is defined and participant.empresa_nome else "Não informado" %}
+                          {% set participant_name = ((p_nome ~ " " ~ p_sobrenome).strip()) if (p_nome or p_sobrenome) else "Não informado" %}
+                          {% set attempt_status = attempt.status if attempt.status is defined and attempt.status else "Não informado" %}
+                          {% set attempt_progress = attempt.progress if attempt.progress is defined else 0 %}
+                          {% set attempt_cargo = attempt.cargo if attempt.cargo is defined and attempt.cargo else "Não informado" %}
+                          {% set attempt_setor_ns = namespace(nome="Não informado") %}
+                          {% for setor_item in setores %}
+                            {% if attempt.setor_id is defined and attempt.setor_id and setor_item.id|string == attempt.setor_id|string %}
+                              {% set attempt_setor_ns.nome = setor_item.nome if setor_item.nome is defined and setor_item.nome else "Não informado" %}
+                            {% endif %}
+                          {% endfor %}
+                          {% set attempt_setor_nome = attempt_setor_ns.nome %}
+                          {% set attempt_status_upper = attempt_status|string|upper %}
+                          {% set status_class = "pd-round-badge" %}
+                          {% set attempt_status_label = attempt_status %}
+                          {% if attempt_status_upper == "SUBMITTED" %}
+                            {% set status_class = "pd-round-badge pd-round-badge--green" %}
+                            {% set attempt_status_label = "Concluído" %}
+                          {% elif attempt_status_upper == "PENDING" %}
+                            {% set status_class = "pd-round-badge pd-round-badge--amber" %}
+                            {% set attempt_status_label = "Pendente" %}
+                          {% elif attempt_status_upper == "OPENED" %}
+                            {% set status_class = "pd-round-badge pd-round-badge--amber" %}
+                            {% set attempt_status_label = "Aberto" %}
+                          {% elif attempt_status_upper == "IN_PROGRESS" %}
+                            {% set status_class = "pd-round-badge pd-round-badge--amber" %}
+                            {% set attempt_status_label = "Em andamento" %}
+                          {% elif attempt_status_upper == "CANCELLED" %}
+                            {% set status_class = "pd-round-badge pd-round-badge--red" %}
+                            {% set attempt_status_label = "Cancelado" %}
+                          {% elif attempt_status_upper == "EXPIRED" %}
+                            {% set status_class = "pd-round-badge pd-round-badge--red" %}
+                            {% set attempt_status_label = "Expirado" %}
+                          {% endif %}
+
+                          {% set attempt_status_group = "outro" %}
+                          {% if attempt_status_upper == "SUBMITTED" %}
+                            {% set attempt_status_group = "concluido" %}
+                          {% elif attempt_status_upper in ["PENDING", "OPENED", "IN_PROGRESS"] %}
+                            {% set attempt_status_group = "andamento" %}
+                          {% endif %}
+
+                          <tr
+                            class="pd-attempt-row"
+                            data-nome="{{ participant_name }}"
+                            data-status="{{ attempt_status_group }}"
+                            data-setor="{{ attempt_setor_nome }}"
+                            data-cargo="{{ attempt_cargo }}"
+                          >
+                            <td>
+                              <div class="pd-round-table__main">{{ participant_name }}</div>
+                              <div class="pd-round-table__sub">{{ p_email }}</div>
+                              <div class="pd-round-table__sub">Empresa: {{ p_empresa }}</div>
+                            </td>
+                            <td>
+                              <div class="pd-round-table__main">{{ attempt_setor_nome }}</div>
+                              <div class="pd-round-table__sub">Cargo: {{ attempt_cargo }}</div>
+                            </td>
+                            <td>
+                              <span class="{{ status_class }}">{{ attempt_status_label }}</span>
+                            </td>
+                            <td>
+                              <div class="pd-round-table__main">{{ attempt_progress }}%</div>
+                            </td>
+                            <td>
+                              <div class="pd-round-table__main">{{ attempt.data_inicio if attempt.data_inicio is defined and attempt.data_inicio else "-" }}</div>
+                            </td>
+                            <td class="pd-col-action">
+                              <a
+                                href="/admin/attempts/{{ attempt.id }}?cliente_id={{ cliente_id_value }}&rodada_id={{ rodada_id_value }}"
+                                class="pd-cliente-btn"
+                              >
+                                Abrir resultado
+                              </a>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="pd-pagination" data-attempts-pagination>
+                    <button type="button" class="pd-pagination__btn" data-page-prev>Anterior</button>
+                    <span class="pd-pagination__info" data-page-info>Página 1 de 1</span>
+                    <button type="button" class="pd-pagination__btn" data-page-next>Próximo</button>
+                  </div>
+                {% else %}
+                  <div class="pd-empty">
+                    Nenhum participante encontrado com os filtros selecionados para esta rodada.
+                  </div>
+                {% endif %}
+              </section>
+            </div>
+
+            <!-- ===================== ABA: CONVITES & LINKS ===================== -->
+            <div class="pd-tab-panel" data-tab-panel="convites">
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <p class="pd-sidebar-eyebrow">Ação de criação</p>
+                    <h2 class="pd-card-title">Gerar convite</h2>
+                    <p class="pd-card-text">
+                      Gere um novo link de participação vinculado a esta rodada e, opcionalmente, a um setor e cargo.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip">Convite</div>
+                </div>
+
+                <form method="post" action="/admin/rodadas/{{ rodada_id_value }}/invites#convites">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                  <input type="hidden" name="cliente_id" value="{{ cliente_id_value }}" />
+
+                  <div class="pd-form-grid">
+                    <div class="pd-form-two-col">
+                      <label class="pd-form-field">
+                        <span>Setor (opcional)</span>
+                        <select id="setor_id_invite" name="setor_id" class="pd-select">
+                          <option value="">Sem setor definido</option>
+                          {% for setor in setores %}
+                            <option value="{{ setor.id }}">
+                              {{ setor.nome if setor.nome is defined and setor.nome else "Setor" }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                      </label>
+
+                      <label class="pd-form-field">
+                        <span>Cargo (opcional)</span>
+                        <input
+                          id="cargo"
+                          class="pd-input"
+                          type="text"
+                          name="cargo"
+                          placeholder="Ex.: Analista, Coordenador, Líder"
+                        />
+                      </label>
+                    </div>
+
+                    <label class="pd-form-field">
+                      <span>Tipo de aplicação</span>
+                      <select id="tipo_aplicacao" name="tipo_aplicacao" class="pd-select" required>
+                        <option value="empresa">Empresa</option>
+                        <option value="pessoal">Pessoal</option>
+                      </select>
+                    </label>
+
+                    <div class="pd-form-actions">
+                      <button type="submit" class="pd-cliente-btn pd-cliente-btn--primary">Gerar Link de Acesso</button>
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              {% if created_invite_path or created_invite_id %}
+                <section class="pd-round-success">
+                  <h3 class="pd-round-success__title">Convite gerado com sucesso</h3>
+
+                  {% if created_invite_path %}
+                    <p class="pd-round-success__text">
+                      Link de acesso gerado para compartilhamento.
+                    </p>
+                    <div
+                      class="pd-round-success__code"
+                      id="pdInviteLinkCode"
+                      data-invite-path="{{ created_invite_path }}"
+                    >{{ created_invite_path }}</div>
+
+                    <div class="pd-invite-share-row">
+                      <div class="pd-whatsapp-steps">
+                        <a id="pdInviteWhatsappStep1" class="pd-whatsapp-btn" href="#" target="_blank" rel="noopener">
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.87.5 3.62 1.45 5.15L2 22l5.06-1.53a9.9 9.9 0 0 0 4.98 1.32h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm5.78 14.07c-.24.68-1.4 1.31-1.92 1.39-.49.08-1.1.11-1.77-.11-.41-.13-.93-.31-1.6-.6-2.82-1.22-4.66-4.06-4.8-4.25-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07 1-2.35.26-.28.57-.35.76-.35.19 0 .38 0 .54.01.17.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.31.31-.13.61.18.3.81 1.34 1.74 2.17 1.2 1.07 2.21 1.4 2.52 1.56.31.15.49.13.67-.05.18-.18.78-.91.99-1.22.21-.31.42-.26.7-.16.29.11 1.81.85 2.12 1.01.31.15.52.23.6.36.08.13.08.74-.16 1.42Z"/>
+                          </svg>
+                          1º Passo: Enviar Saudação
+                        </a>
+
+                        <a id="pdInviteWhatsappStep2" class="pd-whatsapp-btn" href="#" target="_blank" rel="noopener">
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3.9 12a5.1 5.1 0 0 1 5.1-5.1h3a1 1 0 1 1 0 2h-3a3.1 3.1 0 0 0 0 6.2h3a1 1 0 1 1 0 2h-3A5.1 5.1 0 0 1 3.9 12Zm8.1-1a1 1 0 0 1 1-1h3a5.1 5.1 0 1 1 0 10.2h-3a1 1 0 1 1 0-2h3a3.1 3.1 0 0 0 0-6.2h-3a1 1 0 0 1-1-1Zm-3.1 0h6.2v2H8.9Z"/>
+                          </svg>
+                          2º Passo: Enviar Link Clicável
+                        </a>
+
+                        <p class="pd-invite-share-hint">
+                          <em>Dispare o 1º Passo. Assim que o candidato responder na tela do WhatsApp, clique no 2º Passo para liberar o link azul e clicável.</em>
+                        </p>
+                      </div>
+
+                      <a id="pdInviteEmail" class="pd-email-btn" href="#">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm17.27 2H3.73L12 13.07ZM2 8.24V18h20V8.24l-9.5 7.13a1 1 0 0 1-1.2 0Z"/>
+                        </svg>
+                        Enviar por E-mail
+                      </a>
+
+                      <div class="pd-invite-qr-card" id="pdInviteQrCard">
+                        <p class="pd-invite-qr-card__label">QR Code de acesso</p>
+                        <div id="pdInviteQrCode"></div>
+                      </div>
+                    </div>
+                  {% endif %}
+
+                  {% if created_invite_id %}
+                    <p class="pd-round-success__text">
+                      ID do convite: <strong>{{ created_invite_id }}</strong>
+                    </p>
+                  {% endif %}
+                </section>
+              {% endif %}
+
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Convites da rodada</h2>
+                    <p class="pd-card-text">
+                      Histórico dos convites emitidos para esta rodada, com status operacional e vínculo com o teste quando existir.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip">Convites</div>
+                </div>
+
+                {% if invites %}
+                  <div class="pd-table-filters" data-invites-filters>
+                    <div class="pd-filter-chips">
+                      <button type="button" class="pd-filter-chip is-active" data-status-filter="todos">Todos</button>
+                      <button type="button" class="pd-filter-chip" data-status-filter="pendente">Pendentes</button>
+                      <button type="button" class="pd-filter-chip" data-status-filter="concluido">Concluídos</button>
+                    </div>
+                    <select class="pd-select pd-table-filters__select" data-setor-filter>
+                      <option value="">Todos os setores</option>
+                    </select>
+                    <select class="pd-select pd-table-filters__select" data-cargo-filter>
+                      <option value="">Todos os cargos</option>
+                    </select>
+                  </div>
+
+                  <div class="pd-round-table-wrap">
+                    <table class="pd-round-table">
+                      <thead>
+                        <tr>
+                          <th>Status</th>
+                          <th>Aplicação</th>
+                          <th>Setor / Cargo</th>
+                          <th>Rastreabilidade</th>
+                          <th>Criado em</th>
+                        </tr>
+                      </thead>
+                      <tbody data-invites-tbody>
+                        {% for invite in invites %}
+                          {% set invite_status = invite.status if invite.status is defined and invite.status else "Não informado" %}
+                          {% set invite_status_upper = invite_status|string|upper %}
+                          {% set invite_status_group = "outro" %}
+                          {% if invite_status_upper == "COMPLETED" %}
+                            {% set invite_status_group = "concluido" %}
+                          {% elif invite_status_upper in ["PENDING", "OPENED"] %}
+                            {% set invite_status_group = "pendente" %}
+                          {% endif %}
+                          {% set invite_tipo = invite.tipo_aplicacao if invite.tipo_aplicacao is defined and invite.tipo_aplicacao else "Não informado" %}
+                          {% set invite_cargo = invite.cargo if invite.cargo is defined and invite.cargo else "Não informado" %}
+                          {% set invite_setor_ns = namespace(nome="Não informado") %}
+                          {% for setor_item in setores %}
+                            {% if invite.setor_id is defined and invite.setor_id and setor_item.id|string == invite.setor_id|string %}
+                              {% set invite_setor_ns.nome = setor_item.nome if setor_item.nome is defined and setor_item.nome else "Não informado" %}
+                            {% endif %}
+                          {% endfor %}
+                          {% set invite_setor_nome = invite_setor_ns.nome %}
+                          {% set invite_status_class = "pd-round-badge" %}
+                          {% set invite_status_label = invite_status %}
+                          {% if invite_status_upper == "COMPLETED" %}
+                            {% set invite_status_class = "pd-round-badge pd-round-badge--green" %}
+                            {% set invite_status_label = "Concluído" %}
+                          {% elif invite_status_upper == "PENDING" %}
+                            {% set invite_status_class = "pd-round-badge pd-round-badge--amber" %}
+                            {% set invite_status_label = "Pendente" %}
+                          {% elif invite_status_upper == "OPENED" %}
+                            {% set invite_status_class = "pd-round-badge pd-round-badge--amber" %}
+                            {% set invite_status_label = "Aberto" %}
+                          {% elif invite_status_upper == "CANCELLED" %}
+                            {% set invite_status_class = "pd-round-badge pd-round-badge--red" %}
+                            {% set invite_status_label = "Cancelado" %}
+                          {% elif invite_status_upper == "EXPIRED" %}
+                            {% set invite_status_class = "pd-round-badge pd-round-badge--red" %}
+                            {% set invite_status_label = "Expirado" %}
+                          {% elif invite_status_upper == "USED" %}
+                            {% set invite_status_class = "pd-round-badge pd-round-badge--red" %}
+                            {% set invite_status_label = "Utilizado" %}
+                          {% endif %}
+
+                          <tr
+                            class="pd-invite-row"
+                            data-status="{{ invite_status_group }}"
+                            data-setor="{{ invite_setor_nome }}"
+                            data-cargo="{{ invite_cargo }}"
+                          >
+                            <td>
+                              <span class="{{ invite_status_class }}">{{ invite_status_label }}</span>
+                            </td>
+                            <td>
+                              <div class="pd-round-table__main">{{ invite_tipo }}</div>
+                            </td>
+                            <td>
+                              <div class="pd-round-table__main">{{ invite_setor_nome }}</div>
+                              <div class="pd-round-table__sub">Cargo: {{ invite_cargo }}</div>
+                            </td>
+                            <td>
+                              <div class="pd-round-table__main">ID do convite: {{ invite.id if invite.id is defined else "-" }}</div>
+                              <div class="pd-round-table__sub">ID do teste: {{ invite.attempt_id if invite.attempt_id is defined and invite.attempt_id else "Não vinculado" }}</div>
+                            </td>
+                            <td>
+                              <div class="pd-round-table__main">{{ invite.criado_em if invite.criado_em is defined and invite.criado_em else "-" }}</div>
+                              <div class="pd-round-table__sub">Usado em: {{ invite.usado_em if invite.usado_em is defined and invite.usado_em else "-" }}</div>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="pd-pagination" data-invites-pagination>
+                    <button type="button" class="pd-pagination__btn" data-page-prev>Anterior</button>
+                    <span class="pd-pagination__info" data-page-info>Página 1 de 1</span>
+                    <button type="button" class="pd-pagination__btn" data-page-next>Próximo</button>
+                  </div>
+                {% else %}
+                  <div class="pd-empty">
+                    Ainda não há convites cadastrados para esta rodada.
+                  </div>
+                {% endif %}
+              </section>
+            </div>
+
+            <!-- ===================== ABA: CONFIGURAÇÕES DA RODADA ===================== -->
+            <div class="pd-tab-panel" data-tab-panel="configuracoes">
+              <section class="pd-card">
+                <div class="pd-card-head">
+                  <div>
+                    <h2 class="pd-card-title">Editar rodada</h2>
+                    <p class="pd-card-text">
+                      Atualize nome e período da rodada sem sair da visão operacional.
+                    </p>
+                  </div>
+                  <div class="pd-card-chip">Configuração</div>
+                </div>
+
+                <form method="post" action="/admin/rodadas/{{ rodada_id_value }}/editar#configuracoes">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                  <input type="hidden" name="cliente_id" value="{{ cliente_id_value }}" />
+
+                  <div class="pd-form-grid">
+                    <label class="pd-form-field">
+                      <span>Nome da rodada</span>
+                      <input
+                        id="pdRodadaEditNome"
+                        class="pd-input"
+                        type="text"
+                        name="nome"
+                        value="{{ rodada.nome if rodada and rodada.nome is defined else '' }}"
+                        required
+                      />
+                    </label>
+
+                    <div class="pd-form-two-col">
+                      <label class="pd-form-field">
+                        <span>Data de início</span>
+                        <input
+                          id="pdRodadaDataInicio"
+                          class="pd-input"
+                          type="date"
+                          name="data_inicio"
+                          value="{{ rodada.data_inicio if rodada and rodada.data_inicio is defined else '' }}"
+                          required
+                        />
+                      </label>
+
+                      <label class="pd-form-field">
+                        <span>Data de encerramento</span>
+                        <input
+                          id="pdRodadaDataEncerramento"
+                          class="pd-input"
+                          type="date"
+                          name="data_encerramento"
+                          value="{{ rodada.data_encerramento if rodada and rodada.data_encerramento is defined and rodada.data_encerramento else '' }}"
+                        />
+                      </label>
+                    </div>
+
+                    <div class="pd-form-actions">
+                      <button type="submit" class="pd-cliente-btn pd-cliente-btn--primary">Salvar rodada</button>
+                    </div>
+                  </div>
+                </form>
+              </section>
+            </div>
+          </div>
+
+          <!-- ============================ SIDEBAR ============================ -->
+          <div class="pd-right-stack">
+            <section class="pd-card">
+              <div class="pd-card-head">
+                <div>
+                  <p class="pd-sidebar-eyebrow">Resumo do contexto</p>
+                  <h2 class="pd-card-title">Contexto atual</h2>
+                </div>
+              </div>
+
+              <div class="pd-summary-metrics pd-summary-metrics--grid">
+                <div class="pd-metric-card pd-metric-card--dark">
+                  <div class="pd-metric-card__label">Cliente</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--md pd-wrap-anywhere">
+                    {{ cliente_nome }}
+                  </div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--brand">
+                  <div class="pd-metric-card__label">Rodada</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--md pd-wrap-anywhere">
+                    {{ rodada_nome }}
+                  </div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--soft">
+                  <div class="pd-metric-card__label">Início</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--md">{{ rodada_inicio }}</div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--warning">
+                  <div class="pd-metric-card__label">Encerramento</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--md">{{ rodada_encerramento }}</div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--success">
+                  <div class="pd-metric-card__label">Status</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--md">{{ rodada_status_label }}</div>
+                </div>
+
+                <div class="pd-metric-card pd-metric-card--soft">
+                  <div class="pd-metric-card__label">Participantes</div>
+                  <div class="pd-metric-card__value pd-metric-card__value--xl">{{ attempts|length }}</div>
+                </div>
+              </div>
+
+              <div class="pd-danger-zone">
+                <p class="pd-danger-zone__hint">
+                  Ações administrativas. Use exclusão apenas quando o vínculo operacional desta rodada não deve mais existir.
+                </p>
+
+                <form method="post" action="/admin/rodadas/{{ rodada_id_value }}/excluir">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                  <input type="hidden" name="cliente_id" value="{{ cliente_id_value }}" />
+                  <button type="submit" class="pd-cliente-btn pd-full-mobile">Excluir rodada</button>
+                </form>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var buttons = Array.prototype.slice.call(document.querySelectorAll('.pd-tab-btn'));
+        var panels = Array.prototype.slice.call(document.querySelectorAll('.pd-tab-panel'));
+        var indicator = document.querySelector('.pd-tabs-indicator');
+
+        function moveIndicator(btn) {
+          if (!indicator || !btn) return;
+          indicator.style.left = btn.offsetLeft + 'px';
+          indicator.style.width = btn.offsetWidth + 'px';
+        }
+
+        function activate(tab) {
+          buttons.forEach(function (b) {
+            var active = b.dataset.tab === tab;
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+            if (active) moveIndicator(b);
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle('is-active', p.dataset.tabPanel === tab);
+          });
+        }
+
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () {
+            activate(b.dataset.tab);
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState(null, '', '#' + b.dataset.tab);
+            } else {
+              window.location.hash = b.dataset.tab;
+            }
+          });
+        });
+
+        var validTabs = buttons.map(function (b) { return b.dataset.tab; });
+        var hashTab = (window.location.hash || '').replace('#', '');
+
+        if (hashTab && validTabs.indexOf(hashTab) !== -1) {
+          activate(hashTab);
+        }
+
+        var initial = document.querySelector('.pd-tab-btn.is-active');
+        window.requestAnimationFrame(function () { moveIndicator(initial); });
+
+        window.addEventListener('resize', function () {
+          moveIndicator(document.querySelector('.pd-tab-btn.is-active'));
+        });
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var codeEl = document.getElementById('pdInviteLinkCode');
+        if (!codeEl) return;
+
+        var path = codeEl.getAttribute('data-invite-path') || '';
+        var fullUrl = window.location.origin + path;
+        codeEl.textContent = fullUrl;
+
+        var waStep1Btn = document.getElementById('pdInviteWhatsappStep1');
+        if (waStep1Btn) {
+          var waStep1Message = 'Olá! Sou da equipe do Profile DNA. '
+            + 'Você está pronto para iniciar sua avaliação comportamental?';
+          waStep1Btn.href = 'https://wa.me/?text=' + encodeURIComponent(waStep1Message);
+        }
+
+        var waStep2Btn = document.getElementById('pdInviteWhatsappStep2');
+        if (waStep2Btn) {
+          var waStep2Message = 'Que maravilha! Segue o seu link de acesso exclusivo para o teste:'
+            + '\n\n'
+            + fullUrl
+            + '\n';
+          waStep2Btn.href = 'https://wa.me/?text=' + encodeURIComponent(waStep2Message);
+        }
+
+        var emailBtn = document.getElementById('pdInviteEmail');
+        if (emailBtn) {
+          var emailSubject = 'Convite: Teste Comportamental Profile DNA';
+          var emailBody = 'Olá!'
+            + '\n\n'
+            + 'Você foi convidado para realizar o teste comportamental Profile DNA.'
+            + '\n\n'
+            + 'Clique aqui para Responder o Questionário DNA Profile:'
+            + '\n'
+            + fullUrl
+            + '\n';
+          emailBtn.href = 'mailto:?subject=' + encodeURIComponent(emailSubject)
+            + '&body=' + encodeURIComponent(emailBody);
+        }
+
+        var qrEl = document.getElementById('pdInviteQrCode');
+        if (qrEl && typeof QRCode !== 'undefined') {
+          new QRCode(qrEl, {
+            text: fullUrl,
+            width: 160,
+            height: 160,
+            colorDark: '#1e293b',
+            colorLight: '#ffffff',
+          });
+        }
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var dataInicioInput = document.getElementById('pdRodadaDataInicio');
+        var dataEncerramentoInput = document.getElementById('pdRodadaDataEncerramento');
+
+        if (!dataInicioInput || !dataEncerramentoInput) return;
+
+        if (dataInicioInput.value) {
+          dataEncerramentoInput.setAttribute('min', dataInicioInput.value);
+        }
+
+        dataInicioInput.addEventListener('change', function () {
+          if (dataInicioInput.value) {
+            dataEncerramentoInput.setAttribute('min', dataInicioInput.value);
+          }
+        });
+
+        if (typeof flatpickr !== 'undefined') {
+          var fpEncerramento = flatpickr(dataEncerramentoInput, {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            disableMobile: true,
+          });
+
+          var fpInicio = flatpickr(dataInicioInput, {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            disableMobile: true,
+            onChange: function (selectedDates, dateStr) {
+              if (dateStr) {
+                fpEncerramento.set('minDate', dateStr);
+              }
+            },
+          });
+        }
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var PAGE_SIZE = 10;
+
+        var filtersBar = document.querySelector('[data-invites-filters]');
+        var tbody = document.querySelector('[data-invites-tbody]');
+        var pagination = document.querySelector('[data-invites-pagination]');
+        if (!filtersBar || !tbody || !pagination) return;
+
+        var rows = Array.prototype.slice.call(tbody.querySelectorAll('.pd-invite-row'));
+        var statusChips = Array.prototype.slice.call(filtersBar.querySelectorAll('[data-status-filter]'));
+        var setorSelect = filtersBar.querySelector('[data-setor-filter]');
+        var cargoSelect = filtersBar.querySelector('[data-cargo-filter]');
+        var prevBtn = pagination.querySelector('[data-page-prev]');
+        var nextBtn = pagination.querySelector('[data-page-next]');
+        var pageInfo = pagination.querySelector('[data-page-info]');
+
+        var currentStatus = 'todos';
+        var currentPage = 1;
+
+        function fillOptions(select, values) {
+          values.sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
+          values.forEach(function (value) {
+            var option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.appendChild(option);
+          });
+        }
+
+        var setorValues = [];
+        var cargoValues = [];
+        rows.forEach(function (row) {
+          var setor = row.getAttribute('data-setor') || '';
+          var cargo = row.getAttribute('data-cargo') || '';
+          if (setor && setorValues.indexOf(setor) === -1) setorValues.push(setor);
+          if (cargo && cargoValues.indexOf(cargo) === -1) cargoValues.push(cargo);
+        });
+        fillOptions(setorSelect, setorValues);
+        fillOptions(cargoSelect, cargoValues);
+
+        function matches(row) {
+          var statusOk = currentStatus === 'todos' || row.getAttribute('data-status') === currentStatus;
+          var setorOk = !setorSelect.value || row.getAttribute('data-setor') === setorSelect.value;
+          var cargoOk = !cargoSelect.value || row.getAttribute('data-cargo') === cargoSelect.value;
+          return statusOk && setorOk && cargoOk;
+        }
+
+        function render() {
+          var visibleRows = rows.filter(matches);
+          var totalPages = Math.max(1, Math.ceil(visibleRows.length / PAGE_SIZE));
+
+          if (currentPage > totalPages) currentPage = totalPages;
+          if (currentPage < 1) currentPage = 1;
+
+          var start = (currentPage - 1) * PAGE_SIZE;
+          var end = start + PAGE_SIZE;
+
+          rows.forEach(function (row) {
+            row.style.display = 'none';
+          });
+
+          visibleRows.slice(start, end).forEach(function (row) {
+            row.style.display = '';
+          });
+
+          pageInfo.textContent = 'Página ' + currentPage + ' de ' + totalPages;
+          prevBtn.disabled = currentPage <= 1;
+          nextBtn.disabled = currentPage >= totalPages;
+        }
+
+        statusChips.forEach(function (chip) {
+          chip.addEventListener('click', function () {
+            statusChips.forEach(function (c) { c.classList.remove('is-active'); });
+            chip.classList.add('is-active');
+            currentStatus = chip.getAttribute('data-status-filter');
+            currentPage = 1;
+            render();
+          });
+        });
+
+        setorSelect.addEventListener('change', function () {
+          currentPage = 1;
+          render();
+        });
+
+        cargoSelect.addEventListener('change', function () {
+          currentPage = 1;
+          render();
+        });
+
+        prevBtn.addEventListener('click', function () {
+          currentPage -= 1;
+          render();
+        });
+
+        nextBtn.addEventListener('click', function () {
+          currentPage += 1;
+          render();
+        });
+
+        render();
+      })();
+    </script>
+
+    <script>
+      (function () {
+        var PAGE_SIZE = 10;
+
+        var filtersBar = document.querySelector('[data-attempts-filters]');
+        var tbody = document.querySelector('[data-attempts-tbody]');
+        var pagination = document.querySelector('[data-attempts-pagination]');
+        if (!filtersBar || !tbody || !pagination) return;
+
+        var rows = Array.prototype.slice.call(tbody.querySelectorAll('.pd-attempt-row'));
+        var nomeInput = filtersBar.querySelector('[data-nome-filter]');
+        var statusChips = Array.prototype.slice.call(filtersBar.querySelectorAll('[data-status-filter]'));
+        var setorSelect = filtersBar.querySelector('[data-setor-filter]');
+        var cargoSelect = filtersBar.querySelector('[data-cargo-filter]');
+        var prevBtn = pagination.querySelector('[data-page-prev]');
+        var nextBtn = pagination.querySelector('[data-page-next]');
+        var pageInfo = pagination.querySelector('[data-page-info]');
+
+        var currentStatus = 'todos';
+        var currentPage = 1;
+
+        function fillOptions(select, values) {
+          values.sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
+          values.forEach(function (value) {
+            var option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.appendChild(option);
+          });
+        }
+
+        var setorValues = [];
+        var cargoValues = [];
+        rows.forEach(function (row) {
+          var setor = row.getAttribute('data-setor') || '';
+          var cargo = row.getAttribute('data-cargo') || '';
+          if (setor && setorValues.indexOf(setor) === -1) setorValues.push(setor);
+          if (cargo && cargoValues.indexOf(cargo) === -1) cargoValues.push(cargo);
+        });
+        fillOptions(setorSelect, setorValues);
+        fillOptions(cargoSelect, cargoValues);
+
+        function matches(row) {
+          var nomeOk = true;
+          var nomeQuery = nomeInput.value.trim().toLowerCase();
+          if (nomeQuery) {
+            var nome = (row.getAttribute('data-nome') || '').toLowerCase();
+            nomeOk = nome.indexOf(nomeQuery) !== -1;
+          }
+          var statusOk = currentStatus === 'todos' || row.getAttribute('data-status') === currentStatus;
+          var setorOk = !setorSelect.value || row.getAttribute('data-setor') === setorSelect.value;
+          var cargoOk = !cargoSelect.value || row.getAttribute('data-cargo') === cargoSelect.value;
+          return nomeOk && statusOk && setorOk && cargoOk;
+        }
+
+        function render() {
+          var visibleRows = rows.filter(matches);
+          var totalPages = Math.max(1, Math.ceil(visibleRows.length / PAGE_SIZE));
+
+          if (currentPage > totalPages) currentPage = totalPages;
+          if (currentPage < 1) currentPage = 1;
+
+          var start = (currentPage - 1) * PAGE_SIZE;
+          var end = start + PAGE_SIZE;
+
+          rows.forEach(function (row) {
+            row.style.display = 'none';
+          });
+
+          visibleRows.slice(start, end).forEach(function (row) {
+            row.style.display = '';
+          });
+
+          pageInfo.textContent = 'Página ' + currentPage + ' de ' + totalPages;
+          prevBtn.disabled = currentPage <= 1;
+          nextBtn.disabled = currentPage >= totalPages;
+        }
+
+        nomeInput.addEventListener('input', function () {
+          currentPage = 1;
+          render();
+        });
+
+        statusChips.forEach(function (chip) {
+          chip.addEventListener('click', function () {
+            statusChips.forEach(function (c) { c.classList.remove('is-active'); });
+            chip.classList.add('is-active');
+            currentStatus = chip.getAttribute('data-status-filter');
+            currentPage = 1;
+            render();
+          });
+        });
+
+        setorSelect.addEventListener('change', function () {
+          currentPage = 1;
+          render();
+        });
+
+        cargoSelect.addEventListener('change', function () {
+          currentPage = 1;
+          render();
+        });
+
+        prevBtn.addEventListener('click', function () {
+          currentPage -= 1;
+          render();
+        });
+
+        nextBtn.addEventListener('click', function () {
+          currentPage += 1;
+          render();
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>

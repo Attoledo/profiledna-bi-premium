@@ -1,0 +1,75 @@
+{% set _painel_gerencial = paineis_area[0] if paineis_area and paineis_area|length > 0 else {} %}
+{% set _painel_interpessoal = paineis_area[1] if paineis_area and paineis_area|length > 1 else {} %}
+{% set _painel_pessoal = paineis_area[2] if paineis_area and paineis_area|length > 2 else {} %}
+{% set _item_g = _painel_gerencial.get("items", [])[0] if _painel_gerencial.get("items", []) else {} %}
+{% set _item_i = _painel_interpessoal.get("items", [])[0] if _painel_interpessoal.get("items", []) else {} %}
+{% set _item_p = _painel_pessoal.get("items", [])[0] if _painel_pessoal.get("items", []) else {} %}
+
+<section class="premium-section">
+  <div class="premium-kicker">Leitura ampliada</div>
+  <h2 class="premium-h2">Análise comportamental profunda</h2>
+
+  <p class="premium-text">
+    Esta seção transforma os indicadores oficiais em uma leitura ampliada sobre liderança, proatividade,
+    comunicação, adaptação, ritmo de execução e funcionamento sob pressão.
+  </p>
+
+  <div class="premium-card-grid-1">
+    <div class="premium-card">
+      <h3>Tomada de decisão e entrega</h3>
+      <p>
+        {% if _item_g %}
+          No eixo de entrega e condução de prioridades, ganha relevância
+          <strong>{{ _item_g.get("name", "competência principal") }}</strong>,
+          atualmente em nível <strong>{{ _item_g.get("band", "não informado") }}</strong>.
+          {{ _item_g.get("text", "Essa competência influencia a forma de decidir, organizar ações e sustentar entregas.") }}
+        {% else %}
+          A leitura gerencial deve considerar como o perfil prioriza, decide e sustenta entregas ao longo da rotina.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Comunicação e trabalho em equipe</h3>
+      <p>
+        {% if _item_i %}
+          Na dinâmica relacional, destaca-se <strong>{{ _item_i.get("name", "competência interpessoal") }}</strong>,
+          em nível <strong>{{ _item_i.get("band", "não informado") }}</strong>.
+          {{ _item_i.get("text", "Essa competência ajuda a compreender o modo de interação, alinhamento e troca com outras pessoas.") }}
+        {% else %}
+          A leitura interpessoal observa como o perfil se posiciona, conversa, escuta e constrói relação com o entorno.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Pressão, adaptação e ritmo</h3>
+      <p>
+        {% if _item_p %}
+          No plano pessoal e de sustentação do comportamento, chama atenção
+          <strong>{{ _item_p.get("name", "competência pessoal") }}</strong>,
+          em nível <strong>{{ _item_p.get("band", "não informado") }}</strong>.
+          {{ _item_p.get("text", "Essa frente ajuda a compreender constância, adaptação e reação diante de exigências do ambiente.") }}
+        {% else %}
+          O eixo pessoal ajuda a entender ritmo, constância, estabilidade e adaptação às demandas do dia a dia.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Talentos centrais</h3>
+      <p>
+        Os talentos centrais devem ser lidos como forças observáveis em contexto. Quando bem direcionados,
+        tendem a ampliar produtividade, clareza de atuação, alinhamento com o cargo e valor percebido na equipe.
+      </p>
+    </div>
+
+    <div class="premium-card">
+      <h3>Pontos de atenção</h3>
+      <p>
+        Os pontos de atenção não representam limitação fixa. Eles indicam áreas importantes para acompanhamento,
+        calibragem comportamental, desenvolvimento prático e apoio de gestão ao longo do tempo.
+      </p>
+    </div>
+  </div>
+</section>

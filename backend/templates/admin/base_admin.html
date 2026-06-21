@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title or "ProfileDNA Admin" }}{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="/static/css/admin.css?v=20260621_cockpit_final" />
+  <style>
+    .pd-admin-topbar {
+      background: rgba(255, 255, 255, 0.65) !important;
+      backdrop-filter: blur(16px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .pd-admin-brand__logo-wrap {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+  </style>
+{% endblock %}
+
+{% set _request_path = request.url.path if request and request.url and request.url.path else "" %}
+{% set _active_nav = active_nav if active_nav is defined and active_nav else "" %}
+{% set _page_title = page_title if page_title is defined and page_title else "Painel Administrativo" %}
+{% set _page_subtitle = page_subtitle if page_subtitle is defined else "" %}
+{% set _admin_name = admin.nome if admin is defined and admin and admin.nome is defined and admin.nome else (admin.username if admin is defined and admin and admin.username is defined and admin.username else "Administrador") %}
+{% set _cliente_name = cliente.nome if cliente is defined and cliente and cliente.nome is defined and cliente.nome else (cliente.razao_social if cliente is defined and cliente and cliente.razao_social is defined and cliente.razao_social else "") %}
+{% set _cliente_id = cliente.id if cliente is defined and cliente and cliente.id is defined and cliente.id else (cliente_id if cliente_id is defined and cliente_id else request.query_params.get("cliente_id") if request and request.query_params else "") %}
+{% set _primary_action_href = primary_action_href if primary_action_href is defined else "" %}
+{% set _primary_action_label = primary_action_label if primary_action_label is defined else "" %}
+{% set _secondary_action_href = secondary_action_href if secondary_action_href is defined else "" %}
+{% set _secondary_action_label = secondary_action_label if secondary_action_label is defined else "" %}
+
+{% macro nav_link(href, label, key, icon="") -%}
+  {% set is_active = (_active_nav == key) or (_request_path.startswith(href) if href != "#" else false) %}
+  <a
+    href="{{ href }}"
+    class="pd-admin-nav__link{% if is_active %} is-active{% endif %}"
+    {% if is_active %}aria-current="page"{% endif %}
+  >
+    {% if icon %}
+      <span class="pd-admin-nav__icon" aria-hidden="true">{{ icon }}</span>
+    {% endif %}
+    <span class="pd-admin-nav__label">{{ label }}</span>
+  </a>
+{%- endmacro %}
+
+{% macro page_action_button(href, label, variant="primary") -%}
+  {% if href and label %}
+    <a
+      href="{{ href }}"
+      class="pd-admin-btn {% if variant == 'secondary' %}pd-admin-btn--secondary{% else %}pd-admin-btn--primary{% endif %}"
+    >
+      {{ label }}
+    </a>
+  {% endif %}
+{%- endmacro %}
+
+{% block body_class %}pd-admin-body{% endblock %}
+
+{% block content %}
+<div class="pd-admin-shell">
+  <header class="pd-admin-topbar">
+    <div class="pd-admin-topbar__inner">
+      <div class="pd-admin-brand">
+        <a href="/admin/dashboard" class="pd-admin-brand__link">
+          <div class="pd-admin-brand__logo-wrap">
+            <img
+              src="/static/img/official_logo.png"
+              alt="Profile DNA"
+              class="pd-admin-brand__logo"
+              style="height: 72px !important; width: auto !important; max-width: 140px !important; object-fit: contain !important; margin-top: -4px; margin-bottom: -4px;"
+              onerror="this.src='/static/img/dna-logo.png';"
+            />
+          </div>
+        </a>
+      </div>
+
+      <nav class="pd-admin-nav" aria-label="Navegação principal">
+        {{ nav_link("/admin/dashboard", "Dashboard", "dashboard", "◈") }}
+        {{ nav_link("/admin/clientes", "Clientes", "clientes", "⊞") }}
+        {{ nav_link("/admin/bi/overview", "BI · Visão Geral", "bi_overview", "◔") }}
+        {{ nav_link("/admin/bi/comparativo", "BI · Comparativo", "bi_comparativo", "⇄") }}
+        {% if _cliente_id %}
+          {{ nav_link("/admin/ai/analysis-inteligente?cliente_id=" ~ _cliente_id, "DANA", "dana", "✦") }}
+        {% else %}
+          {{ nav_link("/admin/ai/analysis-inteligente", "DANA", "dana", "✦") }}
+        {% endif %}
+      </nav>
+
+      <div class="pd-admin-topbar__meta">
+        {% if _cliente_name %}
+          <div class="pd-admin-chip pd-admin-chip--client">
+            <span class="pd-admin-chip__dot"></span>
+            <span class="pd-admin-chip__text">{{ _cliente_name }}</span>
+          </div>
+        {% endif %}
+
+        <div class="pd-admin-user">
+          <div class="pd-admin-user__label">Sessão ativa</div>
+          <div class="pd-admin-user__name">{{ _admin_name }}</div>
+        </div>
+
+        <a href="/admin/logout" class="pd-admin-btn pd-admin-btn--ghost">
+          Sair
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="pd-admin-main">
+    <div class="pd-admin-container">
+      {% block admin_flash_messages %}
+        {% set _flash_messages = flash_messages if flash_messages is defined and flash_messages else [] %}
+        {% if _flash_messages %}
+          <section class="pd-admin-flash-stack" aria-label="Mensagens do sistema">
+            {% for message in _flash_messages %}
+              {% if message is sequence and message is not string and message|length >= 2 %}
+                {% set category = message[0] %}
+                {% set content = message[1] %}
+              {% else %}
+                {% set category = "info" %}
+                {% set content = message %}
+              {% endif %}
+
+              <div class="pd-admin-alert pd-admin-alert--{{ category }}">
+                <div class="pd-admin-alert__content">{{ content }}</div>
+              </div>
+            {% endfor %}
+          </section>
+        {% endif %}
+      {% endblock %}
+
+      <section class="pd-admin-page-head">
+        <div class="pd-admin-page-head__content">
+          {% block admin_page_header %}
+            <div class="pd-admin-page-head__eyebrow">Painel administrativo</div>
+            <h1 class="pd-admin-page-head__title">{{ _page_title }}</h1>
+            {% if _page_subtitle %}
+              <p class="pd-admin-page-head__subtitle">{{ _page_subtitle }}</p>
+            {% endif %}
+          {% endblock %}
+        </div>
+
+        <div class="pd-admin-page-head__actions">
+          {% block admin_page_actions %}
+            {{ page_action_button(_secondary_action_href, _secondary_action_label, "secondary") }}
+            {{ page_action_button(_primary_action_href, _primary_action_label, "primary") }}
+          {% endblock %}
+        </div>
+      </section>
+
+      {% block admin_context_bar %}
+        {% if _cliente_name or _cliente_id %}
+          <section class="pd-admin-context-bar">
+            <div class="pd-admin-context-bar__item">
+              <span class="pd-admin-context-bar__label">Cliente</span>
+              <span class="pd-admin-context-bar__value">{{ _cliente_name or "Não informado" }}</span>
+            </div>
+            <div class="pd-admin-context-bar__item">
+              <span class="pd-admin-context-bar__label">Cliente ID</span>
+              <span class="pd-admin-context-bar__value pd-wrap-anywhere">{{ _cliente_id or "Não informado" }}</span>
+            </div>
+            {% block admin_context_bar_extra %}{% endblock %}
+          </section>
+        {% endif %}
+      {% endblock %}
+
+      <section class="pd-admin-content">
+        {% block admin_content %}{% endblock %}
+      </section>
+    </div>
+  </main>
+</div>
+{% endblock %}

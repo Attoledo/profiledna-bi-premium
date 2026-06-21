@@ -1,0 +1,79 @@
+<section class="premium-section premium-force-page-break">
+  <div class="premium-kicker">Destaques do perfil</div>
+  <h2 class="premium-h2">Top 5 competências de maior destaque</h2>
+
+  {% for item in top5_cards %}
+    <div class="premium-analysis-card">
+      <div class="premium-card-title">
+        {{ item.get("name") }}
+        <span class="premium-badge">{{ item.get("band") }}</span>
+      </div>
+      <div class="premium-small-label">Área · {{ item.get("area") }} · Score {{ item.get("score") }}/10</div>
+
+      <div class="premium-pdi-block">
+        <strong>Leitura da competência</strong>
+        <p class="premium-text">{{ item.get("base_text") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Impactos positivos e reflexos no trabalho</strong>
+        <p class="premium-text">{{ item.get("impactos") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Possíveis dificuldades</strong>
+        <p class="premium-text">{{ item.get("dificuldades") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Orientação para o gestor</strong>
+        <p class="premium-text">{{ item.get("orientacao") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Tendência comportamental no dia a dia</strong>
+        <p class="premium-text">{{ item.get("tendencia") }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</section>
+
+<section class="premium-section">
+  <div class="premium-kicker">Pontos de atenção</div>
+  <h2 class="premium-h2">3 competências que pedem desenvolvimento</h2>
+
+  {% for item in bottom3_cards %}
+    <div class="premium-analysis-card">
+      <div class="premium-card-title">
+        {{ item.get("name") }}
+        <span class="premium-badge">{{ item.get("band") }}</span>
+      </div>
+      <div class="premium-small-label">Área · {{ item.get("area") }} · Score {{ item.get("score") }}/10</div>
+
+      <div class="premium-pdi-block">
+        <strong>Leitura da competência</strong>
+        <p class="premium-text">{{ item.get("base_text") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Impactos positivos e reflexos no trabalho</strong>
+        <p class="premium-text">{{ item.get("impactos") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Possíveis dificuldades</strong>
+        <p class="premium-text">{{ item.get("dificuldades") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Orientação para o gestor</strong>
+        <p class="premium-text">{{ item.get("orientacao") }}</p>
+      </div>
+
+      <div class="premium-pdi-block">
+        <strong>Tendência comportamental no dia a dia</strong>
+        <p class="premium-text">{{ item.get("tendencia") }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</section>

@@ -1,0 +1,822 @@
+{% extends "admin/base_admin.html" %}
+
+{% set participants = participants if participants is defined and participants else [] %}
+{% set filters = filters if filters is defined and filters else {} %}
+{% set filter_options = filter_options if filter_options is defined and filter_options else {} %}
+{% set cliente = cliente if cliente is defined and cliente else None %}
+{% set rodada = rodada if rodada is defined and rodada else None %}
+
+{% set cliente_nome = cliente.nome if cliente and cliente.nome is defined and cliente.nome else (cliente.razao_social if cliente and cliente.razao_social is defined and cliente.razao_social else "Cliente não informado") %}
+{% set cliente_id = cliente.id if cliente and cliente.id is defined and cliente.id else (filters.cliente_id if filters and filters.cliente_id is defined else "") %}
+{% set rodada_nome = rodada.nome if rodada and rodada.nome is defined and rodada.nome else "Todas as rodadas" %}
+{% set rodada_id = rodada.id if rodada and rodada.id is defined and rodada.id else (filters.rodada_id if filters and filters.rodada_id is defined else "") %}
+
+{% set rodada_options = filter_options.rodadas if filter_options and filter_options.rodadas is defined else [] %}
+{% set setor_options = filter_options.setores if filter_options and filter_options.setores is defined else [] %}
+{% set cargo_options = filter_options.cargos if filter_options and filter_options.cargos is defined else [] %}
+{% set tipo_options = filter_options.tipos_aplicacao if filter_options and filter_options.tipos_aplicacao is defined else [] %}
+{% set status_options = filter_options.statuses if filter_options and filter_options.statuses is defined else [] %}
+
+{% set filtro_setor_id = filters.setor_id if filters and filters.setor_id is defined else "" %}
+{% set filtro_cargo = filters.cargo if filters and filters.cargo is defined else "" %}
+{% set filtro_tipo_aplicacao = filters.tipo_aplicacao if filters and filters.tipo_aplicacao is defined else "" %}
+{% set filtro_status = filters.status if filters and filters.status is defined else "" %}
+
+{% set active_nav = "dashboard" %}
+{% set page_title = "Participantes" %}
+{% set page_subtitle = "Lista de participantes do cliente selecionado" %}
+{% set primary_action_href = "" %}
+{% set primary_action_label = "" %}
+{% set secondary_action_href = "" %}
+{% set secondary_action_label = "" %}
+
+{% block title %}ProfileDNA — Participantes{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <style>
+    .pd-participants-page {
+      display: grid;
+      gap: 20px;
+    }
+
+    .pd-participants-hero {
+      display: grid;
+      gap: 14px;
+    }
+
+    .pd-participants-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      width: fit-content;
+    }
+
+    .pd-participants-title {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .pd-participants-subtitle {
+      margin: 10px 0 0;
+      color: #6b7280;
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 920px;
+    }
+
+    .pd-participants-context-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px !important;
+    }
+
+    .pd-participants-context-card {
+      padding: 22px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.05);
+      min-width: 0;
+    }
+
+    .pd-participants-section {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.05);
+      min-width: 0;
+    }
+
+    .pd-participants-context-card__label {
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      color: #9ca3af;
+      margin: 0;
+    }
+
+    .pd-participants-context-card__value {
+      color: #111827;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .pd-participants-context-card__meta {
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participants-section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .pd-participants-section-title {
+      margin: 0;
+      color: #111827;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .pd-participants-section-text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .pd-participants-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pd-participants-name-search-row {
+      margin-bottom: 14px;
+    }
+
+    .pd-participants-name-search-label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .pd-participants-name-search-input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.65) !important;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 600;
+      box-sizing: border-box;
+      outline: none;
+      box-shadow: 0 2px 8px rgba(17, 24, 39, 0.05);
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .pd-participants-name-search-input:focus {
+      border-color: rgba(251, 146, 60, 0.5);
+      box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.12);
+    }
+
+    .pd-participants-name-search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .pd-participants-filters-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pd-participants-filter-label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .pd-participants-filter-control {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.65) !important;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      color: #1e293b;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color .18s ease;
+    }
+
+    .pd-participants-filter-control:focus {
+      border-color: rgba(251, 146, 60, 0.5);
+    }
+
+    .pd-participants-filter-actions {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .pd-participants-btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pd-participants-table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .pd-participants-page-size-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #64748b;
+    }
+
+    .pd-participants-page-size-select {
+      min-height: 36px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.65) !important;
+      backdrop-filter: blur(12px);
+      color: #1e293b;
+      font-size: 13px;
+      font-weight: 800;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .pd-participants-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(229, 231, 235, 0.6);
+    }
+
+    .pd-participants-pagination__info {
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .pd-participants-pagination__controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pd-participants-pagination__btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(251, 146, 60, 0.35);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      color: var(--pd-brand-orange-strong);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease;
+    }
+
+    .pd-participants-pagination__btn:hover:not(:disabled) {
+      background: rgba(255, 247, 237, 0.85);
+      border-color: var(--pd-brand-orange);
+    }
+
+    .pd-participants-pagination__btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .pd-participants-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      cursor: pointer;
+    }
+
+    .pd-participants-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+    }
+
+    .pd-participants-btn--primary {
+      border-color: transparent;
+      color: #ffffff;
+      background: linear-gradient(90deg, #f39c4a 0%, #f97316 48%, #ef4444 100%);
+      box-shadow: 0 18px 34px rgba(249, 115, 22, 0.22);
+    }
+
+    .pd-participants-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #ffffff;
+    }
+
+    .pd-participants-table {
+      width: 100%;
+      min-width: 1080px;
+      border-collapse: collapse;
+    }
+
+    .pd-participants-table th {
+      text-align: left;
+      padding: 14px 14px;
+      font-size: 12px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      color: #6b7280;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+      white-space: nowrap;
+    }
+
+    .pd-participants-table td {
+      padding: 14px 14px;
+      vertical-align: top;
+      border-bottom: 1px solid #eef2f7;
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .pd-participants-table tbody tr:hover {
+      background: #fcfcfd;
+    }
+
+    .pd-participants-name {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .pd-participants-name__main {
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 900;
+      color: #111827;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participants-name__meta {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #6b7280;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-participants-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #111827;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pd-participants-status--finalizado {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .pd-participants-status--em_andamento {
+      border-color: #fde68a;
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    .pd-participants-status--nao_finalizado {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .pd-participants-action-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: #111827;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pd-participants-empty {
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1100px) {
+      .pd-participants-context-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pd-participants-filters-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .pd-participants-context-grid,
+      .pd-participants-filters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-participants-filter-actions,
+      .pd-participants-btn-row {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .pd-participants-btn {
+        width: 100%;
+      }
+
+      .pd-participants-table-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block admin_page_header %}
+  <div class="pd-participants-hero">
+    <div class="pd-participants-kicker">Lista administrativa</div>
+    <h1 class="pd-participants-title">Participantes</h1>
+    <p class="pd-participants-subtitle">
+      Lista de participantes vinculados ao cliente selecionado.
+    </p>
+  </div>
+{% endblock %}
+
+{% block admin_context_bar %}
+  <section class="pd-participants-context-grid">
+    <div class="pd-participants-context-card">
+      <div class="pd-participants-context-card__label">Cliente em análise</div>
+      <div class="pd-participants-context-card__value">{{ cliente_nome }}</div>
+      <div class="pd-participants-context-card__meta">Cliente ID: {{ cliente_id or "Não informado" }}</div>
+    </div>
+
+    <div class="pd-participants-context-card">
+      <div class="pd-participants-context-card__label">Rodada</div>
+      <div class="pd-participants-context-card__value">{{ rodada_nome }}</div>
+      <div class="pd-participants-context-card__meta">Rodada ID: {{ rodada_id or "Todas as rodadas" }}</div>
+    </div>
+
+    <div class="pd-participants-context-card">
+      <div class="pd-participants-context-card__label">Participantes listados</div>
+      <div class="pd-participants-context-card__value">{{ participants|length }}</div>
+      <div class="pd-participants-context-card__meta">Registros exibidos no recorte atual</div>
+    </div>
+
+  </section>
+{% endblock %}
+
+{% block admin_content %}
+  <div class="pd-participants-page">
+    <section class="pd-participants-section">
+      <div class="pd-participants-section-head">
+        <div>
+          <h2 class="pd-participants-section-title">Filtros de participantes</h2>
+          <p class="pd-participants-section-text">
+            Refine a lista mantendo o escopo do cliente em análise. Esta filtragem serve para leitura operacional e não altera nenhuma lógica de cálculo do sistema.
+          </p>
+        </div>
+        <div class="pd-participants-chip">Escopo contextual</div>
+      </div>
+
+      <form method="get" action="{{ request.url.path if request is defined and request and request.url and request.url.path else '/admin/participants' }}">
+        {% if cliente_id %}
+          <input type="hidden" name="cliente_id" value="{{ cliente_id }}">
+        {% endif %}
+
+        <div class="pd-participants-name-search-row">
+          <label class="pd-participants-name-search-label">
+            <span>Buscar por Nome</span>
+            <input
+              type="text"
+              id="pd-participants-nome-input"
+              class="pd-participants-name-search-input"
+              placeholder="Digite o nome do participante..."
+              autocomplete="off"
+            />
+          </label>
+        </div>
+
+        <div class="pd-participants-filters-grid">
+          <label class="pd-participants-filter-label">
+            <span>Rodada</span>
+            <select name="rodada_id" class="pd-participants-filter-control">
+              <option value="">Todas</option>
+              {% for item in rodada_options %}
+                {% set _value = item.value if item.value is defined else item.id if item.id is defined else "" %}
+                {% set _label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                <option value="{{ _value }}" {% if rodada_id|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label class="pd-participants-filter-label">
+            <span>Setor</span>
+            <select name="setor_id" class="pd-participants-filter-control">
+              <option value="">Todos</option>
+              {% for item in setor_options %}
+                {% set _value = item.value if item.value is defined else item.id if item.id is defined else "" %}
+                {% set _label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                <option value="{{ _value }}" {% if filtro_setor_id|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label class="pd-participants-filter-label">
+            <span>Cargo</span>
+            <select name="cargo" class="pd-participants-filter-control">
+              <option value="">Todos</option>
+              {% for item in cargo_options %}
+                {% set _value = item.value if item.value is defined else item %}
+                {% set _label = item.label if item.label is defined else item %}
+                <option value="{{ _value }}" {% if filtro_cargo|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label class="pd-participants-filter-label">
+            <span>Tipo</span>
+            <select name="tipo_aplicacao" class="pd-participants-filter-control">
+              <option value="">Todos</option>
+              {% for item in tipo_options %}
+                {% set _value = item.value if item.value is defined else item %}
+                {% set _label = item.label if item.label is defined else item %}
+                <option value="{{ _value }}" {% if filtro_tipo_aplicacao|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label class="pd-participants-filter-label">
+            <span>Status</span>
+            <select name="status" class="pd-participants-filter-control">
+              <option value="">Todos</option>
+              {% for item in status_options %}
+                {% set _value = item.value if item.value is defined else item %}
+                {% set _label = item.label if item.label is defined else item %}
+                <option value="{{ _value }}" {% if filtro_status|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <div class="pd-participants-filter-actions">
+          <button type="submit" class="pd-participants-btn pd-participants-btn--primary">Aplicar filtros</button>
+          <a href="/admin/participants?cliente_id={{ cliente_id }}{% if rodada_id %}&rodada_id={{ rodada_id }}{% endif %}" class="pd-participants-btn">Limpar filtros</a>
+        </div>
+      </form>
+    </section>
+
+    <section class="pd-participants-section">
+      <div class="pd-participants-section-head">
+        <div>
+          <h2 class=”pd-participants-section-title”>Lista de participantes</h2>
+        </div>
+        <div class="pd-participants-chip">{{ participants|length }} registro(s)</div>
+      </div>
+
+      {% if participants %}
+        <div class="pd-participants-table-toolbar">
+          <label class="pd-participants-page-size-label">
+            Exibir:
+            <select id="pd-participants-page-size" class="pd-participants-page-size-select">
+              <option value="10">10</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            participantes
+          </label>
+        </div>
+
+        <div class="pd-participants-table-wrap">
+          <table class="pd-participants-table">
+            <thead>
+              <tr>
+                <th>Participante</th>
+                <th>Setor</th>
+                <th>Cliente</th>
+                <th>Rodada</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="pd-participants-tbody">
+              {% for row in participants %}
+                {% set row_participant_name = row.participant_name if row.participant_name is defined and row.participant_name else row.participant_nome if row.participant_nome is defined and row.participant_nome else row.nome if row.nome is defined and row.nome else "Participante não informado" %}
+                {% set row_email = row.email if row.email is defined and row.email else "" %}
+                {% set row_setor = row.setor_name if row.setor_name is defined and row.setor_name else row.setor_nome if row.setor_nome is defined and row.setor_nome else row.setor if row.setor is defined and row.setor else "Não informado" %}
+                {% set row_cliente = row.cliente_name if row.cliente_name is defined and row.cliente_name else row.cliente_nome if row.cliente_nome is defined and row.cliente_nome else cliente_nome %}
+                {% set row_rodada = row.rodada_name if row.rodada_name is defined and row.rodada_name else row.rodada_nome if row.rodada_nome is defined and row.rodada_nome else rodada_nome %}
+                {% set row_status = row.status if row.status is defined and row.status else "Não informado" %}
+                {% set row_attempt_id = row.attempt_id if row.attempt_id is defined and row.attempt_id else row.id if row.id is defined else "" %}
+                {% set row_cliente_id = row.cliente_id if row.cliente_id is defined and row.cliente_id else cliente_id %}
+                {% set row_rodada_id = row.rodada_id if row.rodada_id is defined and row.rodada_id else rodada_id %}
+                {% set row_report_url = row.report_url if row.report_url is defined and row.report_url else ("/admin/attempts/" ~ row_attempt_id ~ "?cliente_id=" ~ row_cliente_id ~ (("&rodada_id=" ~ row_rodada_id) if row_rodada_id else "")) if row_attempt_id else "#" %}
+                {% set row_status_key = row_status|string|lower|replace(" ", "_")|replace("-", "_") %}
+
+                <tr data-nome="{{ row_participant_name|lower }}">
+                  <td>
+                    <div class="pd-participants-name">
+                      <div class="pd-participants-name__main">{{ row_participant_name }}</div>
+                      <div class="pd-participants-name__meta">
+                        {% if row_email %}{{ row_email }}{% else %}Avaliação ID: {{ row_attempt_id or "Não informado" }}{% endif %}
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ row_setor }}</td>
+                  <td>{{ row_cliente }}</td>
+                  <td>{{ row_rodada }}</td>
+                  <td>
+                    <span class="pd-participants-status pd-participants-status--{{ row_status_key }}">
+                      {{ row_status }}
+                    </span>
+                  </td>
+                  <td>
+                    <a href="{{ row_report_url }}" class="pd-participants-action-link">
+                      Abrir relatório
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pd-participants-pagination">
+          <span class="pd-participants-pagination__info" id="pd-participants-pagination-info">Exibindo 1–10 de {{ participants|length }} registros</span>
+          <div class="pd-participants-pagination__controls">
+            <button type="button" class="pd-participants-pagination__btn" id="pd-participants-prev">← Anterior</button>
+            <button type="button" class="pd-participants-pagination__btn" id="pd-participants-next">Próximo →</button>
+          </div>
+        </div>
+      {% else %}
+        <div class="pd-participants-empty">
+          Nenhum participante foi encontrado para o recorte atual. Ajuste os filtros ou revise o contexto selecionado de cliente e rodada.
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var tbody = document.getElementById('pd-participants-tbody');
+      if (!tbody) return;
+
+      var nomeInput   = document.getElementById('pd-participants-nome-input');
+      var pageSizeSel = document.getElementById('pd-participants-page-size');
+      var prevBtn     = document.getElementById('pd-participants-prev');
+      var nextBtn     = document.getElementById('pd-participants-next');
+      var infoEl      = document.getElementById('pd-participants-pagination-info');
+
+      var allRows     = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+      var pageSize    = 10;
+      var currentPage = 1;
+
+      function getVisible() {
+        var query = nomeInput ? nomeInput.value.trim().toLowerCase() : '';
+        return allRows.filter(function (row) {
+          if (!query) return true;
+          return (row.getAttribute('data-nome') || '').indexOf(query) !== -1;
+        });
+      }
+
+      function render() {
+        var visible    = getVisible();
+        var totalPages = Math.max(1, Math.ceil(visible.length / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        var start = (currentPage - 1) * pageSize;
+        var end   = start + pageSize;
+
+        allRows.forEach(function (r) { r.style.display = 'none'; });
+        visible.forEach(function (r, i) {
+          r.style.display = (i >= start && i < end) ? '' : 'none';
+        });
+
+        var fromN = visible.length === 0 ? 0 : start + 1;
+        var toN   = Math.min(end, visible.length);
+        if (infoEl) infoEl.textContent = 'Exibindo ' + fromN + '–' + toN + ' de ' + visible.length + ' registros';
+        if (prevBtn) prevBtn.disabled = currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+      }
+
+      if (nomeInput) nomeInput.addEventListener('input', function () { currentPage = 1; render(); });
+
+      if (pageSizeSel) pageSizeSel.addEventListener('change', function () {
+        pageSize = parseInt(this.value, 10) || 10;
+        currentPage = 1;
+        render();
+      });
+
+      if (prevBtn) prevBtn.addEventListener('click', function () {
+        if (currentPage > 1) { currentPage--; render(); }
+      });
+      if (nextBtn) nextBtn.addEventListener('click', function () {
+        if (currentPage < Math.max(1, Math.ceil(getVisible().length / pageSize))) { currentPage++; render(); }
+      });
+
+      render();
+    })();
+  </script>
+{% endblock %}

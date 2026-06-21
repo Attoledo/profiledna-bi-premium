@@ -1,0 +1,1621 @@
+{% extends "admin/base_admin.html" %}
+
+{% set csrf_token = csrf_token if csrf_token is defined else "" %}
+{% set filters = filters if filters is defined and filters else {} %}
+{% set filter_options = filter_options if filter_options is defined and filter_options else {} %}
+{% set overview_cards = overview_cards if overview_cards is defined and overview_cards else [] %}
+{% set dimension_rows = dimension_rows if dimension_rows is defined and dimension_rows else [] %}
+{% set area_rows = area_rows if area_rows is defined and area_rows else [] %}
+{% set ranking_top = ranking_top if ranking_top is defined and ranking_top else [] %}
+{% set ranking_bottom = ranking_bottom if ranking_bottom is defined and ranking_bottom else [] %}
+{% set chart_bundle = chart_bundle if chart_bundle is defined and chart_bundle else {} %}
+
+{% set radar_chart = chart_bundle.radar_area_chart if chart_bundle and chart_bundle.radar_area_chart is defined else {} %}
+{% set status_chart = chart_bundle.status_pie_chart if chart_bundle and chart_bundle.status_pie_chart is defined else {} %}
+{% set top5_chart = chart_bundle.top5_chart if chart_bundle and chart_bundle.top5_chart is defined else {} %}
+{% set bottom3_chart = chart_bundle.bottom3_chart if chart_bundle and chart_bundle.bottom3_chart is defined else {} %}
+
+{% set page_title = page_title if page_title is defined and page_title else "BI — Visão Geral" %}
+{% set page_subtitle = page_subtitle if page_subtitle is defined and page_subtitle else "Painel analítico consolidado do ProfileDNA com filtros operacionais e visão executiva." %}
+
+{% set cliente_options = filter_options.clientes if filter_options and filter_options.clientes is defined else [] %}
+{% set rodada_options = filter_options.rodadas if filter_options and filter_options.rodadas is defined else [] %}
+{% set setor_options = filter_options.setores if filter_options and filter_options.setores is defined else [] %}
+{% set cargo_options = filter_options.cargos if filter_options and filter_options.cargos is defined else [] %}
+{% set tipo_options = filter_options.tipos_aplicacao if filter_options and filter_options.tipos_aplicacao is defined else [] %}
+{% set status_options = filter_options.statuses if filter_options and filter_options.statuses is defined else [] %}
+
+{% set filtro_cliente_id = filters.cliente_id if filters and filters.cliente_id is defined else "" %}
+{% set filtro_rodada_id = filters.rodada_id if filters and filters.rodada_id is defined else "" %}
+{% set filtro_setor_id = filters.setor_id if filters and filters.setor_id is defined else "" %}
+{% set filtro_cargo = filters.cargo if filters and filters.cargo is defined else "" %}
+{% set filtro_tipo_aplicacao = filters.tipo_aplicacao if filters and filters.tipo_aplicacao is defined else "" %}
+{% set filtro_status = filters.status if filters and filters.status is defined else "" %}
+{% set filtro_only_completed = filters.only_completed if filters and filters.only_completed is defined else false %}
+
+{% set has_cliente_selected = true if filtro_cliente_id else false %}
+{% set has_rodada_selected = true if filtro_rodada_id else false %}
+
+{% set _cliente_name = cliente.nome if cliente is defined and cliente and cliente.nome is defined and cliente.nome else (cliente.razao_social if cliente is defined and cliente and cliente.razao_social is defined and cliente.razao_social else "Selecione um cliente") %}
+{% set _cliente_id = cliente.id if cliente is defined and cliente and cliente.id is defined and cliente.id else (cliente_id if cliente_id is defined and cliente_id else filtro_cliente_id) %}
+
+{% set dashboard_href = dashboard_href if dashboard_href is defined and dashboard_href else "/admin/dashboard" %}
+{% set comparativo_href = comparativo_href if comparativo_href is defined and comparativo_href else "/admin/bi/comparativo" %}
+{% set export_csv_href = export_csv_href if export_csv_href is defined and export_csv_href else "/admin/exportar/csv" %}
+{% set export_xlsx_href = export_xlsx_href if export_xlsx_href is defined and export_xlsx_href else "/admin/exportar/xlsx" %}
+{% set participants_href = participants_href if participants_href is defined and participants_href else "#" %}
+
+{% block title %}ProfileDNA — BI Visão Geral{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .pd-bi-overview {
+      display: grid;
+      gap: 20px;
+    }
+
+    .pd-bi-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 8px 0 2px;
+    }
+
+    .pd-bi-hero__content {
+      max-width: 900px;
+      min-width: 0;
+    }
+
+    .pd-bi-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+
+    .pd-bi-title {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 52px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #111827;
+      font-weight: 900;
+    }
+
+    .pd-bi-subtitle {
+      margin: 14px 0 0;
+      max-width: 920px;
+      color: #6b7280;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .pd-bi-hero__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pd-bi-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease;
+      cursor: pointer;
+    }
+
+    .pd-bi-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+    }
+
+    .pd-bi-btn--primary {
+      border-color: transparent;
+      color: #ffffff;
+      background: linear-gradient(90deg, #f39c4a 0%, #f97316 48%, #ef4444 100%);
+      box-shadow: 0 18px 34px rgba(249, 115, 22, 0.22);
+    }
+
+    .pd-bi-btn[aria-disabled="true"],
+    .pd-bi-btn.is-disabled {
+      opacity: 0.55;
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .pd-bi-filter-card,
+    .pd-bi-panel,
+    .pd-bi-data-card {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+      min-width: 0;
+    }
+
+    .pd-bi-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .pd-bi-card-title {
+      margin: 0;
+      color: #111827;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .pd-bi-card-text {
+      margin: 8px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 860px;
+    }
+
+    .pd-bi-card-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pd-bi-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .pd-bi-field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .pd-bi-field label,
+    .pd-bi-field span {
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .pd-bi-select,
+    .pd-bi-input {
+      width: 100%;
+      min-width: 0;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      color: #111827;
+      padding: 0 12px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    .pd-bi-select:focus,
+    .pd-bi-input:focus {
+      border-color: rgba(243, 156, 74, 0.72);
+      box-shadow: 0 0 0 4px rgba(243, 156, 74, 0.12);
+    }
+
+    .pd-bi-select:disabled,
+    .pd-bi-input:disabled {
+      background: #f9fafb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .pd-bi-filter-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .pd-bi-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .pd-bi-checkbox input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: #111827;
+    }
+
+    .pd-bi-filter-actions__right {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pd-bi-filter-helper {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #fde68a;
+      background: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%);
+      color: #7c2d12;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-bi-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .pd-bi-kpi-card {
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid #dbe1ea;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+      min-width: 0;
+    }
+
+    .pd-bi-kpi-card__label {
+      font-size: 12px;
+      line-height: 1.2;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .pd-bi-kpi-card__value {
+      font-size: 38px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: #111827;
+      font-weight: 900;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .pd-bi-kpi-card__text {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-bi-main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+      gap: 18px;
+    }
+
+    .pd-bi-action-glass {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .pd-bi-action-glass-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 20px 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      box-shadow: 0 4px 18px rgba(17, 24, 39, 0.07);
+      text-decoration: none;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .pd-bi-action-glass-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(17, 24, 39, 0.12);
+      border-color: #fdba74;
+    }
+
+    .pd-bi-action-glass-card.is-disabled {
+      opacity: 0.42;
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .pd-bi-action-glass-card__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      color: #c2410c;
+      font-size: 21px;
+      flex: 0 0 auto;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .pd-bi-action-glass-card__label {
+      color: #111827;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    .pd-bi-chart-box {
+      position: relative;
+      min-height: 300px;
+    }
+
+    .pd-bi-chart-box--rank {
+      min-height: 280px;
+    }
+
+    .pd-bi-top-bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .pd-bi-table-wrap {
+      overflow-x: auto;
+    }
+
+    .pd-bi-table {
+      width: 100%;
+      min-width: 480px;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .pd-bi-table thead th {
+      text-align: left;
+      padding: 14px 10px;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .pd-bi-table thead th:last-child {
+      width: 48px;
+      text-align: center;
+    }
+
+    .pd-bi-table tbody td {
+      padding: 14px 10px;
+      vertical-align: middle;
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.55;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .pd-bi-table tbody td:last-child {
+      text-align: center;
+    }
+
+    .pd-bi-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pd-bi-table__dimension {
+      font-weight: 900;
+      font-size: 16px;
+      line-height: 1.1;
+    }
+
+    .pd-bi-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .pd-bi-badge--alta {
+      background: #ecfdf5;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .pd-bi-badge--media,
+    .pd-bi-badge--média {
+      background: #fff7ed;
+      color: #9a3412;
+      border-color: #fdba74;
+    }
+
+    .pd-bi-badge--baixa {
+      background: #fff1f2;
+      color: #b91c1c;
+      border-color: #fecdd3;
+    }
+
+    .pd-bi-expand-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #6b7280;
+      cursor: pointer;
+      transition: background .14s ease, color .14s ease, border-color .14s ease;
+      flex: 0 0 auto;
+    }
+
+    .pd-bi-expand-btn:hover {
+      background: #fff7ed;
+      border-color: #fdba74;
+      color: #c2410c;
+    }
+
+    .pd-bi-areas-pie-wrap {
+      display: grid;
+      gap: 18px;
+    }
+
+    .pd-bi-areas-pie-box {
+      position: relative;
+      min-height: 320px;
+    }
+
+    .pd-bi-areas-legend {
+      display: grid;
+      gap: 10px;
+    }
+
+    .pd-bi-areas-legend-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #f9fafb;
+      min-width: 0;
+    }
+
+    .pd-bi-areas-legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+
+    .pd-bi-areas-legend-main {
+      min-width: 0;
+    }
+
+    .pd-bi-areas-legend-title {
+      margin: 0;
+      color: #111827;
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .pd-bi-areas-legend-text {
+      margin: 4px 0 0;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .pd-bi-areas-legend-value {
+      text-align: right;
+      color: #111827;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pd-bi-empty {
+      padding: 16px 18px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pd-bi-empty--sm {
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+
+    .pd-bi-chart-box--compact {
+      position: relative;
+      min-height: 188px;
+    }
+
+    .pd-bi-panel-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 6px 0 2px;
+    }
+
+    .pd-bi-panel-divider::before,
+    .pd-bi-panel-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .pd-bi-panel-divider span {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+
+    .pd-bi-action-glass--sm {
+      gap: 10px;
+    }
+
+    .pd-bi-action-glass--sm .pd-bi-action-glass-card {
+      padding: 13px 18px;
+      gap: 14px;
+    }
+
+    .pd-bi-action-glass--sm .pd-bi-action-glass-card__icon {
+      width: 38px;
+      height: 38px;
+      font-size: 18px;
+    }
+
+    .pd-bi-action-glass--sm .pd-bi-action-glass-card__label {
+      font-size: 14px;
+    }
+
+    /* ── Drawer ── */
+    .pd-bi-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.28);
+      backdrop-filter: blur(2px);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+
+    .pd-bi-drawer-overlay.is-open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .pd-bi-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(480px, 95vw);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-left: 1px solid rgba(229, 231, 235, 0.8);
+      box-shadow: -8px 0 48px rgba(17, 24, 39, 0.13);
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .pd-bi-drawer.is-open {
+      transform: translateX(0);
+    }
+
+    .pd-bi-drawer__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+      flex: 0 0 auto;
+    }
+
+    .pd-bi-drawer__title {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 900;
+      color: #111827;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .pd-bi-drawer__close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 18px;
+      cursor: pointer;
+      flex: 0 0 auto;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    .pd-bi-drawer__close:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .pd-bi-drawer__body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1 1 auto;
+      display: grid;
+      gap: 22px;
+      align-content: start;
+    }
+
+    .pd-bi-drawer__row {
+      display: grid;
+      gap: 5px;
+    }
+
+    .pd-bi-drawer__row-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #9ca3af;
+    }
+
+    .pd-bi-drawer__row-value {
+      font-size: 17px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.35;
+    }
+
+    .pd-bi-drawer__row-text {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.75;
+    }
+
+    .pd-bi-drawer__band-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      border: 1px solid transparent;
+    }
+
+    .pd-bi-drawer__band-badge--alta { background: #ecfdf5; color: #166534; border-color: #bbf7d0; }
+    .pd-bi-drawer__band-badge--media { background: #fff7ed; color: #9a3412; border-color: #fdba74; }
+    .pd-bi-drawer__band-badge--baixa { background: #fff1f2; color: #b91c1c; border-color: #fecdd3; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1320px) {
+      .pd-bi-filter-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pd-bi-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pd-bi-main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .pd-bi-top-bottom-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-bi-filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .pd-bi-filter-grid,
+      .pd-bi-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-bi-filter-actions {
+        align-items: stretch;
+      }
+
+      .pd-bi-filter-actions__right,
+      .pd-bi-hero__actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .pd-bi-btn {
+        width: 100%;
+      }
+
+      .pd-bi-chart-box,
+      .pd-bi-areas-pie-box {
+        min-height: 250px;
+      }
+
+      .pd-bi-areas-legend-item {
+        grid-template-columns: auto 1fr;
+      }
+
+      .pd-bi-areas-legend-value {
+        grid-column: 2;
+        text-align: left;
+      }
+
+      .pd-bi-drawer {
+        width: 100vw;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block admin_page_header %}
+  <div class="pd-bi-hero">
+    <div class="pd-bi-hero__content">
+      <div class="pd-bi-kicker">Business Intelligence</div>
+      <h1 class="pd-bi-title">{{ page_title }}</h1>
+      <p class="pd-bi-subtitle">{{ page_subtitle }}</p>
+    </div>
+
+    <div class="pd-bi-hero__actions">
+      <a href="{{ export_csv_href }}" class="pd-bi-btn">Exportar CSV</a>
+      <a href="{{ export_xlsx_href }}" class="pd-bi-btn pd-bi-btn--primary">Exportar XLSX</a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block admin_context_bar %}{% endblock %}
+
+{% block admin_content %}
+  <div class="pd-bi-overview">
+
+    <!-- ── Filtros BI ── -->
+    <section class="pd-bi-filter-card">
+      <div class="pd-bi-card-head">
+        <div>
+          <h2 class="pd-bi-card-title">Filtros BI</h2>
+          <p class="pd-bi-card-text">
+            O <strong>Cliente</strong> é o filtro mestre. Depois de selecioná-lo, as opções de rodada, setor, cargo, tipo e status devem refletir somente aquilo que pertence a esse cliente.
+          </p>
+        </div>
+        <div class="pd-bi-card-chip">Recorte analítico</div>
+      </div>
+
+      <form
+        id="biOverviewFiltersForm"
+        method="get"
+        action="{{ request.url.path if request is defined and request and request.url and request.url.path else '/admin/bi/overview' }}"
+      >
+        <div class="pd-bi-filter-grid">
+          <div class="pd-bi-field">
+            <label for="cliente_id">Cliente</label>
+            <select id="cliente_id" name="cliente_id" class="pd-bi-select">
+              <option value="">Selecione</option>
+              {% for item in cliente_options %}
+                {% set _value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                {% set _label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                <option value="{{ _value }}" {% if filtro_cliente_id|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pd-bi-field">
+            <label for="rodada_id">Rodada</label>
+            <select id="rodada_id" name="rodada_id" class="pd-bi-select" {% if not has_cliente_selected %}disabled{% endif %}>
+              <option value="">Todas</option>
+              {% for item in rodada_options %}
+                {% set _value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                {% set _label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                <option value="{{ _value }}" {% if filtro_rodada_id|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pd-bi-field">
+            <label for="setor_id">Setor</label>
+            <select id="setor_id" name="setor_id" class="pd-bi-select" {% if not has_cliente_selected %}disabled{% endif %}>
+              <option value="">Todos</option>
+              {% for item in setor_options %}
+                {% set _value = item.value if item.value is defined else item.id if item.id is defined else '' %}
+                {% set _label = item.label if item.label is defined else item.nome if item.nome is defined else item %}
+                <option value="{{ _value }}" {% if filtro_setor_id|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pd-bi-field">
+            <label for="cargo">Cargo</label>
+            <select id="cargo" name="cargo" class="pd-bi-select" {% if not has_cliente_selected %}disabled{% endif %}>
+              <option value="">Todos</option>
+              {% for item in cargo_options %}
+                {% set _value = item.value if item.value is defined else item %}
+                {% set _label = item.label if item.label is defined else item %}
+                <option value="{{ _value }}" {% if filtro_cargo|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pd-bi-field">
+            <label for="tipo_aplicacao">Tipo</label>
+            <select id="tipo_aplicacao" name="tipo_aplicacao" class="pd-bi-select" {% if not has_cliente_selected %}disabled{% endif %}>
+              <option value="">Todos</option>
+              {% for item in tipo_options %}
+                {% set _value = item.value if item.value is defined else item %}
+                {% set _label = item.label if item.label is defined else item %}
+                <option value="{{ _value }}" {% if filtro_tipo_aplicacao|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pd-bi-field">
+            <label for="status">Status</label>
+            <select id="status" name="status" class="pd-bi-select" {% if not has_cliente_selected %}disabled{% endif %}>
+              <option value="">Todos</option>
+              {% for item in status_options %}
+                {% set _value = item.value if item.value is defined else item %}
+                {% set _label = item.label if item.label is defined else item %}
+                <option value="{{ _value }}" {% if filtro_status|string == _value|string %}selected{% endif %}>{{ _label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="pd-bi-filter-actions">
+          <label class="pd-bi-checkbox">
+            <input type="checkbox" name="only_completed" value="true" {% if filtro_only_completed %}checked{% endif %}>
+            <span>Somente concluídos</span>
+          </label>
+
+          <div class="pd-bi-filter-actions__right">
+            <button type="submit" class="pd-bi-btn pd-bi-btn--primary">Aplicar filtros</button>
+            <a href="{{ request.url.path if request is defined and request and request.url and request.url.path else '/admin/bi/overview' }}" class="pd-bi-btn">Limpar filtros</a>
+          </div>
+        </div>
+
+        <div class="pd-bi-filter-helper">
+          <strong>Fluxo recomendado:</strong>
+          primeiro selecione o cliente. A tela será atualizada para carregar apenas as opções válidas daquele cliente. Depois refine por rodada, setor, cargo, tipo e status.
+        </div>
+      </form>
+    </section>
+
+    <!-- ── KPIs ── -->
+    <section class="pd-bi-kpi-grid">
+      {% if overview_cards %}
+        {% for card in overview_cards %}
+          <article class="pd-bi-kpi-card">
+            <div class="pd-bi-kpi-card__label">
+              {{ card.label if card.label is defined else card.title if card.title is defined else "Indicador" }}
+            </div>
+            <div class="pd-bi-kpi-card__value">
+              {{ card.value if card.value is defined else "-" }}
+            </div>
+            {% if card.description is defined and card.description %}
+              <div class="pd-bi-kpi-card__text">{{ card.description }}</div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      {% else %}
+        <article class="pd-bi-kpi-card">
+          <div class="pd-bi-kpi-card__label">Indicador</div>
+          <div class="pd-bi-kpi-card__value">-</div>
+          <div class="pd-bi-kpi-card__text">Sem indicadores consolidados para o recorte atual.</div>
+        </article>
+      {% endif %}
+    </section>
+
+    <!-- ── Radar + Ações rápidas ── -->
+    <section class="pd-bi-main-grid">
+      <div class="pd-bi-panel">
+        <div class="pd-bi-card-head">
+          <div>
+            <h2 class="pd-bi-card-title">Radar / Área analítica</h2>
+            <p class="pd-bi-card-text">
+              Média das macroáreas no recorte atual. Quanto maior o valor, maior a presença relativa daquela área no grupo.
+            </p>
+          </div>
+        </div>
+
+        {% if radar_chart and radar_chart.has_data %}
+          <div class="pd-bi-chart-box">
+            <canvas id="radarAreaChart"></canvas>
+          </div>
+        {% else %}
+          <div class="pd-bi-empty">
+            Radar ainda sem dados disponíveis para o recorte atual.
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="pd-bi-panel">
+        <div class="pd-bi-card-head">
+          <h2 class="pd-bi-card-title">Distribuição de Performance</h2>
+        </div>
+
+        {% if dimension_rows %}
+          <div class="pd-bi-chart-box pd-bi-chart-box--compact">
+            <canvas id="pd-performance-demographic-chart"></canvas>
+          </div>
+        {% else %}
+          <div class="pd-bi-empty pd-bi-empty--sm">
+            Sem dados de performance para o recorte atual.
+          </div>
+        {% endif %}
+
+        <div class="pd-bi-panel-divider"><span>Atalhos operacionais</span></div>
+
+        <div class="pd-bi-action-glass pd-bi-action-glass--sm">
+          <a
+            href="{{ comparativo_href }}"
+            class="pd-bi-action-glass-card {% if not has_cliente_selected %}is-disabled{% endif %}"
+            {% if not has_cliente_selected %}aria-disabled="true" tabindex="-1"{% endif %}
+          >
+            <div class="pd-bi-action-glass-card__icon">⇄</div>
+            <div class="pd-bi-action-glass-card__label">Comparar com outra rodada</div>
+          </a>
+
+          <a
+            href="{{ participants_href }}"
+            class="pd-bi-action-glass-card {% if not has_cliente_selected %}is-disabled{% endif %}"
+            {% if not has_cliente_selected %}aria-disabled="true" tabindex="-1"{% endif %}
+          >
+            <div class="pd-bi-action-glass-card__icon">👥</div>
+            <div class="pd-bi-action-glass-card__label">Abrir Participantes</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Top 5 + Pontos de atenção ── -->
+    <section class="pd-bi-top-bottom-grid">
+      <div class="pd-bi-panel">
+        <div class="pd-bi-card-head">
+          <div>
+            <h2 class="pd-bi-card-title">Top 5 forças coletivas</h2>
+            <p class="pd-bi-card-text">
+              Dimensões com maior recorrência no grupo analisado.
+            </p>
+          </div>
+        </div>
+
+        {% if ranking_top or (top5_chart and top5_chart.has_data) %}
+          <div class="pd-bi-chart-box pd-bi-chart-box--rank">
+            <canvas id="top5BarChart"></canvas>
+          </div>
+        {% else %}
+          <div class="pd-bi-empty">Top 5 ainda não disponível para o recorte atual.</div>
+        {% endif %}
+      </div>
+
+      <div class="pd-bi-panel">
+        <div class="pd-bi-card-head">
+          <div>
+            <h2 class="pd-bi-card-title">Pontos de atenção</h2>
+            <p class="pd-bi-card-text">
+              Dimensões com menor recorrência — áreas que merecem interpretação mais cuidadosa.
+            </p>
+          </div>
+        </div>
+
+        {% if ranking_bottom or (bottom3_chart and bottom3_chart.has_data) %}
+          <div class="pd-bi-chart-box pd-bi-chart-box--rank">
+            <canvas id="bottom3BarChart"></canvas>
+          </div>
+        {% else %}
+          <div class="pd-bi-empty">Pontos de atenção ainda não disponíveis para o recorte atual.</div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- ── Tabela dimensional + Áreas consolidadas ── -->
+    <section class="pd-bi-main-grid">
+      <div class="pd-bi-data-card">
+        <div class="pd-bi-card-head">
+          <div>
+            <h2 class="pd-bi-card-title">Tabela dimensional</h2>
+            <p class="pd-bi-card-text">
+              Visão compacta por dimensão. Clique em <strong>Expandir</strong> para ver mediana, faixa e leitura comportamental completa.
+            </p>
+          </div>
+        </div>
+
+        {% if dimension_rows %}
+          <div class="pd-bi-table-wrap">
+            <table class="pd-bi-table">
+              <thead>
+                <tr>
+                  <th>Dimensão</th>
+                  <th>Área</th>
+                  <th>Média</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in dimension_rows %}
+                  {% set _label = row.dimension_label if row.dimension_label is defined and row.dimension_label else row.label if row.label is defined else row.dimension if row.dimension is defined else "-" %}
+                  {% set _area = row.area if row.area is defined else "-" %}
+                  {% set _avg = row.average_label if row.average_label is defined else row.value if row.value is defined else "-" %}
+                  {% set _median = row.median_label if row.median_label is defined else "-" %}
+                  {% set _band = row.band if row.band is defined else "-" %}
+                  {% set _desc = row.description if row.description is defined else "-" %}
+                  <tr
+                    data-dim="{{ _label }}"
+                    data-area="{{ _area }}"
+                    data-avg="{{ _avg }}"
+                    data-median="{{ _median }}"
+                    data-band="{{ _band }}"
+                    data-desc="{{ _desc }}"
+                  >
+                    <td class="pd-bi-table__dimension">{{ _label }}</td>
+                    <td>{{ _area }}</td>
+                    <td>{{ _avg }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="pd-bi-expand-btn"
+                        onclick="pdBiOpenDrawer(this.closest('tr'))"
+                        title="Expandir leitura"
+                        aria-label="Expandir leitura de {{ _label }}"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="pd-bi-empty">
+            Tabela dimensional ainda não disponível.
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="pd-bi-data-card">
+        <div class="pd-bi-card-head">
+          <div>
+            <h2 class="pd-bi-card-title">Áreas consolidadas</h2>
+            <p class="pd-bi-card-text">
+              Resume o comportamento médio das macroáreas com base nas dimensões do recorte.
+            </p>
+          </div>
+        </div>
+
+        {% if area_rows %}
+          <div class="pd-bi-areas-pie-wrap">
+            <div class="pd-bi-areas-pie-box">
+              <canvas id="areasPieChart"></canvas>
+            </div>
+
+            <div class="pd-bi-areas-legend">
+              {% for row in area_rows %}
+                {% set _label = row.label if row.label is defined else "-" %}
+                {% set _value_label = row.value if row.value is defined else "-" %}
+                {% set _desc = row.description if row.description is defined else "" %}
+                {% set _color = "#f97316" %}
+                {% if "gerencial" in _label|string|lower %}
+                  {% set _color = "#f39c4a" %}
+                {% elif "interpessoal" in _label|string|lower %}
+                  {% set _color = "#ef4444" %}
+                {% elif "pessoal" in _label|string|lower %}
+                  {% set _color = "#0f172a" %}
+                {% endif %}
+                <article class="pd-bi-areas-legend-item">
+                  <span class="pd-bi-areas-legend-dot" style="background: {{ _color }};"></span>
+                  <div class="pd-bi-areas-legend-main">
+                    <h3 class="pd-bi-areas-legend-title">{{ _label }}</h3>
+                    {% if _desc %}
+                      <p class="pd-bi-areas-legend-text">{{ _desc }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="pd-bi-areas-legend-value">{{ _value_label }}</div>
+                </article>
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <div class="pd-bi-empty">
+            Áreas consolidadas ainda não disponíveis.
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ── Drawer dimensional ── -->
+  <div class="pd-bi-drawer-overlay" id="pd-bi-drawer-overlay"></div>
+  <aside
+    class="pd-bi-drawer"
+    id="pd-bi-dimensao-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pd-bi-drawer-title"
+  >
+    <div class="pd-bi-drawer__head">
+      <h2 class="pd-bi-drawer__title" id="pd-bi-drawer-title">Leitura dimensional</h2>
+      <button type="button" class="pd-bi-drawer__close" id="pd-bi-drawer-close" aria-label="Fechar">&#x2715;</button>
+    </div>
+    <div class="pd-bi-drawer__body" id="pd-bi-drawer-body"></div>
+  </aside>
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ super() }}
+  <script>
+    const radarChartData  = {{ radar_chart   | tojson }};
+    const statusChartData = {{ status_chart  | tojson }};
+    const top5ChartData   = {{ top5_chart    | tojson }};
+    const bottom3ChartData= {{ bottom3_chart | tojson }};
+    const areaRowsData    = {{ area_rows     | tojson }};
+    const rankingTopData    = {{ ranking_top      | tojson }};
+    const rankingBottomData = {{ ranking_bottom   | tojson }};
+    const dimensionRowsData = {{ dimension_rows   | tojson }};
+
+    const overviewRadarBorder = "#f97316";
+    const overviewRadarFill   = "rgba(249, 115, 22, 0.16)";
+    const areasPiePalette     = ["#f39c4a", "#ef4444", "#0f172a", "#f97316"];
+    const top5BarColor        = "#0f172a";
+    const bottom3BarColor     = "#6b7280";
+
+    /* ── Performance fit distribution chart (High / Mid / Low) ── */
+    (function () {
+      var perfCanvas = document.getElementById("pd-performance-demographic-chart");
+      if (!perfCanvas || typeof Chart === "undefined") return;
+
+      var totalHigh = 0, totalMid = 0, totalLow = 0;
+      (dimensionRowsData || []).forEach(function (row) {
+        totalHigh += Number(row.high_count) || 0;
+        totalMid  += Number(row.mid_count)  || 0;
+        totalLow  += Number(row.low_count)  || 0;
+      });
+
+      new Chart(perfCanvas, {
+        type: "doughnut",
+        data: {
+          labels: [
+            "Alta Aderência (High Fit)",
+            "Média Aderência (Mid Fit)",
+            "Abaixo do Perfil (Atenção)"
+          ],
+          datasets: [{
+            data: [totalHigh, totalMid, totalLow],
+            backgroundColor: ["#10b981", "#94a3b8", "#f97316"],
+            borderColor: "#ffffff",
+            borderWidth: 3,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "60%",
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                color: "#4b5563",
+                font: { size: 11, weight: "700" },
+                boxWidth: 12,
+                padding: 10
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  var total = ctx.dataset.data.reduce(function (a, v) { return a + Number(v || 0); }, 0);
+                  var pct   = total > 0 ? ((Number(ctx.raw || 0) / total) * 100).toFixed(1) : "0.0";
+                  return " " + ctx.label + ": " + ctx.raw + " (" + pct + "%)";
+                }
+              }
+            }
+          }
+        }
+      });
+    })();
+
+    /* ── Radar chart ── */
+    if (typeof Chart !== "undefined" && radarChartData && radarChartData.has_data) {
+      const radarCanvas = document.getElementById("radarAreaChart");
+      if (radarCanvas) {
+        new Chart(radarCanvas, {
+          type: "radar",
+          data: {
+            labels: radarChartData.labels || [],
+            datasets: (radarChartData.datasets || []).map(function (ds) {
+              return {
+                label: ds.label || "Média por área",
+                data: ds.data || [],
+                borderColor: overviewRadarBorder,
+                backgroundColor: overviewRadarFill,
+                borderWidth: 2,
+                pointBackgroundColor: overviewRadarBorder,
+                pointBorderColor: overviewRadarBorder,
+                pointRadius: 3
+              };
+            })
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                min: radarChartData.scale_min ?? 0,
+                max: radarChartData.scale_max ?? 10,
+                ticks: { stepSize: 2 },
+                grid: { color: "rgba(107,114,128,0.18)" },
+                angleLines: { color: "rgba(107,114,128,0.18)" },
+                pointLabels: { color: "#4b5563", font: { size: 11, weight: "600" } }
+              }
+            },
+            plugins: {
+              legend: { display: true, labels: { color: "#4b5563", boxWidth: 34 } }
+            }
+          }
+        });
+      }
+    }
+
+    /* ── Áreas doughnut chart ── */
+    if (typeof Chart !== "undefined" && Array.isArray(areaRowsData) && areaRowsData.length > 0) {
+      const areasCanvas = document.getElementById("areasPieChart");
+      if (areasCanvas) {
+        const labels = areaRowsData.map(function (item) { return item.label || item.area || "Área"; });
+        const values = areaRowsData.map(function (item) {
+          var raw = item.average_score != null ? item.average_score : (item.average != null ? item.average : 0);
+          var parsed = Number(raw);
+          return Number.isFinite(parsed) ? parsed : 0;
+        });
+
+        new Chart(areasCanvas, {
+          type: "doughnut",
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: labels.map(function (_, i) { return areasPiePalette[i % areasPiePalette.length]; }),
+              borderColor: "#ffffff",
+              borderWidth: 4,
+              hoverOffset: 10
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "58%",
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) {
+                    var label = ctx.label || "Área";
+                    var value = typeof ctx.raw === "number" ? ctx.raw.toFixed(2) : ctx.raw;
+                    var total = ctx.dataset.data.reduce(function (acc, v) { return acc + Number(v || 0); }, 0);
+                    var pct = total > 0 ? ((Number(ctx.raw || 0) / total) * 100).toFixed(2) : "0.00";
+                    return label + ": " + value + " (" + pct + "%)";
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    /* ── Top 5 horizontal bar ── */
+    (function () {
+      var canvas = document.getElementById("top5BarChart");
+      if (!canvas || typeof Chart === "undefined") return;
+
+      var labels, values;
+
+      if (Array.isArray(rankingTopData) && rankingTopData.length > 0) {
+        var rows = rankingTopData.slice(0, 5);
+        labels = rows.map(function (r) { return r.dimension_label || r.label || r.dimension || "-"; });
+        values = rows.map(function (r) {
+          var v = r.pct != null ? r.pct : (r.count != null ? r.count : (r.value != null ? r.value : 0));
+          return Number(v) || 0;
+        });
+      } else if (top5ChartData && top5ChartData.has_data) {
+        labels = top5ChartData.labels || [];
+        values = top5ChartData.values || [];
+      } else {
+        return;
+      }
+
+      new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Recorrência no grupo",
+            data: values,
+            backgroundColor: top5BarColor,
+            borderRadius: 5,
+            barThickness: 22
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: { color: "rgba(107,114,128,0.14)" },
+              ticks: { color: "#4b5563" }
+            },
+            y: {
+              grid: { color: "rgba(107,114,128,0.08)" },
+              ticks: { color: "#4b5563", font: { size: 12 } }
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    })();
+
+    /* ── Bottom 3 horizontal bar ── */
+    (function () {
+      var canvas = document.getElementById("bottom3BarChart");
+      if (!canvas || typeof Chart === "undefined") return;
+
+      var labels, values;
+
+      if (Array.isArray(rankingBottomData) && rankingBottomData.length > 0) {
+        var rows = rankingBottomData.slice(0, 3);
+        labels = rows.map(function (r) { return r.dimension_label || r.label || r.dimension || "-"; });
+        values = rows.map(function (r) {
+          var v = r.pct != null ? r.pct : (r.count != null ? r.count : (r.value != null ? r.value : 0));
+          return Number(v) || 0;
+        });
+      } else if (bottom3ChartData && bottom3ChartData.has_data) {
+        labels = bottom3ChartData.labels || [];
+        values = bottom3ChartData.values || [];
+      } else {
+        return;
+      }
+
+      new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Recorrência no grupo",
+            data: values,
+            backgroundColor: bottom3BarColor,
+            borderRadius: 5,
+            barThickness: 22
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: { color: "rgba(107,114,128,0.14)" },
+              ticks: { color: "#4b5563" }
+            },
+            y: {
+              grid: { color: "rgba(107,114,128,0.08)" },
+              ticks: { color: "#4b5563", font: { size: 12 } }
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    })();
+
+    /* ── Drawer ── */
+    function pdBiOpenDrawer(row) {
+      var drawer  = document.getElementById("pd-bi-dimensao-drawer");
+      var overlay = document.getElementById("pd-bi-drawer-overlay");
+      var titleEl = document.getElementById("pd-bi-drawer-title");
+      var bodyEl  = document.getElementById("pd-bi-drawer-body");
+      if (!drawer || !row) return;
+
+      var dim    = row.dataset.dim    || "-";
+      var area   = row.dataset.area   || "-";
+      var avg    = row.dataset.avg    || "-";
+      var median = row.dataset.median || "-";
+      var band   = row.dataset.band   || "-";
+      var desc   = row.dataset.desc   || "-";
+
+      titleEl.textContent = dim;
+      bodyEl.innerHTML = "";
+
+      function makeRow(label, valueNode) {
+        var wrap = document.createElement("div");
+        wrap.className = "pd-bi-drawer__row";
+        var lbl = document.createElement("div");
+        lbl.className = "pd-bi-drawer__row-label";
+        lbl.textContent = label;
+        wrap.appendChild(lbl);
+        wrap.appendChild(valueNode);
+        return wrap;
+      }
+
+      function textVal(text, cls) {
+        var el = document.createElement("div");
+        el.className = cls || "pd-bi-drawer__row-value";
+        el.textContent = text;
+        return el;
+      }
+
+      var bandLower = band.toLowerCase();
+      var badgeCls  = bandLower.indexOf("alta") !== -1
+        ? "pd-bi-drawer__band-badge--alta"
+        : bandLower.indexOf("baix") !== -1
+          ? "pd-bi-drawer__band-badge--baixa"
+          : "pd-bi-drawer__band-badge--media";
+      var badgeEl = document.createElement("div");
+      badgeEl.className = "pd-bi-drawer__band-badge " + badgeCls;
+      badgeEl.textContent = band;
+
+      bodyEl.appendChild(makeRow("Área", textVal(area)));
+      bodyEl.appendChild(makeRow("Média", textVal(avg)));
+      bodyEl.appendChild(makeRow("Mediana", textVal(median)));
+      bodyEl.appendChild(makeRow("Faixa predominante", badgeEl));
+      bodyEl.appendChild(makeRow("Leitura comportamental", textVal(desc, "pd-bi-drawer__row-text")));
+
+      drawer.classList.add("is-open");
+      if (overlay) overlay.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function pdBiCloseDrawer() {
+      var drawer  = document.getElementById("pd-bi-dimensao-drawer");
+      var overlay = document.getElementById("pd-bi-drawer-overlay");
+      if (drawer)  drawer.classList.remove("is-open");
+      if (overlay) overlay.classList.remove("is-open");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("pd-bi-drawer-close").addEventListener("click", pdBiCloseDrawer);
+    document.getElementById("pd-bi-drawer-overlay").addEventListener("click", pdBiCloseDrawer);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") pdBiCloseDrawer();
+    });
+
+    /* ── Filter auto-submit ── */
+    (function () {
+      var form   = document.getElementById("biOverviewFiltersForm");
+      if (!form) return;
+
+      var cliente = document.getElementById("cliente_id");
+      var rodada  = document.getElementById("rodada_id");
+      var setor   = document.getElementById("setor_id");
+      var cargo   = document.getElementById("cargo");
+      var tipo    = document.getElementById("tipo_aplicacao");
+      var status  = document.getElementById("status");
+
+      var dependentFields = [rodada, setor, cargo, tipo, status].filter(Boolean);
+      var granularFields  = [setor, cargo, tipo, status].filter(Boolean);
+
+      function clearFields(fields) {
+        fields.forEach(function (f) { if (f) f.value = ""; });
+      }
+
+      if (cliente) {
+        cliente.addEventListener("change", function () {
+          clearFields(dependentFields);
+          form.submit();
+        });
+      }
+
+      if (rodada) {
+        rodada.addEventListener("change", function () {
+          clearFields(granularFields);
+          form.submit();
+        });
+      }
+    })();
+  </script>
+{% endblock %}

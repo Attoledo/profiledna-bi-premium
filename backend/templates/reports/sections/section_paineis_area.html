@@ -1,0 +1,71 @@
+<div class="card">
+  <h3>3. Painel de Resultados por Área</h3>
+
+  {% set paineis_area = paineis_area if paineis_area is defined and paineis_area else [] %}
+
+  {% if paineis_area %}
+    <div class="grid">
+      {% for painel in paineis_area %}
+        {% set titulo = painel.get("titulo") or "Área" %}
+        {% set descricao = painel.get("descricao") or painel.get("summary") or painel.get("resumo") or "" %}
+        {% set itens = painel.get("itens", []) %}
+        {% set media = painel.get("media") if painel.get("media") is not none else painel.get("average_score") %}
+        {% set destaque = painel.get("highlight") %}
+        {% set atencao = painel.get("attention") %}
+
+        <div class="card mini">
+          <h4>{{ titulo }}</h4>
+
+          {% if media is not none and media != "" %}
+            <p class="muted"><strong>Média da área:</strong> {{ media }}/10</p>
+          {% endif %}
+
+          {% if descricao %}
+            <p class="muted">{{ descricao }}</p>
+          {% endif %}
+
+          {% if destaque or atencao %}
+            <div class="card mini">
+              {% if destaque %}
+                <p>
+                  <strong>Maior recorrência:</strong>
+                  {{ destaque.get("letter", "") }} — {{ destaque.get("name", "") }}
+                  {% if destaque.get("score") is not none %}
+                    ({{ destaque.get("score") }}/10)
+                  {% endif %}
+                </p>
+              {% endif %}
+
+              {% if atencao %}
+                <p>
+                  <strong>Menor recorrência:</strong>
+                  {{ atencao.get("letter", "") }} — {{ atencao.get("name", "") }}
+                  {% if atencao.get("score") is not none %}
+                    ({{ atencao.get("score") }}/10)
+                  {% endif %}
+                </p>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if itens %}
+            <ul>
+              {% for item in itens %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>Sem indicadores disponíveis.</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>
+      Os painéis por área serão exibidos aqui conforme a estrutura consolidada do relatório final.
+    </p>
+    <p class="muted">
+      Esta seção está preparada para receber os agrupamentos analíticos do backend canônico.
+    </p>
+  {% endif %}
+</div>

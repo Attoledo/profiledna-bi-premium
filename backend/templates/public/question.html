@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block body_class %}public-flow{% endblock %}
+{% block content %}
+<main class="public-shell">
+  <section class="public-stage">
+    <div class="public-card public-card--compact">
+      <div class="public-question-card">
+        <div class="public-question-top">
+          <div class="public-brand" style="margin-bottom: 0;">
+            <div class="public-brand__logo">
+              <img src="{{ brand_logo_src or '/static/img/dna-logo.png' }}" alt="Profile DNA">
+            </div>
+            <div>
+              <p class="public-brand__eyebrow">Questionário</p>
+              <h1 class="public-brand__title" style="font-size: 30px;">Pergunta {{ number }}/100</h1>
+              <p class="public-brand__subtitle">
+                Escolha a alternativa que mais se parece com você no seu comportamento mais frequente.
+              </p>
+            </div>
+          </div>
+
+          <div class="public-progress">
+            <div class="public-progress__label">
+              <span>Progresso</span>
+              <span>{{ number }}%</span>
+            </div>
+            <div class="public-progress__track">
+              <span class="public-progress__fill" style="width: {{ number }}%;"></span>
+            </div>
+          </div>
+        </div>
+
+        {% if current_choice %}
+          <p class="public-question-status">
+            Resposta atual desta pergunta:
+            <strong>Alternativa {{ current_choice }}</strong>.
+            Você pode alterar a resposta abaixo ou seguir usando o botão <strong>Avançar</strong>.
+          </p>
+        {% else %}
+          <p class="public-question-helper">
+            Ao escolher uma alternativa, sua resposta será salva e você seguirá automaticamente para a próxima pergunta.
+          </p>
+        {% endif %}
+
+        <form method="post" action="/{{ route_mode }}/{{ token }}/q/{{ number }}/answer">
+          <div class="public-question-options">
+            <button
+              class="public-choice {% if current_choice == 'A' %}public-choice--selected{% endif %}"
+              name="choice"
+              value="A"
+              type="submit"
+            >
+              <span class="public-choice__badge">A</span>
+              <span class="public-choice__text">{{ option_a }}</span>
+            </button>
+
+            <button
+              class="public-choice {% if current_choice == 'B' %}public-choice--selected{% endif %}"
+              name="choice"
+              value="B"
+              type="submit"
+            >
+              <span class="public-choice__badge">B</span>
+              <span class="public-choice__text">{{ option_b }}</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="public-actions public-actions--nav">
+          <div>
+            {% if can_go_back and previous_href %}
+              <a class="public-btn public-btn--secondary" href="{{ previous_href }}">Voltar</a>
+            {% endif %}
+          </div>
+
+          <div style="margin-left:auto;">
+            {% if can_advance and next_nav_href %}
+              <a class="public-btn public-btn--primary" href="{{ next_nav_href }}">Avançar</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

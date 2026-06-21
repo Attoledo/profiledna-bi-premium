@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DANA — Chat Analítico</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --primary: #111827;
+        --primary-contrast: #ffffff;
+        --accent: #f59e0b;
+        --danger: #b91c1c;
+        --success: #166534;
+        --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+        --radius: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        gap: 20px;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+        color: #fff;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        line-height: 1.15;
+      }
+
+      .hero p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.82);
+        max-width: 900px;
+      }
+
+      .hero-meta {
+        margin-top: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 13px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar,
+      .chat-card {
+        overflow: hidden;
+      }
+
+      .section-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .section-header h2,
+      .section-header h3 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+      }
+
+      .section-header p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .section-body {
+        padding: 20px;
+      }
+
+      .info-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .info-item {
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #fafafa;
+      }
+
+      .info-label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .info-value {
+        font-size: 15px;
+        font-weight: 600;
+        word-break: break-word;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .field input[type="text"],
+      .field textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font: inherit;
+        color: var(--text);
+        background: #fff;
+      }
+
+      .field textarea {
+        min-height: 150px;
+        resize: vertical;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fafafa;
+      }
+
+      .checkbox-item input {
+        margin-top: 2px;
+      }
+
+      .checkbox-item span {
+        display: block;
+        font-size: 14px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        appearance: none;
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: var(--primary-contrast);
+      }
+
+      .btn-secondary {
+        background: #e5e7eb;
+        color: var(--text);
+      }
+
+      .chat-card {
+        min-height: 640px;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .chat-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .chat-area {
+        padding: 20px;
+        display: grid;
+        gap: 16px;
+        align-content: start;
+        max-height: 720px;
+        overflow: auto;
+        background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+      }
+
+      .loading,
+      .empty-state,
+      .error-state {
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px dashed var(--border);
+        background: #fff;
+        color: var(--muted);
+      }
+
+      .error-state {
+        color: var(--danger);
+        border-color: rgba(185, 28, 28, 0.25);
+        background: rgba(185, 28, 28, 0.04);
+      }
+
+      .response-preview {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid rgba(22, 101, 52, 0.18);
+        background: rgba(22, 101, 52, 0.05);
+        color: var(--success);
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .chat-card {
+          min-height: 520px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <section class="hero">
+        <h1>DANA — Chat Analítico</h1>
+        <p>
+          Assistente analítica do ProfileDNA para leitura de resultados consolidados,
+          BI oficial e, futuramente, base documental controlada da DANA.
+        </p>
+        <div class="hero-meta">
+          <span class="pill">Cliente em contexto: {{ cliente.nome }}</span>
+          <span class="pill">Cliente ID: {{ cliente_id }}</span>
+          <span class="pill">Admin: {{ admin.username }}</span>
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="card sidebar">
+          <div class="section-header">
+            <h2>Contexto da consulta</h2>
+            <p>
+              Defina o escopo básico da pergunta. Nesta etapa, o painel é mínimo,
+              mas já operacional para a DANA.
+            </p>
+          </div>
+
+          <div class="section-body">
+            <div class="info-grid" style="margin-bottom: 18px;">
+              <div class="info-item">
+                <span class="info-label">Cliente</span>
+                <span class="info-value">{{ cliente.nome }}</span>
+              </div>
+
+              <div class="info-item">
+                <span class="info-label">Cliente ID</span>
+                <span class="info-value">{{ cliente_id }}</span>
+              </div>
+            </div>
+
+            <form id="dana-chat-form" class="form-grid">
+              <div class="field">
+                <label for="attempt_id">Attempt ID (opcional)</label>
+                <input
+                  id="attempt_id"
+                  name="attempt_id"
+                  type="text"
+                  placeholder="Ex.: fd5b2f1e-d3df-46f2-a4b4-a02a56fa23b1"
+                />
+                <span class="hint">
+                  Use quando quiser focar a conversa em um participante específico.
+                </span>
+              </div>
+
+              <div class="field">
+                <label for="question">Pergunta para a DANA</label>
+                <textarea
+                  id="question"
+                  name="question"
+                  placeholder="Ex.: Analise os principais pontos fortes e oportunidades de desenvolvimento deste participante à luz do relatório final."
+                  required
+                ></textarea>
+                <span class="hint">
+                  A DANA trabalha sobre resultado final consolidado, BI e contexto autorizado.
+                </span>
+              </div>
+
+              <div class="checkbox-grid">
+                <label class="checkbox-item">
+                  <input id="comparative" name="comparative" type="checkbox" />
+                  <span>Modo comparativo</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="docsia_enabled" name="docsia_enabled" type="checkbox" />
+                  <span>Habilitar contexto docsIA quando disponível</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="comparative_enabled" name="comparative_enabled" type="checkbox" />
+                  <span>Habilitar contexto comparativo quando disponível</span>
+                </label>
+
+                <label class="checkbox-item">
+                  <input id="search_scope_enabled" name="search_scope_enabled" type="checkbox" />
+                  <span>Habilitar busca/escopo ampliado quando disponível</span>
+                </label>
+              </div>
+
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Enviar para a DANA</button>
+                <button class="btn btn-secondary" type="button" id="refresh-messages-btn">
+                  Atualizar histórico
+                </button>
+              </div>
+            </form>
+          </div>
+        </aside>
+
+        <section class="card chat-card">
+          <div class="section-header">
+            <h3>Conversa com a DANA</h3>
+            <p>
+              Histórico e respostas da sessão atual no contexto do cliente selecionado.
+            </p>
+            <div class="chat-meta">
+              <span class="pill" style="background:#111827; color:#fff;">/admin/ai/chat</span>
+              <span class="pill" style="background:#374151; color:#fff;">/admin/ai/messages</span>
+            </div>
+          </div>
+
+          <div id="chat-area" class="chat-area">
+            <div class="empty-state">
+              Nenhuma mensagem carregada ainda. Use o formulário ao lado para iniciar a interação com a DANA.
+            </div>
+          </div>
+        </section>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        const clienteId = {{ cliente_id | tojson }};
+        const messagesUrlBase = "/admin/ai/messages";
+        const chatUrlBase = "/admin/ai/chat";
+
+        const chatArea = document.getElementById("chat-area");
+        const form = document.getElementById("dana-chat-form");
+        const refreshBtn = document.getElementById("refresh-messages-btn");
+
+        const attemptInput = document.getElementById("attempt_id");
+        const questionInput = document.getElementById("question");
+        const comparativeInput = document.getElementById("comparative");
+        const docsiaEnabledInput = document.getElementById("docsia_enabled");
+        const comparativeEnabledInput = document.getElementById("comparative_enabled");
+        const searchScopeEnabledInput = document.getElementById("search_scope_enabled");
+
+        function setChatLoading(message) {
+          chatArea.innerHTML = '<div class="loading">' + message + '</div>';
+        }
+
+        function setChatError(message) {
+          chatArea.innerHTML = '<div class="error-state">' + message + '</div>';
+        }
+
+        function appendResponsePreview(text) {
+          const box = document.createElement("div");
+          box.className = "response-preview";
+          box.textContent = text;
+          chatArea.prepend(box);
+        }
+
+        async function loadMessages() {
+          const params = new URLSearchParams({ cliente_id: clienteId });
+
+          const attemptId = attemptInput.value.trim();
+          if (attemptId) {
+            params.set("attempt_id", attemptId);
+          }
+
+          setChatLoading("Carregando mensagens da DANA...");
+
+          try {
+            const response = await fetch(messagesUrlBase + "?" + params.toString(), {
+              method: "GET",
+              headers: {
+                "Accept": "text/html"
+              },
+              credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+              throw new Error("Falha ao carregar histórico da DANA.");
+            }
+
+            const html = await response.text();
+            chatArea.innerHTML = html;
+          } catch (error) {
+            setChatError(error.message || "Erro ao carregar histórico.");
+          }
+        }
+
+        async function submitQuestion(event) {
+          event.preventDefault();
+
+          const question = questionInput.value.trim();
+          const attemptId = attemptInput.value.trim();
+
+          if (!question) {
+            setChatError("Digite uma pergunta para a DANA.");
+            return;
+          }
+
+          setChatLoading("Processando pergunta e consultando a DANA...");
+
+          const payload = {
+            question: question,
+            attempt_id: attemptId || null,
+            filters_active: {},
+            comparative: comparativeInput.checked,
+            selected_participant_ids: [],
+            docsia_enabled: docsiaEnabledInput.checked,
+            comparative_enabled: comparativeEnabledInput.checked,
+            search_scope_enabled: searchScopeEnabledInput.checked
+          };
+
+          try {
+            const response = await fetch(chatUrlBase + "?cliente_id=" + encodeURIComponent(clienteId), {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
+              credentials: "same-origin",
+              body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+              let errorMessage = "Falha ao processar a interação com a DANA.";
+              try {
+                const errorJson = await response.json();
+                if (errorJson && errorJson.detail) {
+                  errorMessage = String(errorJson.detail);
+                }
+              } catch (_) {}
+              throw new Error(errorMessage);
+            }
+
+            const data = await response.json();
+            appendResponsePreview(data.response || "[Sem resposta textual]");
+            await loadMessages();
+          } catch (error) {
+            setChatError(error.message || "Erro ao enviar pergunta.");
+          }
+        }
+
+        form.addEventListener("submit", submitQuestion);
+        refreshBtn.addEventListener("click", loadMessages);
+
+        loadMessages();
+      })();
+    </script>
+  </body>
+</html>
