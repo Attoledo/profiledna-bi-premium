@@ -1,8 +1,17 @@
 from __future__ import annotations
 
+import re
 from typing import Any, Dict
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+# Detecta QUALQUER letra única de dimensão (A..T) seguida de "(" ou "—"/"-" residual,
+# em vez de uma lista fixa de letras (ex.: apenas D/F/K/N). Isso garante que o contrato
+# do renderer rejeite vazamentos para as 20 dimensões, não só para um subconjunto.
+_DIMENSION_LEAK_PATTERNS = (
+    re.compile(r"\b[A-Z]\s*\([^)]+\)"),
+    re.compile(r"\b[A-Z]\s*[—-]\s*"),
+)
 
 
 def _validate_premium_context(context: Dict[str, Any]) -> None:
@@ -35,19 +44,9 @@ def _validate_premium_context(context: Dict[str, Any]) -> None:
                 "Premium renderer contract error: raw sintese_executiva dict cannot be rendered by the premium template."
             )
 
-    forbidden_patterns = (
-        "D (",
-        "F (",
-        "K (",
-        "N (",
-        "D —",
-        "F —",
-        "K —",
-        "N —",
-    )
-    if any(pattern in executive_summary_text for pattern in forbidden_patterns):
+    if any(pattern.search(executive_summary_text) for pattern in _DIMENSION_LEAK_PATTERNS):
         raise ValueError(
-            "Premium renderer contract error: executive_summary_text contains forbidden technical dimension codes."
+            "Premium renderer contract error: executive_summary_text contains a residual technical dimension code."
         )
 
 

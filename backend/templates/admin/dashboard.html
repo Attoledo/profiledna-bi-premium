@@ -7,6 +7,9 @@
 {% set csrf_token = csrf_token if csrf_token is defined else "" %}
 {% set setor_distribution = setor_distribution if setor_distribution is defined else [] %}
 {% set top5_frequency = top5_frequency if top5_frequency is defined else [] %}
+{% set setor_options = setor_options if setor_options is defined and setor_options else [] %}
+{% set rodada_options = rodada_options if rodada_options is defined and rodada_options else [] %}
+{% set participant_options = participant_options if participant_options is defined and participant_options else [] %}
 
 {% block title %}ProfileDNA — Dashboard Admin{% endblock %}
 
@@ -235,7 +238,7 @@
       background: linear-gradient(90deg, #fb923c, #f97316 50%, #ef4444);
     }
 
-    /* ── DANA chat column ── */
+    /* ── DANA chat column (compact widget) ── */
     .pd-cockpit-dana {
       border-radius: 24px;
       border: 1px solid rgba(255,255,255,0.45);
@@ -253,6 +256,10 @@
       padding: 18px 20px;
       border-bottom: 1px solid rgba(229,231,235,0.6);
       flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
 
     .pd-dana-title-block { display: flex; align-items: center; gap: 14px; }
@@ -290,6 +297,29 @@
       background: #16a34a;
       box-shadow: 0 0 0 3px rgba(22,163,74,0.15);
       flex: 0 0 auto;
+    }
+
+    .pd-dana-expand-btn {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      border: 1px solid rgba(203,213,225,0.7);
+      background: rgba(255,255,255,0.8);
+      color: #374151;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .pd-dana-expand-btn:hover {
+      background: #fff7ed;
+      border-color: rgba(249,115,22,0.4);
+      color: #c2410c;
+      transform: translateY(-1px);
     }
 
     .pd-dana-messages {
@@ -422,6 +452,289 @@
 
     .pd-dana-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* ── DANA Drawer (painel lateral expansível) ── */
+    .pd-dana-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.32);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      z-index: 9998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s ease;
+    }
+
+    .pd-dana-drawer-backdrop.is-open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .pd-dana-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(460px, 94vw);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: -16px 0 48px rgba(17, 24, 39, 0.18);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform .32s cubic-bezier(.32,.72,0,1), opacity .28s ease;
+      pointer-events: none;
+    }
+
+    .pd-dana-drawer.is-open {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .pd-dana-drawer__header {
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(229,231,235,0.6);
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pd-dana-drawer__header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .pd-dana-drawer__title {
+      font-size: 14px;
+      font-weight: 900;
+      color: #111827;
+      line-height: 1.2;
+    }
+
+    .pd-dana-drawer__close {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      border: 1px solid rgba(203,213,225,0.7);
+      background: rgba(255,255,255,0.8);
+      color: #374151;
+      font-size: 15px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .18s ease, color .18s ease;
+    }
+
+    .pd-dana-drawer__close:hover {
+      background: #fff1f2;
+      color: #b91c1c;
+    }
+
+    .pd-dana-drawer__body {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px 20px;
+    }
+
+    .pd-dana-drawer__context-banner {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      flex-wrap: wrap;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #f9fafb;
+      padding: 10px 14px;
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-drawer__context-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ca3af;
+      flex: 1 0 100%;
+      margin-bottom: 2px;
+    }
+
+    .pd-dana-drawer__context-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #374151;
+    }
+
+    .pd-dana-drawer__history {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #f9fafb;
+      padding: 14px 16px;
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-drawer__history-title {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    .pd-dana-drawer__history-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .pd-dana-drawer__history-title { margin-bottom: 0; }
+
+    .pd-dana-drawer__history-count {
+      font-size: 11px;
+      font-weight: 800;
+      color: #6b7280;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 999px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+
+    .pd-dana-drawer__history-list {
+      display: grid;
+      gap: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .pd-dana-drawer__history-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #ffffff;
+      padding: 10px 12px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .pd-dana-drawer__history-item-q {
+      font-size: 13px;
+      font-weight: 800;
+      color: #111827;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-dana-drawer__history-item-a {
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: #6b7280;
+      overflow-wrap: anywhere;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .pd-dana-drawer__chat {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 220px;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .pd-dana-drawer__messages {
+      min-height: 160px;
+    }
+
+    .pd-dana-empty {
+      padding: 12px 14px;
+      border: 1px dashed #d1d5db;
+      border-radius: 12px;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    /* ── Botão flutuante nativo: gatilho direto para o Drawer da DANA,
+       reduzindo a dependência do link de navegação superior global. ── */
+    .pd-dana-fab {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      z-index: 9500;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px 14px 16px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #fb923c, #ef4444);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      box-shadow: 0 14px 32px rgba(239,68,68,0.30), 0 4px 12px rgba(249,115,22,0.20);
+      transition: transform .2s cubic-bezier(.32,.72,0,1), box-shadow .2s ease;
+    }
+
+    .pd-dana-fab:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 18px 38px rgba(239,68,68,0.36), 0 6px 16px rgba(249,115,22,0.26);
+    }
+
+    .pd-dana-fab:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .pd-dana-fab__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+      font-size: 13px;
+      flex: 0 0 auto;
+    }
+
+    .pd-dana-fab__label { white-space: nowrap; }
+
+    .pd-dana-drawer.is-open ~ .pd-dana-fab {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px) scale(0.94);
+    }
+
     @media (max-width: 900px) {
       .pd-dashboard-main-grid { grid-template-columns: 1fr; }
       .pd-cockpit-dana { min-height: 520px; }
@@ -431,6 +744,8 @@
       .pd-dashboard-filter-bar { gap: 12px; }
       .pd-dashboard-filter-bar__select { min-width: 160px; }
       .pd-cockpit-kpi-row { grid-template-columns: 1fr; }
+      .pd-dana-fab { right: 18px; bottom: 18px; padding: 13px 18px 13px 14px; }
+      .pd-dana-fab__label { display: none; }
     }
   </style>
 
@@ -444,6 +759,10 @@
     </div>
   </div>
 
+  <!-- ═══ Barra de filtros de contexto — única fonte de verdade do escopo
+       de análise para todo o Dashboard, incluindo o Drawer da DANA.
+       Os 4 seletores (Cliente/Setor/Rodada/Participante) residem juntos
+       nesta mesma linha horizontal, alinhados e responsivos. ═══ -->
   <div class="pd-dashboard-filter-bar">
     <label class="pd-dashboard-filter-bar__label">
       Cliente
@@ -456,8 +775,29 @@
     </label>
     <label class="pd-dashboard-filter-bar__label">
       Setor
-      <select class="pd-dashboard-filter-bar__select">
+      <select id="filtro-setor" class="pd-dashboard-filter-bar__select">
         <option value="">Todos os Setores</option>
+        {% for s in setor_options %}
+          <option value="{{ s.get('id', '') }}">{{ s.get('nome') or '-' }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="pd-dashboard-filter-bar__label">
+      Rodada / BI Visão
+      <select id="filtro-rodada" class="pd-dashboard-filter-bar__select">
+        <option value="">Todas as Rodadas</option>
+        {% for r in rodada_options %}
+          <option value="{{ r.get('id', '') }}">{{ r.get('nome') or '-' }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="pd-dashboard-filter-bar__label">
+      Participante
+      <select id="filtro-participante" class="pd-dashboard-filter-bar__select">
+        <option value="">Todos os Participantes</option>
+        {% for p in participant_options %}
+          <option value="{{ p.get('attempt_id', '') }}">{{ p.get('participant_display_name') or 'Participante' }}</option>
+        {% endfor %}
       </select>
     </label>
   </div>
@@ -548,7 +888,7 @@
 
     </div><!-- /.pd-cockpit-analytics -->
 
-    <!-- ── RIGHT COLUMN: DANA CHAT ── -->
+    <!-- ── RIGHT COLUMN: DANA CHAT (widget compacto) ── -->
     <div class="pd-cockpit-dana">
       <div class="pd-cockpit-dana__header">
         <div class="pd-dana-title-block">
@@ -561,6 +901,7 @@
             </div>
           </div>
         </div>
+        <button id="pd-dana-expand-btn" class="pd-dana-expand-btn" type="button" title="Expandir painel da DANA (filtros e histórico)">⤢</button>
       </div>
 
       <div class="pd-dana-messages" id="pd-dana-messages">
@@ -589,148 +930,80 @@
 
   </div><!-- /.pd-dashboard-main-grid -->
 
+  <!-- ═══════════════ DANA DRAWER — painel lateral expansível ═══════════════
+       Sem seletores internos próprios: todo o escopo de contexto (Cliente,
+       Setor, Rodada, Participante) é herdado em tempo real dos 4 seletores
+       da barra de filtros global do topo do Dashboard. ── -->
+  <div id="pd-dana-drawer-backdrop" class="pd-dana-drawer-backdrop"></div>
+  <aside
+    id="pd-dana-drawer"
+    class="pd-dana-drawer"
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pd-dana-drawer-title"
+  >
+    <div class="pd-dana-drawer__header">
+      <div class="pd-dana-drawer__header-left">
+        <span class="pd-dana-icon">✦</span>
+        <div>
+          <div class="pd-dana-drawer__title" id="pd-dana-drawer-title">DANA — Painel Expandido</div>
+          <div class="pd-dana-status">
+            <span class="pd-dana-status__dot"></span>
+            Ativa
+          </div>
+        </div>
+      </div>
+      <button id="pd-dana-drawer-close" class="pd-dana-drawer__close" type="button" aria-label="Fechar painel da DANA">✕</button>
+    </div>
+
+    <div class="pd-dana-drawer__body">
+      <section class="pd-dana-drawer__context-banner">
+        <span class="pd-dana-drawer__context-label">Escopo ativo (herdado do Dashboard)</span>
+        <span class="pd-dana-drawer__context-pill" id="pd-dana-drawer-context-cliente">Todos os Clientes</span>
+        <span class="pd-dana-drawer__context-pill" id="pd-dana-drawer-context-setor">Todos os Setores</span>
+        <span class="pd-dana-drawer__context-pill" id="pd-dana-drawer-context-rodada">Todas as Rodadas</span>
+        <span class="pd-dana-drawer__context-pill" id="pd-dana-drawer-context-participante">Todos os Participantes</span>
+      </section>
+
+      <section class="pd-dana-drawer__history">
+        <div class="pd-dana-drawer__history-head">
+          <span class="pd-dana-drawer__history-title">Histórico recente</span>
+          <span class="pd-dana-drawer__history-count" id="pd-dana-drawer-history-count">0 interação(ões)</span>
+        </div>
+        <div id="pd-dana-drawer-history-list" class="pd-dana-drawer__history-list">
+          <div class="pd-dana-empty">Selecione um cliente para carregar o histórico.</div>
+        </div>
+      </section>
+
+      <section class="pd-dana-drawer__chat">
+        <div id="pd-dana-drawer-messages" class="pd-dana-messages pd-dana-drawer__messages"></div>
+        <div class="pd-dana-input-row">
+          <input
+            type="text"
+            id="pd-dana-drawer-input"
+            class="pd-dana-input"
+            placeholder="Pergunte à DANA..."
+            autocomplete="off"
+          />
+          <button id="pd-dana-drawer-send" class="pd-dana-send-btn" type="button" title="Enviar">→</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- ═══════════ Gatilho nativo flutuante (acesso direto ao Drawer) ═══════════ -->
+  <button id="pd-dana-fab" class="pd-dana-fab" type="button" title="Abrir o painel da DANA">
+    <span class="pd-dana-fab__icon" aria-hidden="true">✦</span>
+    <span class="pd-dana-fab__label">Perguntar à DANA</span>
+  </button>
+
   <script>
+  /* ── Chart.js — Gráficos do BI (escopo isolado, não-DANA) ── */
   (function () {
-    var msgBox  = document.getElementById('pd-dana-messages');
-    var inputEl = document.getElementById('pd-dana-input');
-    var sendBtn = document.getElementById('pd-dana-send');
-    var chips   = document.querySelectorAll('.pd-dana-chip');
-
-    function getClienteId() {
-      var sel = document.getElementById('filtro-cliente');
-      return sel ? sel.value : '';
-    }
-
-    function getClienteNome() {
-      var sel = document.getElementById('filtro-cliente');
-      if (!sel || !sel.value) return '';
-      return sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
-    }
-
-    function appendMsg(text, role) {
-      var div = document.createElement('div');
-      div.className = 'pd-dana-msg pd-dana-msg--' + role;
-      div.textContent = text;
-      msgBox.appendChild(div);
-      msgBox.scrollTop = msgBox.scrollHeight;
-    }
-
-    function setLoading(on) {
-      if (sendBtn) { sendBtn.disabled = on; sendBtn.textContent = on ? '…' : '→'; }
-      if (inputEl) inputEl.disabled = on;
-    }
-
-    var _twGeneration = 0;
-
-    function typeWriter(text, el, onComplete) {
-      var gen = ++_twGeneration;
-      el.textContent = '';
-      var len = text.length;
-      if (len === 0) { if (onComplete) onComplete(); return; }
-      var charsPerTick = Math.max(1, Math.ceil(len / 140));
-      var i = 0;
-      function tick() {
-        if (_twGeneration !== gen) return;
-        i = Math.min(i + charsPerTick, len);
-        el.textContent = text.slice(0, i);
-        msgBox.scrollTop = msgBox.scrollHeight;
-        if (i < len) {
-          setTimeout(tick, 20);
-        } else {
-          if (onComplete) onComplete();
-        }
-      }
-      tick();
-    }
-
-    var _typewriting = false;
-
-    async function sendQuestion(q) {
-      q = (q || '').trim();
-      if (!q) return;
-      var cid = getClienteId();
-      appendMsg(q, 'user');
-      if (inputEl) inputEl.value = '';
-      setLoading(true);
-      _typewriting = false;
-      var chatUrl = cid
-        ? '/admin/ai/chat?cliente_id=' + encodeURIComponent(cid)
-        : '/admin/ai/chat';
-      var _reqBody = { question: q };
-      var _biCtx = _buildBiContextString();
-      if (_biCtx) _reqBody.bi_context = _biCtx;
-      try {
-        var res = await fetch(chatUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'same-origin',
-          body: JSON.stringify(_reqBody)
-        });
-        if (!res.ok) {
-          var err = await res.json().catch(function () { return {}; });
-          appendMsg('Erro ' + res.status + ': ' + (err.detail || 'Tente novamente.'), 'system');
-        } else {
-          var data = await res.json();
-          var aiDiv = document.createElement('div');
-          aiDiv.className = 'pd-dana-msg pd-dana-msg--ai';
-          msgBox.appendChild(aiDiv);
-          msgBox.scrollTop = msgBox.scrollHeight;
-          _typewriting = true;
-          var _rawResp = data.response || '(sem resposta)';
-          var _cleanResp = _rawResp
-            .replace(/\*{1,3}/g, '')
-            .replace(/^#{1,6}\s*/gm, '')
-            .replace(/[ \t]{2,}/g, ' ')
-            .trim();
-          typeWriter(_cleanResp, aiDiv, function () {
-            _typewriting = false;
-            setLoading(false);
-          });
-        }
-      } catch (e) {
-        appendMsg('Erro de conexão. Verifique a rede e tente novamente.', 'system');
-      } finally {
-        if (!_typewriting) setLoading(false);
-      }
-    }
-
-    if (sendBtn) sendBtn.addEventListener('click', function () { sendQuestion(inputEl.value); });
-    if (inputEl) inputEl.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(inputEl.value); }
-    });
-    chips.forEach(function (chip) {
-      chip.addEventListener('click', function () { sendQuestion(chip.getAttribute('data-q')); });
-    });
-
-    /* ── Real BI data injected from backend ── */
-    var _setoresRaw  = {{ setor_distribution | tojson }};
-    var _top5Raw     = {{ top5_frequency | tojson }};
-
-    function _buildBiContextString() {
-      var lines = [];
-      if (_setoresRaw && _setoresRaw.length > 0) {
-        var total = _setoresRaw.reduce(function (s, r) { return s + (parseInt(r.count) || 0); }, 0);
-        var parts = _setoresRaw
-          .slice()
-          .sort(function (a, b) { return (parseInt(b.count) || 0) - (parseInt(a.count) || 0); })
-          .map(function (r) {
-            var name = r.setor || r.label || r.name || 'Sem Setor';
-            var count = parseInt(r.count) || 0;
-            var pct = total > 0 ? Math.round(count / total * 1000) / 10 : 0;
-            return 'Setor ' + name + ' = ' + pct + '% (' + count + ' avaliações)';
-          });
-        lines.push('Distribuição por setor: ' + parts.join(', ') + '.');
-      }
-      if (_top5Raw && _top5Raw.length > 0) {
-        var top5Parts = _top5Raw.slice(0, 5).map(function (r, i) {
-          var label = r.dimension_label || r.label || r.dimension || '?';
-          var pct = parseFloat(r.pct) || 0;
-          return (i + 1) + '. ' + label + ' (' + pct.toFixed(1) + '%)';
-        });
-        lines.push('TOP 5 Forças Dominantes: ' + top5Parts.join(', ') + '.');
-      }
-      return lines.join(' ');
-    }
+    var _setoresRaw = {{ setor_distribution | tojson }};
+    var _top5Raw    = {{ top5_frequency | tojson }};
+    window.__pdDashboardBiData = { setores: _setoresRaw, top5: _top5Raw };
 
     var PALETTE_CORAL = [
       'rgba(251,146,60,0.85)',
@@ -744,7 +1017,6 @@
       var C = window.Chart;
       if (!C) return;
 
-      /* Chart 1 — Doughnut: Distribuição por Setores */
       var ctxSetores = document.getElementById('pd-chart-setores');
       if (ctxSetores) {
         var setoresLabels = _setoresRaw.map(function (r) {
@@ -789,10 +1061,9 @@
         });
       }
 
-      /* Chart 2 — Horizontal Bar: TOP 5 Forças Dominantes */
       var ctxForcas = document.getElementById('pd-chart-forcas');
       if (ctxForcas) {
-        var top5Slice   = _top5Raw.slice(0, 5);
+        var top5Slice    = _top5Raw.slice(0, 5);
         var forcasLabels = top5Slice.map(function (r) {
           return r.dimension_label || r.label || r.dimension || '?';
         });
@@ -844,17 +1115,401 @@
     } else if (cdn) {
       cdn.addEventListener('load', initCharts);
     }
+  })();
+  </script>
 
-    /* ── DANA chat reset on filter change ── */
+  <script>
+  /* ── window.Dana360 — namespace isolado de toda a lógica portável da DANA ──
+     Isolado deliberadamente do Chart.js/ApexCharts acima para evitar colisão
+     de escopo global. Cobre: widget compacto do dashboard + drawer expansível
+     (histórico e chat) + botão flutuante nativo, todos contra o mesmo
+     endpoint stateless /admin/ai/chat. O Drawer NÃO mantém seletores de
+     contexto próprios — ele lê reativamente os 4 seletores globais da barra
+     principal do Dashboard (#filtro-cliente / #filtro-setor / #filtro-rodada
+     / #filtro-participante) como única fonte de verdade do escopo. */
+  window.Dana360 = (function () {
+    var widgetMsgBox = document.getElementById('pd-dana-messages');
+    var widgetInput  = document.getElementById('pd-dana-input');
+    var widgetSend   = document.getElementById('pd-dana-send');
+    var widgetChips  = document.querySelectorAll('.pd-dana-chip');
+    var expandBtn    = document.getElementById('pd-dana-expand-btn');
+    var fabBtn       = document.getElementById('pd-dana-fab');
+
+    var drawerEl        = document.getElementById('pd-dana-drawer');
+    var drawerBackdrop  = document.getElementById('pd-dana-drawer-backdrop');
+    var drawerCloseBtn  = document.getElementById('pd-dana-drawer-close');
+    var drawerMsgBox    = document.getElementById('pd-dana-drawer-messages');
+    var drawerInput     = document.getElementById('pd-dana-drawer-input');
+    var drawerSend      = document.getElementById('pd-dana-drawer-send');
+    var drawerHistoryList  = document.getElementById('pd-dana-drawer-history-list');
+    var drawerHistoryCount = document.getElementById('pd-dana-drawer-history-count');
+    var drawerContextCliente     = document.getElementById('pd-dana-drawer-context-cliente');
+    var drawerContextSetor       = document.getElementById('pd-dana-drawer-context-setor');
+    var drawerContextRodada      = document.getElementById('pd-dana-drawer-context-rodada');
+    var drawerContextParticipante = document.getElementById('pd-dana-drawer-context-participante');
+
+    /* Única fonte de verdade do escopo de contexto: os 4 seletores da
+       barra de filtros global do topo do Dashboard. */
+    var filterCliente      = document.getElementById('filtro-cliente');
+    var filterSetorMain    = document.getElementById('filtro-setor');
+    var filterRodadaMain   = document.getElementById('filtro-rodada');
+    var filterParticipanteMain = document.getElementById('filtro-participante');
+
+    var _twGeneration = 0;
+    var _typewriting = false;
+
+    function getClienteId() {
+      return filterCliente ? filterCliente.value : '';
+    }
+
+    function getClienteNome() {
+      if (!filterCliente || !filterCliente.value) return '';
+      return filterCliente.options[filterCliente.selectedIndex]
+        ? filterCliente.options[filterCliente.selectedIndex].text
+        : '';
+    }
+
+    function getSetorId() {
+      return filterSetorMain ? filterSetorMain.value : '';
+    }
+
+    function getSetorNome() {
+      if (!filterSetorMain || !filterSetorMain.value) return '';
+      return filterSetorMain.options[filterSetorMain.selectedIndex]
+        ? filterSetorMain.options[filterSetorMain.selectedIndex].text
+        : '';
+    }
+
+    function getRodadaId() {
+      return filterRodadaMain ? filterRodadaMain.value : '';
+    }
+
+    function getRodadaNome() {
+      if (!filterRodadaMain || !filterRodadaMain.value) return '';
+      return filterRodadaMain.options[filterRodadaMain.selectedIndex]
+        ? filterRodadaMain.options[filterRodadaMain.selectedIndex].text
+        : '';
+    }
+
+    function getParticipanteId() {
+      return filterParticipanteMain ? filterParticipanteMain.value : '';
+    }
+
+    function getParticipanteNome() {
+      if (!filterParticipanteMain || !filterParticipanteMain.value) return '';
+      return filterParticipanteMain.options[filterParticipanteMain.selectedIndex]
+        ? filterParticipanteMain.options[filterParticipanteMain.selectedIndex].text
+        : '';
+    }
+
+    function _resetSelectToPlaceholder(selectEl, placeholderText) {
+      if (!selectEl) return;
+      selectEl.innerHTML = '';
+      var placeholderOpt = document.createElement('option');
+      placeholderOpt.value = '';
+      placeholderOpt.textContent = placeholderText;
+      selectEl.appendChild(placeholderOpt);
+    }
+
+    /* Setor, Rodada e Participante são todos dependentes do Cliente. Quando
+       o Cliente global muda, os 3 <select> precisam ser ressincronizados
+       contra /admin/ai/get-options (endpoint fora de backend/ai_analyst/,
+       leitura pura de setores/rodadas/attempts) — sem isso, a barra
+       principal continuaria mostrando opções do cliente anterior. A
+       resposta vem estruturada como {"setores": [...], "rodadas": [...],
+       "participantes": [...]}, pronta para injeção direta nas tags. */
+    async function refreshDependentOptions() {
+      var cid = getClienteId();
+
+      if (!cid) {
+        _resetSelectToPlaceholder(filterSetorMain, 'Todos os Setores');
+        _resetSelectToPlaceholder(filterRodadaMain, 'Todas as Rodadas');
+        _resetSelectToPlaceholder(filterParticipanteMain, 'Todos os Participantes');
+        return;
+      }
+
+      try {
+        var res = await fetch('/admin/ai/get-options?cliente_id=' + encodeURIComponent(cid), {
+          credentials: 'same-origin'
+        });
+        if (!res.ok) throw new Error('options_fetch_failed');
+        var data = await res.json();
+
+        _resetSelectToPlaceholder(filterSetorMain, 'Todos os Setores');
+        (data.setores || []).forEach(function (s) {
+          var opt = document.createElement('option');
+          opt.value = s.id || '';
+          opt.textContent = s.nome || '-';
+          if (filterSetorMain) filterSetorMain.appendChild(opt);
+        });
+
+        _resetSelectToPlaceholder(filterRodadaMain, 'Todas as Rodadas');
+        (data.rodadas || []).forEach(function (r) {
+          var opt = document.createElement('option');
+          opt.value = r.id || '';
+          opt.textContent = r.nome || '-';
+          if (filterRodadaMain) filterRodadaMain.appendChild(opt);
+        });
+
+        _resetSelectToPlaceholder(filterParticipanteMain, 'Todos os Participantes');
+        (data.participantes || []).forEach(function (p) {
+          var opt = document.createElement('option');
+          opt.value = p.attempt_id || '';
+          opt.textContent = p.participant_display_name || 'Participante';
+          if (filterParticipanteMain) filterParticipanteMain.appendChild(opt);
+        });
+      } catch (e) {
+        _resetSelectToPlaceholder(filterSetorMain, 'Todos os Setores');
+        _resetSelectToPlaceholder(filterRodadaMain, 'Todas as Rodadas');
+        _resetSelectToPlaceholder(filterParticipanteMain, 'Todos os Participantes');
+      }
+    }
+
+    function appendMsg(box, text, role) {
+      if (!box) return null;
+      var div = document.createElement('div');
+      div.className = 'pd-dana-msg pd-dana-msg--' + role;
+      div.textContent = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return div;
+    }
+
+    function setLoading(inputEl, sendBtn, on) {
+      if (sendBtn) { sendBtn.disabled = on; sendBtn.textContent = on ? '…' : '→'; }
+      if (inputEl) inputEl.disabled = on;
+    }
+
+    function typeWriter(text, el, box, onComplete) {
+      var gen = ++_twGeneration;
+      el.textContent = '';
+      var len = text.length;
+      if (len === 0) { if (onComplete) onComplete(); return; }
+      var charsPerTick = Math.max(1, Math.ceil(len / 140));
+      var i = 0;
+      function tick() {
+        if (_twGeneration !== gen) return;
+        i = Math.min(i + charsPerTick, len);
+        el.textContent = text.slice(0, i);
+        if (box) box.scrollTop = box.scrollHeight;
+        if (i < len) {
+          setTimeout(tick, 20);
+        } else if (onComplete) {
+          onComplete();
+        }
+      }
+      tick();
+    }
+
+    /* Captura, em tempo real, todo o escopo ativo direto dos 4 seletores
+       globais do cabeçalho do Dashboard — nenhum valor é lido de elementos
+       internos do Drawer, pois eles não existem mais. */
+    function buildFiltersPayload() {
+      return {
+        cliente_id: getClienteId(),
+        setor_id: getSetorId(),
+        rodada_id: getRodadaId(),
+        attempt_id: getParticipanteId()
+      };
+    }
+
+    function buildBiContextString() {
+      var bi = window.__pdDashboardBiData || {};
+      var setoresRaw = bi.setores || [];
+      var top5Raw = bi.top5 || [];
+      var lines = [];
+      if (setoresRaw && setoresRaw.length > 0) {
+        var total = setoresRaw.reduce(function (s, r) { return s + (parseInt(r.count) || 0); }, 0);
+        var parts = setoresRaw
+          .slice()
+          .sort(function (a, b) { return (parseInt(b.count) || 0) - (parseInt(a.count) || 0); })
+          .map(function (r) {
+            var name = r.setor || r.label || r.name || 'Sem Setor';
+            var count = parseInt(r.count) || 0;
+            var pct = total > 0 ? Math.round(count / total * 1000) / 10 : 0;
+            return 'Setor ' + name + ' = ' + pct + '% (' + count + ' avaliações)';
+          });
+        lines.push('Distribuição por setor: ' + parts.join(', ') + '.');
+      }
+      if (top5Raw && top5Raw.length > 0) {
+        var top5Parts = top5Raw.slice(0, 5).map(function (r, i) {
+          var label = r.dimension_label || r.label || r.dimension || '?';
+          var pct = parseFloat(r.pct) || 0;
+          return (i + 1) + '. ' + label + ' (' + pct.toFixed(1) + '%)';
+        });
+        lines.push('TOP 5 Forças Dominantes: ' + top5Parts.join(', ') + '.');
+      }
+      return lines.join(' ');
+    }
+
+    async function sendQuestion(q, opts) {
+      opts = opts || {};
+      var box     = opts.box     || widgetMsgBox;
+      var inputEl = opts.inputEl || widgetInput;
+      var sendBtn = opts.sendBtn || widgetSend;
+
+      q = (q || '').trim();
+      if (!q) return;
+
+      var cid = getClienteId();
+      appendMsg(box, q, 'user');
+      if (inputEl) inputEl.value = '';
+      setLoading(inputEl, sendBtn, true);
+      _typewriting = false;
+
+      var chatUrl = cid
+        ? '/admin/ai/chat?cliente_id=' + encodeURIComponent(cid)
+        : '/admin/ai/chat';
+
+      var filters = buildFiltersPayload();
+      var _reqBody = { question: q, filters_active: filters };
+      if (filters.attempt_id) _reqBody.attempt_id = filters.attempt_id;
+      var _biCtx = buildBiContextString();
+      if (_biCtx) _reqBody.bi_context = _biCtx;
+
+      try {
+        var res = await fetch(chatUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify(_reqBody)
+        });
+        if (!res.ok) {
+          var err = await res.json().catch(function () { return {}; });
+          appendMsg(box, 'Erro ' + res.status + ': ' + (err.detail || 'Tente novamente.'), 'system');
+          setLoading(inputEl, sendBtn, false);
+        } else {
+          var data = await res.json();
+          var aiDiv = document.createElement('div');
+          aiDiv.className = 'pd-dana-msg pd-dana-msg--ai';
+          if (box) {
+            box.appendChild(aiDiv);
+            box.scrollTop = box.scrollHeight;
+          }
+          _typewriting = true;
+          var _rawResp = data.response || '(sem resposta)';
+          var _cleanResp = _rawResp
+            .replace(/\*{1,3}/g, '')
+            .replace(/^#{1,6}\s*/gm, '')
+            .replace(/[ \t]{2,}/g, ' ')
+            .trim();
+          typeWriter(_cleanResp, aiDiv, box, function () {
+            _typewriting = false;
+            setLoading(inputEl, sendBtn, false);
+          });
+          if (drawerEl && drawerEl.classList.contains('is-open')) {
+            loadHistory();
+          }
+        }
+      } catch (e) {
+        appendMsg(box, 'Erro de conexão. Verifique a rede e tente novamente.', 'system');
+        setLoading(inputEl, sendBtn, false);
+      }
+    }
+
+    /* cliente_id e attempt_id usados para buscar histórico são extraídos,
+       sempre em tempo real, dos seletores globais #filtro-cliente e
+       #filtro-participante — nunca de estado interno do Drawer. */
+    async function loadHistory() {
+      if (!drawerHistoryList) return;
+      var cid = getClienteId();
+      if (!cid) {
+        drawerHistoryList.innerHTML = '<div class="pd-dana-empty">Selecione um cliente para carregar o histórico.</div>';
+        if (drawerHistoryCount) drawerHistoryCount.textContent = '0 interação(ões)';
+        return;
+      }
+      var url = '/admin/ai/history?cliente_id=' + encodeURIComponent(cid);
+      var attemptId = getParticipanteId();
+      if (attemptId) url += '&attempt_id=' + encodeURIComponent(attemptId);
+
+      try {
+        var res = await fetch(url, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('history_fetch_failed');
+        var data = await res.json();
+        var items = (data && data.items) || (Array.isArray(data) ? data : []) || [];
+        if (drawerHistoryCount) drawerHistoryCount.textContent = items.length + ' interação(ões)';
+        if (!items.length) {
+          drawerHistoryList.innerHTML = '<div class="pd-dana-empty">Ainda não há histórico para este escopo.</div>';
+          return;
+        }
+        drawerHistoryList.innerHTML = '';
+        items.forEach(function (item) {
+          var card = document.createElement('article');
+          card.className = 'pd-dana-drawer__history-item';
+
+          var qDiv = document.createElement('div');
+          qDiv.className = 'pd-dana-drawer__history-item-q';
+          qDiv.textContent = item.question_sanitized || '-';
+
+          var aDiv = document.createElement('div');
+          aDiv.className = 'pd-dana-drawer__history-item-a';
+          aDiv.textContent = item.response_text || '-';
+
+          card.appendChild(qDiv);
+          card.appendChild(aDiv);
+          drawerHistoryList.appendChild(card);
+        });
+      } catch (e) {
+        drawerHistoryList.innerHTML = '<div class="pd-dana-empty">Não foi possível carregar o histórico agora.</div>';
+      }
+    }
+
+    /* Reflete visualmente, dentro do Drawer, os 4 badges de escopo herdado
+       da barra principal — apenas leitura/exibição, sem nenhum seletor
+       paralelo. */
+    function syncContextBanner() {
+      if (drawerContextCliente) {
+        var nomeCliente = getClienteNome();
+        drawerContextCliente.textContent = nomeCliente ? ('Cliente: ' + nomeCliente) : 'Todos os Clientes';
+      }
+      if (drawerContextSetor) {
+        var nomeSetor = getSetorNome();
+        drawerContextSetor.textContent = nomeSetor ? ('Setor: ' + nomeSetor) : 'Todos os Setores';
+      }
+      if (drawerContextRodada) {
+        var nomeRodada = getRodadaNome();
+        drawerContextRodada.textContent = nomeRodada ? ('Rodada: ' + nomeRodada) : 'Todas as Rodadas';
+      }
+      if (drawerContextParticipante) {
+        var nomeParticipante = getParticipanteNome();
+        drawerContextParticipante.textContent = nomeParticipante ? ('Participante: ' + nomeParticipante) : 'Todos os Participantes';
+      }
+    }
+
+    function openDrawer() {
+      if (!drawerEl) return;
+      drawerEl.classList.add('is-open');
+      drawerEl.setAttribute('aria-hidden', 'false');
+      if (drawerBackdrop) drawerBackdrop.classList.add('is-open');
+      syncContextBanner();
+      loadHistory();
+    }
+
+    function closeDrawer() {
+      if (!drawerEl) return;
+      drawerEl.classList.remove('is-open');
+      drawerEl.setAttribute('aria-hidden', 'true');
+      if (drawerBackdrop) drawerBackdrop.classList.remove('is-open');
+    }
+
+    function toggleDrawer() {
+      if (!drawerEl) return;
+      if (drawerEl.classList.contains('is-open')) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    }
+
     var _MSG_ECOSYSTEM = '✦ Olá! Aqui é a DANA. Estou com toda a base em tela — pronta para analisar tendências gerais, padrões comportamentais por setor e benchmarks consolidados. Em que posso apoiar sua estratégia hoje?';
 
-    function _resetChat() {
+    function resetWidgetChat() {
       _typewriting = false;
-      setLoading(false);
-      if (msgBox) msgBox.innerHTML = '';
+      setLoading(widgetInput, widgetSend, false);
+      if (widgetMsgBox) widgetMsgBox.innerHTML = '';
       var welcomeDiv = document.createElement('div');
       welcomeDiv.className = 'pd-dana-msg pd-dana-msg--ai';
-      if (msgBox) msgBox.appendChild(welcomeDiv);
+      if (widgetMsgBox) widgetMsgBox.appendChild(welcomeDiv);
       var cid = getClienteId();
       var welcomeText;
       if (cid) {
@@ -863,12 +1518,102 @@
       } else {
         welcomeText = _MSG_ECOSYSTEM;
       }
-      typeWriter(welcomeText, welcomeDiv, null);
+      typeWriter(welcomeText, welcomeDiv, widgetMsgBox, null);
     }
 
-    document.querySelectorAll('.pd-dashboard-filter-bar__select').forEach(function (sel) {
-      sel.addEventListener('change', _resetChat);
+    function initFromQueryString() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('open_dana') === 'true') {
+          var qCliente = params.get('cliente_id');
+          if (qCliente && filterCliente) filterCliente.value = qCliente;
+          refreshDependentOptions().then(openDrawer);
+        }
+      } catch (e) {
+        /* URLSearchParams indisponível — no-op silencioso */
+      }
+    }
+
+    /* ── wiring: widget compacto ── */
+    if (widgetSend) {
+      widgetSend.addEventListener('click', function () { sendQuestion(widgetInput.value); });
+    }
+    if (widgetInput) {
+      widgetInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(widgetInput.value); }
+      });
+    }
+    widgetChips.forEach(function (chip) {
+      chip.addEventListener('click', function () { sendQuestion(chip.getAttribute('data-q')); });
     });
+    if (expandBtn) {
+      expandBtn.addEventListener('click', openDrawer);
+    }
+    if (fabBtn) {
+      fabBtn.addEventListener('click', toggleDrawer);
+    }
+
+    /* ── wiring: drawer ── */
+    if (drawerSend) {
+      drawerSend.addEventListener('click', function () {
+        sendQuestion(drawerInput.value, { box: drawerMsgBox, inputEl: drawerInput, sendBtn: drawerSend });
+      });
+    }
+    if (drawerInput) {
+      drawerInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendQuestion(drawerInput.value, { box: drawerMsgBox, inputEl: drawerInput, sendBtn: drawerSend });
+        }
+      });
+    }
+    if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+    if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawerEl && drawerEl.classList.contains('is-open')) closeDrawer();
+    });
+
+    /* Setor, Rodada ou Participante mudam na barra global → apenas reflete
+       no banner/payload/chat/histórico (são folhas; não exigem novo fetch
+       de opções). */
+    function handleScopeChange() {
+      syncContextBanner();
+      resetWidgetChat();
+      if (drawerEl && drawerEl.classList.contains('is-open')) loadHistory();
+    }
+
+    /* Cliente muda na barra global → ressincroniza Setor/Rodada/Participante
+       (todos dependentes do cliente) e só então aplica a mesma reação de
+       escopo (banner/chat/histórico). Nenhum seletor interno do Drawer
+       precisa de ressincronização — eles foram removidos; a barra
+       principal é a única fonte de verdade. */
+    function handleClienteScopeChange() {
+      refreshDependentOptions().then(handleScopeChange);
+    }
+
+    if (filterCliente) filterCliente.addEventListener('change', handleClienteScopeChange);
+    if (filterSetorMain) filterSetorMain.addEventListener('change', handleScopeChange);
+    if (filterRodadaMain) filterRodadaMain.addEventListener('change', handleScopeChange);
+    if (filterParticipanteMain) filterParticipanteMain.addEventListener('change', handleScopeChange);
+
+    syncContextBanner();
+    initFromQueryString();
+
+    return {
+      sendQuestion: sendQuestion,
+      openDrawer: openDrawer,
+      closeDrawer: closeDrawer,
+      toggleDrawer: toggleDrawer,
+      loadHistory: loadHistory,
+      refreshDependentOptions: refreshDependentOptions,
+      getClienteId: getClienteId,
+      getSetorId: getSetorId,
+      getRodadaId: getRodadaId,
+      getParticipanteId: getParticipanteId,
+      buildBiContextString: buildBiContextString,
+      buildFiltersPayload: buildFiltersPayload
+    };
   })();
   </script>
 {% endblock %}

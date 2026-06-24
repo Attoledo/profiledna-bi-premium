@@ -1865,12 +1865,13 @@ async def admin_login_post(
     csrf = new_csrf_token()
 
     resp = RedirectResponse(url="/admin/dashboard", status_code=303)
+    is_https = request.url.scheme == "https"
 
     resp.set_cookie(
         key=ACCESS_COOKIE_NAME,
         value=token,
         httponly=True,
-        secure=True,
+        secure=is_https,
         samesite="lax",
         path="/admin",
     )
@@ -1878,7 +1879,7 @@ async def admin_login_post(
         key=CSRF_COOKIE_NAME,
         value=csrf,
         httponly=False,
-        secure=True,
+        secure=is_https,
         samesite="lax",
         path="/admin",
     )
@@ -1894,10 +1895,73 @@ async def admin_logout():
     return resp
 
 
+async def _load_dana_context_options(
+    session: AsyncSession,
+    cliente_id: str | None,
+) -> dict[str, list[dict[str, str]]]:
+    """Opções de Rodada/Setor/Participante escopadas a um cliente.
+
+    Reaproveitada na renderização inicial do Dashboard e no endpoint
+    assíncrono /admin/ai/get-options que sincroniza o Drawer da DANA em
+    tempo real quando o filtro de Cliente muda. Apenas leitura de dados já
+    existentes (rodadas/setores/attempts) — não envolve o motor de IA.
+    """
+    rodada_options: list[dict[str, str]] = []
+    setor_options: list[dict[str, str]] = []
+    participant_options: list[dict[str, str]] = []
+
+    if not cliente_id:
+        return {
+            "rodada_options": rodada_options,
+            "setor_options": setor_options,
+            "participant_options": participant_options,
+        }
+
+    cliente_uuid = _safe_uuid(cliente_id) or cliente_id
+
+    try:
+        rodadas = await list_rodadas_by_cliente(session, cliente_uuid)
+        rodada_options = [
+            {"id": _safe_str(rodada.id), "nome": str(getattr(rodada, "nome", "") or "-")}
+            for rodada in rodadas
+        ]
+    except Exception:
+        rodada_options = []
+
+    try:
+        setores = await list_setores_by_cliente(session, cliente_uuid)
+        setor_options = [
+            {"id": _safe_str(setor.id), "nome": str(getattr(setor, "nome", "") or "-")}
+            for setor in setores
+        ]
+    except Exception:
+        setor_options = []
+
+    try:
+        attempts = await _load_all_attempts(session, cliente_id=cliente_uuid, limit=500)
+        for attempt in attempts:
+            participant = getattr(attempt, "participant", None)
+            nome = str(getattr(participant, "nome", "") or "").strip()
+            sobrenome = str(getattr(participant, "sobrenome", "") or "").strip()
+            display_name = f"{nome} {sobrenome}".strip() or "Participante"
+            participant_options.append(
+                {"attempt_id": _safe_str(attempt.id), "participant_display_name": display_name}
+            )
+    except Exception:
+        participant_options = []
+
+    return {
+        "rodada_options": rodada_options,
+        "setor_options": setor_options,
+        "participant_options": participant_options,
+    }
+
+
 @router.get("/dashboard", response_class=HTMLResponse)
 async def admin_dashboard(
     request: Request,
     q: str | None = Query(None),
+    cliente_id: str | None = Query(None),
     admin=Depends(get_current_admin),
     db: AsyncSession = Depends(get_db),
 ):
@@ -1922,6 +1986,8 @@ async def admin_dashboard(
         bi_setor_distribution = []
         bi_top5_frequency = []
 
+    _dana_options = await _load_dana_context_options(db, cliente_id)
+
     return templates.TemplateResponse(
         "admin/dashboard.html",
         {
@@ -1933,7 +1999,37 @@ async def admin_dashboard(
             "csrf_token": request.cookies.get(CSRF_COOKIE_NAME),
             "setor_distribution": bi_setor_distribution,
             "top5_frequency": bi_top5_frequency,
+            "rodada_options": _dana_options["rodada_options"],
+            "setor_options": _dana_options["setor_options"],
+            "participant_options": _dana_options["participant_options"],
         },
+    )
+
+
+@router.get("/ai/get-options")
+async def admin_ai_get_options(
+    cliente_id: str | None = Query(None),
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Endpoint auxiliar (fora de backend/ai_analyst/) que alimenta a
+    sincronização em tempo real dos 4 seletores de contexto na barra
+    principal do Dashboard (Cliente/Setor/Rodada/Participante): a cada
+    troca do filtro de Cliente, o frontend busca aqui as opções já
+    escopadas, sem tocar no motor de RAG/LLM. Estrutura de resposta
+    estável e nomeada em português para consumo direto pelo frontend:
+    {"setores": [...], "rodadas": [...], "participantes": [...]}.
+    """
+    if isinstance(admin, RedirectResponse):
+        return JSONResponse({"detail": "not authenticated"}, status_code=401)
+
+    options = await _load_dana_context_options(db, cliente_id)
+    return JSONResponse(
+        {
+            "setores": options["setor_options"],
+            "rodadas": options["rodada_options"],
+            "participantes": options["participant_options"],
+        }
     )
 
 

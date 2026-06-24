@@ -336,7 +336,7 @@
 
     .pd-compare-canonical-table {
       width: 100%;
-      min-width: 1100px;
+      min-width: 520px;
       border-collapse: separate;
       border-spacing: 0;
       border: 1px solid #e5e7eb;
@@ -646,7 +646,7 @@
 
     .pd-compare-data-table {
       width: 100%;
-      min-width: 980px;
+      min-width: 300px;
       border-collapse: separate;
       border-spacing: 0;
       border: 1px solid #e5e7eb;
@@ -852,6 +852,338 @@
         min-height: 250px;
       }
     }
+
+    /* ── Diff badges in canonical table ── */
+    .pd-compare-diff-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .pd-compare-diff-badge--stable {
+      background: #f8fafc;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    .pd-compare-diff-badge--positive {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid rgba(167, 243, 208, 0.6);
+    }
+
+    .pd-compare-diff-badge--negative {
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid rgba(254, 215, 170, 0.6);
+    }
+
+    /* ── Full-width unified chart panels ── */
+    .pd-compare-unified-chart-panel {
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-radius: 22px;
+      padding: 22px 24px;
+      box-shadow: 0 8px 28px rgba(17, 24, 39, 0.06);
+    }
+
+    .pd-compare-unified-chart-panel__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .pd-compare-unified-chart-panel__title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .pd-compare-unified-chart-panel__legend {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pd-compare-legend-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #374151;
+    }
+
+    .pd-compare-legend-dot__circle {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+
+    .pd-compare-unified-chart-box {
+      position: relative;
+      min-height: 340px;
+    }
+
+    .pd-compare-unified-chart-box--bar {
+      min-height: 280px;
+    }
+
+    /* ── Side-by-side chart grid (Radar + Fit) ── */
+    .pd-compare-unified-charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .pd-compare-unified-charts-grid .pd-compare-unified-chart-panel {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    .pd-compare-unified-charts-grid .pd-compare-unified-chart-box {
+      flex: 1;
+      min-height: 280px;
+    }
+
+    /* ── Canonical table: centered container ── */
+    .pd-compare-canonical-table-outer {
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1180px) {
+      .pd-compare-unified-charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── Horizontal band grids ── */
+    .pd-compare-row-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pd-compare-ranking-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .pd-compare-detail-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 1400px) {
+      .pd-compare-ranking-row,
+      .pd-compare-detail-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .pd-compare-row-grid,
+      .pd-compare-ranking-row,
+      .pd-compare-detail-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── Dimensional drawer expand button ── */
+    .pd-bi-expand-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid #dbe1ea;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+      padding: 0;
+    }
+
+    .pd-bi-expand-btn:hover {
+      background: #fff7ed;
+      border-color: #fdba74;
+      color: #c2410c;
+    }
+
+    /* ── Drawer overlay ── */
+    .pd-bi-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+
+    .pd-bi-drawer.is-open {
+      pointer-events: all;
+      opacity: 1;
+    }
+
+    .pd-bi-drawer__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.26);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+
+    .pd-bi-drawer__inner {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(420px, 92vw);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border-left: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: -8px 0 36px rgba(17, 24, 39, 0.12);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .28s cubic-bezier(.32,.72,0,1);
+      overflow-y: auto;
+    }
+
+    .pd-bi-drawer.is-open .pd-bi-drawer__inner {
+      transform: translateX(0);
+    }
+
+    .pd-bi-drawer__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 24px 22px 18px;
+      border-bottom: 1px solid #eef2f7;
+      flex-shrink: 0;
+    }
+
+    .pd-bi-drawer__title {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 900;
+      color: #111827;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-bi-drawer__close {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+      padding: 0;
+    }
+
+    .pd-bi-drawer__close:hover {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .pd-bi-drawer__body {
+      padding: 20px 22px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .pd-bi-drawer__meta {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+
+    .pd-bi-drawer__row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 11px 14px;
+      border: 1px solid #eef2f7;
+      border-radius: 12px;
+      background: #f9fafb;
+    }
+
+    .pd-bi-drawer__row dt {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #9ca3af;
+      min-width: 64px;
+      flex: 0 0 auto;
+      padding-top: 2px;
+    }
+
+    .pd-bi-drawer__row dd {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-bi-drawer__desc-card {
+      padding: 16px;
+      border: 1px solid #eef2f7;
+      border-radius: 14px;
+      background: #ffffff;
+    }
+
+    .pd-bi-drawer__desc-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #9ca3af;
+      margin: 0 0 8px;
+    }
+
+    .pd-bi-drawer__desc-text {
+      margin: 0;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.65;
+    }
   </style>
 {% endblock %}
 
@@ -865,62 +1197,10 @@
       </p>
     </div>
 
-    <div class="pd-compare-hero__actions">
-      <a href="/admin/dashboard" class="pd-compare-btn">Dashboard</a>
-      <a href="/admin/bi/overview" class="pd-compare-btn">BI — Visão Geral</a>
-      <a href="/admin/logout" class="pd-compare-btn pd-compare-btn--primary">Sair</a>
-    </div>
   </div>
 {% endblock %}
 
-{% block admin_context_bar %}
-  <section class="pd-compare-guide-card">
-    <div class="pd-compare-card-head">
-      <div>
-        <h2 class="pd-compare-card-title">Como interpretar o comparativo</h2>
-        <p class="pd-compare-card-text">
-          Esta página foi desenhada para leitura gerencial. O objetivo é mostrar, de forma clara, em qual lado cada característica aparece com mais força e o que isso significa na prática.
-        </p>
-      </div>
-      <div class="pd-compare-chip">Leitura didática</div>
-    </div>
-
-    <div class="pd-compare-guide-grid">
-      <article class="pd-compare-guide-item">
-        <h3 class="pd-compare-guide-item__title">Lado A e Lado B</h3>
-        <p class="pd-compare-guide-item__text">
-          Cada lado representa um recorte diferente. Normalmente, a comparação mais útil é entre duas rodadas do mesmo cliente.
-        </p>
-      </article>
-
-      <article class="pd-compare-guide-item">
-        <h3 class="pd-compare-guide-item__title">Diferença por dimensão</h3>
-        <p class="pd-compare-guide-item__text">
-          A tabela canônica mostra onde cada dimensão ficou mais alta. Isso ajuda a identificar mudanças reais entre os dois grupos.
-        </p>
-      </article>
-
-      <article class="pd-compare-guide-item">
-        <h3 class="pd-compare-guide-item__title">Top 5 e 3 Pontos de atenção</h3>
-        <p class="pd-compare-guide-item__text">
-          Esses blocos resumem rapidamente quais dimensões aparecem com mais força e quais merecem mais atenção em cada lado.
-        </p>
-      </article>
-
-      <article class="pd-compare-guide-item">
-        <h3 class="pd-compare-guide-item__title">Mesmo cliente</h3>
-        <p class="pd-compare-guide-item__text">
-          O comparativo ideal mantém o mesmo cliente nos dois lados e varia apenas a rodada, para permitir leitura evolutiva consistente.
-        </p>
-      </article>
-    </div>
-
-    <div class="pd-compare-helper">
-      <strong>Regra de leitura recomendada:</strong>
-      primeiro compare os dois recortes na tabela canônica por dimensão. Depois use Top 5 e 3 Pontos de atenção para leitura rápida de forças e pontos de atenção em cada lado.
-    </div>
-  </section>
-{% endblock %}
+{% block admin_context_bar %}{% endblock %}
 
 {% block admin_content %}
   <div class="pd-compare-page">
@@ -1134,49 +1414,52 @@
       </div>
 
       {% if comparison_dimension_rows %}
-        <div class="pd-compare-canonical-table-wrap">
-          <table class="pd-compare-canonical-table">
-            <thead>
-              <tr>
-                <th>Dimensão</th>
-                <th>Área</th>
-                <th>Média A</th>
-                <th>Média B</th>
-                <th>Diferença</th>
-                <th>Leitura</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in comparison_dimension_rows %}
-                {% set delta_value = row.delta if row.delta is defined and row.delta is not none else 0 %}
-                {% set signal_value = row.signal if row.signal is defined and row.signal else "IGUAL" %}
+        <div class="pd-compare-canonical-table-outer">
+          <div class="pd-compare-canonical-table-wrap">
+            <table class="pd-compare-canonical-table">
+              <colgroup>
+                <col style="width:38%;">
+                <col style="width:22%;">
+                <col style="width:10%;">
+                <col style="width:10%;">
+                <col style="width:20%;">
+              </colgroup>
+              <thead>
                 <tr>
-                  <td style="font-weight:700;">
-                    {{ row.dimension_label if row.dimension_label is defined else row.dimension if row.dimension is defined else "-" }}
-                  </td>
-                  <td>{{ row.area if row.area is defined else "-" }}</td>
-                  <td>{{ "%.2f"|format(row.mean_a) if row.mean_a is not none else "—" }}</td>
-                  <td>{{ "%.2f"|format(row.mean_b) if row.mean_b is not none else "—" }}</td>
-                  <td>{{ "%.2f"|format(delta_value) }}</td>
-                  <td>
-                    {% if signal_value == "A_MAIOR" %}
-                      <span class="pd-compare-signal pd-compare-signal--a">Lado A acima do Lado B</span>
-                    {% elif signal_value == "B_MAIOR" %}
-                      <span class="pd-compare-signal pd-compare-signal--b">Lado B acima do Lado A</span>
-                    {% else %}
-                      <span class="pd-compare-signal pd-compare-signal--equal">Equilíbrio entre os lados</span>
-                    {% endif %}
-                  </td>
+                  <th>Dimensão</th>
+                  <th>Área</th>
+                  <th style="text-align:center;">Média A</th>
+                  <th style="text-align:center;">Média B</th>
+                  <th style="text-align:center;">Diferença</th>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {% for row in comparison_dimension_rows %}
+                  {% set delta_value = row.delta if row.delta is defined and row.delta is not none else 0 %}
+                  {% set delta_abs = delta_value | abs %}
+                  <tr>
+                    <td style="font-weight:700;">
+                      {{ row.dimension_label if row.dimension_label is defined else row.dimension if row.dimension is defined else "-" }}
+                    </td>
+                    <td>{{ row.area if row.area is defined else "-" }}</td>
+                    <td style="text-align:center;">{{ "%.2f"|format(row.mean_a) if row.mean_a is not none else "—" }}</td>
+                    <td style="text-align:center;">{{ "%.2f"|format(row.mean_b) if row.mean_b is not none else "—" }}</td>
+                    <td style="text-align:center;">
+                      {% if delta_abs < 0.005 %}
+                        <span class="pd-compare-diff-badge pd-compare-diff-badge--stable">{{ "%.2f"|format(delta_abs) }} =</span>
+                      {% elif delta_value > 0 %}
+                        <span class="pd-compare-diff-badge pd-compare-diff-badge--positive">+{{ "%.2f"|format(delta_value) }} ↑</span>
+                      {% else %}
+                        <span class="pd-compare-diff-badge pd-compare-diff-badge--negative">{{ "%.2f"|format(delta_value) }} ↓</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div><!-- /.pd-compare-canonical-table-outer -->
 
-        <div class="pd-compare-helper" style="margin-top:12px;">
-          <strong>Como ler:</strong>
-          Média A e Média B mostram a intensidade da dimensão em cada lado. Diferença mostra o afastamento entre os recortes. A leitura resume qual lado está acima.
-        </div>
       {% else %}
         <div class="pd-compare-empty">
           Comparativo canônico por dimensão ainda não disponível.
@@ -1184,15 +1467,60 @@
       {% endif %}
     </section>
 
-    <div class="pd-compare-dual-columns">
-      <section>
+    <!-- ── Radar + Fit: side-by-side ── -->
+    <div class="pd-compare-unified-charts-grid">
+
+      <!-- Unified Radar Overlay -->
+      {% if (left_radar_chart and left_radar_chart.has_data) or (right_radar_chart and right_radar_chart.has_data) %}
+        <section class="pd-compare-unified-chart-panel">
+          <div class="pd-compare-unified-chart-panel__head">
+            <h2 class="pd-compare-unified-chart-panel__title">Confronto de Macroáreas (Lado A vs Lado B)</h2>
+            <div class="pd-compare-unified-chart-panel__legend">
+              <span class="pd-compare-legend-dot">
+                <span class="pd-compare-legend-dot__circle" style="background:#f97316;"></span>Lado A
+              </span>
+              <span class="pd-compare-legend-dot">
+                <span class="pd-compare-legend-dot__circle" style="background:#0f172a;"></span>Lado B
+              </span>
+            </div>
+          </div>
+          <div class="pd-compare-unified-chart-box">
+            <canvas id="combinedRadarChart"></canvas>
+          </div>
+        </section>
+      {% endif %}
+
+      <!-- Fit Behavioural Distribution -->
+      {% if left_dimension_rows or right_dimension_rows %}
+        <section class="pd-compare-unified-chart-panel">
+          <div class="pd-compare-unified-chart-panel__head">
+            <h2 class="pd-compare-unified-chart-panel__title">Variação de Fit Comportamental do Grupo</h2>
+            <div class="pd-compare-unified-chart-panel__legend">
+              <span class="pd-compare-legend-dot">
+                <span class="pd-compare-legend-dot__circle" style="background:#f97316;"></span>Lado A
+              </span>
+              <span class="pd-compare-legend-dot">
+                <span class="pd-compare-legend-dot__circle" style="background:#0f172a;"></span>Lado B
+              </span>
+            </div>
+          </div>
+          <div class="pd-compare-unified-chart-box pd-compare-unified-chart-box--bar">
+            <canvas id="fitComparisonBarChart"></canvas>
+          </div>
+        </section>
+      {% endif %}
+
+    </div><!-- /.pd-compare-unified-charts-grid -->
+
+    <!-- ── Row 1: Side headers + KPIs ── -->
+    <div class="pd-compare-row-grid">
+      <div>
         <div class="pd-compare-side-header">
           <h2 class="pd-compare-side-header__title">Lado A</h2>
           <p class="pd-compare-side-header__text">
             {{ left_context.page_subtitle if left_context and left_context.page_subtitle is defined else "Primeiro recorte do comparativo." }}
           </p>
         </div>
-
         <section class="pd-compare-kpi-grid">
           {% if left_overview_cards %}
             {% for card in left_overview_cards %}
@@ -1212,274 +1540,14 @@
             {% endfor %}
           {% endif %}
         </section>
-
-        <section class="pd-compare-chart-panel">
-          <h3 class="pd-compare-chart-panel__title">Radar / Área analítica</h3>
-          <p class="pd-compare-chart-panel__text">
-            Mostra a média das macroáreas no Lado A.
-          </p>
-
-          {% if left_radar_chart and left_radar_chart.has_data %}
-            <div class="pd-compare-chart-box">
-              <canvas id="leftRadarAreaChart"></canvas>
-            </div>
-          {% else %}
-            <div class="pd-compare-empty" style="margin-top:14px;">
-              Radar indisponível no Lado A.
-            </div>
-          {% endif %}
-        </section>
-
-        <section class="pd-compare-chart-panel">
-          <h3 class="pd-compare-chart-panel__title">Distribuição por status</h3>
-          <p class="pd-compare-chart-panel__text">
-            Mostra em que etapa estão os participantes do Lado A.
-          </p>
-
-          {% if left_status_chart and left_status_chart.has_data %}
-            <div class="pd-compare-chart-box">
-              <canvas id="leftStatusPieChart"></canvas>
-            </div>
-          {% else %}
-            <div class="pd-compare-empty" style="margin-top:14px;">
-              Status indisponível no Lado A.
-            </div>
-          {% endif %}
-        </section>
-
-        <div class="pd-compare-ranking-grid">
-          <section class="pd-compare-ranking-card">
-            <h3 class="pd-compare-ranking-card__title">Top 5 forças coletivas</h3>
-            <p class="pd-compare-ranking-card__text">
-              Mostra as dimensões que aparecem com mais força ou recorrência no Lado A.
-            </p>
-
-            {% set left_top_items = left_ranking_top %}
-            {% if left_top_items %}
-              <div class="pd-compare-ranking-list">
-                {% for item in left_top_items[:5] %}
-                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
-                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
-                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
-                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
-                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
-                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
-                  <article class="pd-compare-ranking-item">
-                    <div class="pd-compare-ranking-item__top">
-                      <div>
-                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
-                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
-                      </div>
-                      <div class="pd-compare-ranking-item__metric">
-                        {{ item_value }}
-                      </div>
-                    </div>
-
-                    <div class="pd-compare-bar-track">
-                      <div class="pd-compare-bar-fill pd-compare-bar-fill--a-strong" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
-                    </div>
-
-                    <div class="pd-compare-ranking-item__desc">
-                      {{ item_description }}
-                    </div>
-
-                    <div class="pd-compare-ranking-item__meta">
-                      <strong>Recorrências no grupo:</strong> {{ item_value }}
-                      {% if item_pct is not none %}
-                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
-                      {% endif %}
-                    </div>
-                  </article>
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="pd-compare-empty" style="margin-top:16px;">
-                Top 5 indisponível no Lado A.
-              </div>
-            {% endif %}
-          </section>
-
-          <section class="pd-compare-ranking-card">
-            <h3 class="pd-compare-ranking-card__title">3 Pontos de atenção</h3>
-            <p class="pd-compare-ranking-card__text">
-              Mostra as dimensões menos predominantes no Lado A e que podem merecer acompanhamento mais cuidadoso.
-            </p>
-
-            {% set left_bottom_items = left_ranking_bottom %}
-            {% if left_bottom_items %}
-              <div class="pd-compare-ranking-list">
-                {% for item in left_bottom_items[:3] %}
-                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
-                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
-                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
-                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
-                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
-                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
-                  <article class="pd-compare-ranking-item">
-                    <div class="pd-compare-ranking-item__top">
-                      <div>
-                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
-                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
-                      </div>
-                      <div class="pd-compare-ranking-item__metric">
-                        {{ item_value }}
-                      </div>
-                    </div>
-
-                    <div class="pd-compare-bar-track">
-                      <div class="pd-compare-bar-fill pd-compare-bar-fill--a-attention" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
-                    </div>
-
-                    <div class="pd-compare-ranking-item__desc">
-                      {{ item_description }}
-                    </div>
-
-                    <div class="pd-compare-ranking-item__meta">
-                      <strong>Recorrências no grupo:</strong> {{ item_value }}
-                      {% if item_pct is not none %}
-                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
-                      {% endif %}
-                    </div>
-                  </article>
-                {% endfor %}
-              </div>
-
-              <div class="pd-compare-helper" style="margin-top:16px;">
-                <strong>Sugestão ao gestor:</strong>
-                trate esses itens como pontos de atenção para aprofundar leitura por rodada, setor e cargo. Eles não são problema isolado por si só; indicam áreas que merecem interpretação mais cuidadosa.
-              </div>
-            {% else %}
-              <div class="pd-compare-empty" style="margin-top:16px;">
-                Bottom 3 indisponível no Lado A.
-              </div>
-            {% endif %}
-          </section>
-        </div>
-
-        <div class="pd-compare-detail-grid">
-          <section class="pd-compare-side-card">
-            <div class="pd-compare-card-head">
-              <div>
-                <h3 class="pd-compare-card-title">Tabela dimensional</h3>
-                <p class="pd-compare-card-text">
-                  Detalhe por dimensão do Lado A.
-                </p>
-              </div>
-            </div>
-
-            {% if left_dimension_rows %}
-              <div class="pd-compare-data-table-wrap">
-                <table class="pd-compare-data-table">
-                  <thead>
-                    <tr>
-                      <th>Dimensão</th>
-                      <th>Área</th>
-                      <th>Média</th>
-                      <th>Mediana</th>
-                      <th>Faixa</th>
-                      <th>Leitura</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for row in left_dimension_rows %}
-                      <tr>
-                        <td style="font-weight:700;">{{ row.label if row.label is defined else "-" }}</td>
-                        <td>{{ row.area if row.area is defined else "-" }}</td>
-                        <td>{{ row.average_label if row.average_label is defined else row.value if row.value is defined else "-" }}</td>
-                        <td>{{ row.median_label if row.median_label is defined else "-" }}</td>
-                        <td>
-                          <span class="pd-compare-badge pd-compare-badge--left">
-                            {{ row.band if row.band is defined else "-" }}
-                          </span>
-                        </td>
-                        <td>{{ row.description if row.description is defined else "-" }}</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            {% else %}
-              <div class="pd-compare-empty">
-                Tabela dimensional indisponível no Lado A.
-              </div>
-            {% endif %}
-          </section>
-
-          <section class="pd-compare-side-card">
-            <div class="pd-compare-card-head">
-              <div>
-                <h3 class="pd-compare-card-title">Áreas consolidadas</h3>
-                <p class="pd-compare-card-text">
-                  Resumo por macroárea do Lado A.
-                </p>
-              </div>
-            </div>
-
-            {% if left_area_rows %}
-              <div class="pd-compare-area-list">
-                {% for row in left_area_rows %}
-                  <div class="pd-compare-area-item">
-                    <div class="pd-compare-area-item__top">
-                      <div class="pd-compare-area-item__title">{{ row.label if row.label is defined else "-" }}</div>
-                      <div class="pd-compare-area-item__value">{{ row.value if row.value is defined else "-" }}</div>
-                    </div>
-                    {% if row.description is defined and row.description %}
-                      <div class="pd-compare-area-item__desc">{{ row.description }}</div>
-                    {% endif %}
-                  </div>
-                {% endfor %}
-              </div>
-
-              {% set left_area_sorted = left_area_rows|sort(attribute='average_score', reverse=true) %}
-              {% set left_primary_area = left_area_sorted[0] if left_area_sorted else none %}
-              {% set left_secondary_area = left_area_sorted[1] if left_area_sorted|length > 1 else none %}
-
-              <div class="pd-compare-area-chart-card">
-                <h4 class="pd-compare-area-chart-card__title">Leitura visual das macroáreas</h4>
-                <p class="pd-compare-area-chart-card__text">
-                  O gráfico em pizza resume a distribuição relativa das médias consolidadas do Lado A entre as macroáreas.
-                </p>
-
-                <div class="pd-compare-area-chart-box">
-                  <canvas id="leftAreaPieChart"></canvas>
-                </div>
-
-                <div class="pd-compare-area-reading">
-                  {% if left_primary_area %}
-                    <strong>Destaque:</strong>
-                    no Lado A, a macroárea com maior média consolidada é
-                    <strong>{{ left_primary_area.label }}</strong>
-                    ({{ left_primary_area.value }}).
-                    {% if left_secondary_area %}
-                      Em seguida aparece <strong>{{ left_secondary_area.label }}</strong>
-                      ({{ left_secondary_area.value }}),
-                      o que ajuda a entender onde o grupo concentra maior força relativa.
-                    {% else %}
-                      Este recorte mostra concentração principal nessa área.
-                    {% endif %}
-                  {% else %}
-                    <strong>Destaque:</strong>
-                    não há dados suficientes para leitura consolidada das áreas no Lado A.
-                  {% endif %}
-                </div>
-              </div>
-            {% else %}
-              <div class="pd-compare-empty">
-                Áreas consolidadas indisponíveis no Lado A.
-              </div>
-            {% endif %}
-          </section>
-        </div>
-      </section>
-
-      <section>
+      </div>
+      <div>
         <div class="pd-compare-side-header">
           <h2 class="pd-compare-side-header__title">Lado B</h2>
           <p class="pd-compare-side-header__text">
             {{ right_context.page_subtitle if right_context and right_context.page_subtitle is defined else "Segundo recorte do comparativo." }}
           </p>
         </div>
-
         <section class="pd-compare-kpi-grid">
           {% if right_overview_cards %}
             {% for card in right_overview_cards %}
@@ -1499,265 +1567,436 @@
             {% endfor %}
           {% endif %}
         </section>
+      </div>
+    </div><!-- /.pd-compare-row-grid -->
 
-        <section class="pd-compare-chart-panel">
-          <h3 class="pd-compare-chart-panel__title">Radar / Área analítica</h3>
-          <p class="pd-compare-chart-panel__text">
-            Mostra a média das macroáreas no Lado B.
-          </p>
+    <!-- ── Row 2: Ranking cards — 4-col, stretch ── -->
+    <div class="pd-compare-ranking-row">
 
-          {% if right_radar_chart and right_radar_chart.has_data %}
-            <div class="pd-compare-chart-box">
-              <canvas id="rightRadarAreaChart"></canvas>
-            </div>
-          {% else %}
-            <div class="pd-compare-empty" style="margin-top:14px;">
-              Radar indisponível no Lado B.
-            </div>
-          {% endif %}
-        </section>
-
-        <section class="pd-compare-chart-panel">
-          <h3 class="pd-compare-chart-panel__title">Distribuição por status</h3>
-          <p class="pd-compare-chart-panel__text">
-            Mostra em que etapa estão os participantes do Lado B.
-          </p>
-
-          {% if right_status_chart and right_status_chart.has_data %}
-            <div class="pd-compare-chart-box">
-              <canvas id="rightStatusPieChart"></canvas>
-            </div>
-          {% else %}
-            <div class="pd-compare-empty" style="margin-top:14px;">
-              Status indisponível no Lado B.
-            </div>
-          {% endif %}
-        </section>
-
-        <div class="pd-compare-ranking-grid">
-          <section class="pd-compare-ranking-card pd-compare-ranking-card--top5-b">
-            <h3 class="pd-compare-ranking-card__title">Top 5 forças coletivas</h3>
-            <p class="pd-compare-ranking-card__text">
-              Mostra as dimensões que aparecem com mais força ou recorrência no Lado B.
-            </p>
-
-            {% set right_top_items = right_ranking_top %}
-            {% if right_top_items %}
-              <div class="pd-compare-ranking-list">
-                {% for item in right_top_items[:5] %}
-                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
-                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
-                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
-                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
-                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
-                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
-                  <article class="pd-compare-ranking-item">
-                    <div class="pd-compare-ranking-item__top">
-                      <div>
-                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
-                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
-                      </div>
-                      <div class="pd-compare-ranking-item__metric">
-                        {{ item_value }}
-                      </div>
-                    </div>
-
-                    <div class="pd-compare-bar-track">
-                      <div class="pd-compare-bar-fill pd-compare-bar-fill--b-strong" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
-                    </div>
-
-                    <div class="pd-compare-ranking-item__desc">
-                      {{ item_description }}
-                    </div>
-
-                    <div class="pd-compare-ranking-item__meta">
-                      <strong>Recorrências no grupo:</strong> {{ item_value }}
-                      {% if item_pct is not none %}
-                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
-                      {% endif %}
-                    </div>
-                  </article>
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="pd-compare-empty" style="margin-top:16px;">
-                Top 5 indisponível no Lado B.
-              </div>
-            {% endif %}
-          </section>
-
-          <section class="pd-compare-ranking-card">
-            <h3 class="pd-compare-ranking-card__title">3 Pontos de atenção</h3>
-            <p class="pd-compare-ranking-card__text">
-              Mostra as dimensões menos predominantes no Lado B e que podem merecer acompanhamento mais cuidadoso.
-            </p>
-
-            {% set right_bottom_items = right_ranking_bottom %}
-            {% if right_bottom_items %}
-              <div class="pd-compare-ranking-list">
-                {% for item in right_bottom_items[:3] %}
-                  {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
-                  {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
-                  {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
-                  {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
-                  {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
-                  {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
-                  <article class="pd-compare-ranking-item">
-                    <div class="pd-compare-ranking-item__top">
-                      <div>
-                        <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
-                        <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
-                      </div>
-                      <div class="pd-compare-ranking-item__metric">
-                        {{ item_value }}
-                      </div>
-                    </div>
-
-                    <div class="pd-compare-bar-track">
-                      <div class="pd-compare-bar-fill pd-compare-bar-fill--b-attention" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
-                    </div>
-
-                    <div class="pd-compare-ranking-item__desc">
-                      {{ item_description }}
-                    </div>
-
-                    <div class="pd-compare-ranking-item__meta">
-                      <strong>Recorrências no grupo:</strong> {{ item_value }}
-                      {% if item_pct is not none %}
-                        · <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%
-                      {% endif %}
-                    </div>
-                  </article>
-                {% endfor %}
-              </div>
-
-              <div class="pd-compare-helper" style="margin-top:16px;">
-                <strong>Sugestão ao gestor:</strong>
-                trate esses itens como pontos de atenção para aprofundar leitura por rodada, setor e cargo. Eles não são problema isolado por si só; indicam áreas que merecem interpretação mais cuidadosa.
-              </div>
-            {% else %}
-              <div class="pd-compare-empty" style="margin-top:16px;">
-                Bottom 3 indisponível no Lado B.
-              </div>
-            {% endif %}
-          </section>
-        </div>
-
-        <div class="pd-compare-detail-grid">
-          <section class="pd-compare-side-card">
-            <div class="pd-compare-card-head">
-              <div>
-                <h3 class="pd-compare-card-title">Tabela dimensional</h3>
-                <p class="pd-compare-card-text">
-                  Detalhe por dimensão do Lado B.
-                </p>
-              </div>
-            </div>
-
-            {% if right_dimension_rows %}
-              <div class="pd-compare-data-table-wrap">
-                <table class="pd-compare-data-table">
-                  <thead>
-                    <tr>
-                      <th>Dimensão</th>
-                      <th>Área</th>
-                      <th>Média</th>
-                      <th>Mediana</th>
-                      <th>Faixa</th>
-                      <th>Leitura</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for row in right_dimension_rows %}
-                      <tr>
-                        <td style="font-weight:700;">{{ row.label if row.label is defined else "-" }}</td>
-                        <td>{{ row.area if row.area is defined else "-" }}</td>
-                        <td>{{ row.average_label if row.average_label is defined else row.value if row.value is defined else "-" }}</td>
-                        <td>{{ row.median_label if row.median_label is defined else "-" }}</td>
-                        <td>
-                          <span class="pd-compare-badge pd-compare-badge--right">
-                            {{ row.band if row.band is defined else "-" }}
-                          </span>
-                        </td>
-                        <td>{{ row.description if row.description is defined else "-" }}</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            {% else %}
-              <div class="pd-compare-empty">
-                Tabela dimensional indisponível no Lado B.
-              </div>
-            {% endif %}
-          </section>
-
-          <section class="pd-compare-side-card">
-            <div class="pd-compare-card-head">
-              <div>
-                <h3 class="pd-compare-card-title">Áreas consolidadas</h3>
-                <p class="pd-compare-card-text">
-                  Resumo por macroárea do Lado B.
-                </p>
-              </div>
-            </div>
-
-            {% if right_area_rows %}
-              <div class="pd-compare-area-list">
-                {% for row in right_area_rows %}
-                  <div class="pd-compare-area-item">
-                    <div class="pd-compare-area-item__top">
-                      <div class="pd-compare-area-item__title">{{ row.label if row.label is defined else "-" }}</div>
-                      <div class="pd-compare-area-item__value">{{ row.value if row.value is defined else "-" }}</div>
-                    </div>
-                    {% if row.description is defined and row.description %}
-                      <div class="pd-compare-area-item__desc">{{ row.description }}</div>
-                    {% endif %}
+      <!-- Top 5 Lado A -->
+      <section class="pd-compare-ranking-card">
+        <h3 class="pd-compare-ranking-card__title">Top 5 forças coletivas</h3>
+        <p class="pd-compare-ranking-card__text">
+          Mostra as dimensões que aparecem com mais força ou recorrência no Lado A.
+        </p>
+        {% set left_top_items = left_ranking_top %}
+        {% if left_top_items %}
+          <div class="pd-compare-ranking-list">
+            {% for item in left_top_items[:5] %}
+              {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+              {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+              {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+              {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+              {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+              {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+              <article class="pd-compare-ranking-item">
+                <div class="pd-compare-ranking-item__top">
+                  <div>
+                    <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                    <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
                   </div>
-                {% endfor %}
-              </div>
-
-              {% set right_area_sorted = right_area_rows|sort(attribute='average_score', reverse=true) %}
-              {% set right_primary_area = right_area_sorted[0] if right_area_sorted else none %}
-              {% set right_secondary_area = right_area_sorted[1] if right_area_sorted|length > 1 else none %}
-
-              <div class="pd-compare-area-chart-card">
-                <h4 class="pd-compare-area-chart-card__title">Leitura visual das macroáreas</h4>
-                <p class="pd-compare-area-chart-card__text">
-                  O gráfico em pizza resume a distribuição relativa das médias consolidadas do Lado B entre as macroáreas.
-                </p>
-
-                <div class="pd-compare-area-chart-box">
-                  <canvas id="rightAreaPieChart"></canvas>
+                  <div class="pd-compare-ranking-item__metric">{{ item_value }}</div>
                 </div>
-
-                <div class="pd-compare-area-reading">
-                  {% if right_primary_area %}
-                    <strong>Destaque:</strong>
-                    no Lado B, a macroárea com maior média consolidada é
-                    <strong>{{ right_primary_area.label }}</strong>
-                    ({{ right_primary_area.value }}).
-                    {% if right_secondary_area %}
-                      Em seguida aparece <strong>{{ right_secondary_area.label }}</strong>
-                      ({{ right_secondary_area.value }}),
-                      o que ajuda a entender onde o grupo concentra maior força relativa.
-                    {% else %}
-                      Este recorte mostra concentração principal nessa área.
-                    {% endif %}
-                  {% else %}
-                    <strong>Destaque:</strong>
-                    não há dados suficientes para leitura consolidada das áreas no Lado B.
-                  {% endif %}
+                <div class="pd-compare-bar-track">
+                  <div class="pd-compare-bar-fill pd-compare-bar-fill--a-strong" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
                 </div>
-              </div>
-            {% else %}
-              <div class="pd-compare-empty">
-                Áreas consolidadas indisponíveis no Lado B.
-              </div>
-            {% endif %}
-          </section>
-        </div>
+                <div class="pd-compare-ranking-item__desc">{{ item_description }}</div>
+                <div class="pd-compare-ranking-item__meta">
+                  <strong>Recorrências no grupo:</strong> {{ item_value }}
+                  {% if item_pct is not none %}· <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%{% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="pd-compare-empty" style="margin-top:16px;">Top 5 indisponível no Lado A.</div>
+        {% endif %}
       </section>
+
+      <!-- Pontos de atenção Lado A -->
+      <section class="pd-compare-ranking-card">
+        <h3 class="pd-compare-ranking-card__title">3 Pontos de atenção</h3>
+        <p class="pd-compare-ranking-card__text">
+          Mostra as dimensões menos predominantes no Lado A e que podem merecer acompanhamento mais cuidadoso.
+        </p>
+        {% set left_bottom_items = left_ranking_bottom %}
+        {% if left_bottom_items %}
+          <div class="pd-compare-ranking-list">
+            {% for item in left_bottom_items[:3] %}
+              {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+              {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+              {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+              {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+              {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+              {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+              <article class="pd-compare-ranking-item">
+                <div class="pd-compare-ranking-item__top">
+                  <div>
+                    <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                    <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
+                  </div>
+                  <div class="pd-compare-ranking-item__metric">{{ item_value }}</div>
+                </div>
+                <div class="pd-compare-bar-track">
+                  <div class="pd-compare-bar-fill pd-compare-bar-fill--a-attention" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
+                </div>
+                <div class="pd-compare-ranking-item__desc">{{ item_description }}</div>
+                <div class="pd-compare-ranking-item__meta">
+                  <strong>Recorrências no grupo:</strong> {{ item_value }}
+                  {% if item_pct is not none %}· <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%{% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+          <div class="pd-compare-helper" style="margin-top:16px;">
+            <strong>Sugestão ao gestor:</strong>
+            trate esses itens como pontos de atenção para aprofundar leitura por rodada, setor e cargo. Eles não são problema isolado por si só; indicam áreas que merecem interpretação mais cuidadosa.
+          </div>
+        {% else %}
+          <div class="pd-compare-empty" style="margin-top:16px;">Bottom 3 indisponível no Lado A.</div>
+        {% endif %}
+      </section>
+
+      <!-- Top 5 Lado B -->
+      <section class="pd-compare-ranking-card pd-compare-ranking-card--top5-b">
+        <h3 class="pd-compare-ranking-card__title">Top 5 forças coletivas</h3>
+        <p class="pd-compare-ranking-card__text">
+          Mostra as dimensões que aparecem com mais força ou recorrência no Lado B.
+        </p>
+        {% set right_top_items = right_ranking_top %}
+        {% if right_top_items %}
+          <div class="pd-compare-ranking-list">
+            {% for item in right_top_items[:5] %}
+              {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+              {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+              {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+              {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+              {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+              {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+              <article class="pd-compare-ranking-item">
+                <div class="pd-compare-ranking-item__top">
+                  <div>
+                    <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                    <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
+                  </div>
+                  <div class="pd-compare-ranking-item__metric">{{ item_value }}</div>
+                </div>
+                <div class="pd-compare-bar-track">
+                  <div class="pd-compare-bar-fill pd-compare-bar-fill--b-strong" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
+                </div>
+                <div class="pd-compare-ranking-item__desc">{{ item_description }}</div>
+                <div class="pd-compare-ranking-item__meta">
+                  <strong>Recorrências no grupo:</strong> {{ item_value }}
+                  {% if item_pct is not none %}· <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%{% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="pd-compare-empty" style="margin-top:16px;">Top 5 indisponível no Lado B.</div>
+        {% endif %}
+      </section>
+
+      <!-- Pontos de atenção Lado B -->
+      <section class="pd-compare-ranking-card">
+        <h3 class="pd-compare-ranking-card__title">3 Pontos de atenção</h3>
+        <p class="pd-compare-ranking-card__text">
+          Mostra as dimensões menos predominantes no Lado B e que podem merecer acompanhamento mais cuidadoso.
+        </p>
+        {% set right_bottom_items = right_ranking_bottom %}
+        {% if right_bottom_items %}
+          <div class="pd-compare-ranking-list">
+            {% for item in right_bottom_items[:3] %}
+              {% set item_label = item.label if item.label is defined and item.label else (item.dimension_label if item.dimension_label is defined and item.dimension_label else item.dimension if item.dimension is defined else "-") %}
+              {% set item_area = item.area if item.area is defined and item.area else "Área não informada" %}
+              {% set item_description = item.description if item.description is defined and item.description else (item.meaning if item.meaning is defined and item.meaning else "Sem descrição gerencial disponível.") %}
+              {% set item_value = item.value if item.value is defined and item.value is not none else (item.count if item.count is defined and item.count is not none else 0) %}
+              {% set item_pct = item.pct if item.pct is defined and item.pct is not none else None %}
+              {% set width_pct = item_pct if item_pct is not none else (item_value if item_value <= 100 else 100) %}
+              <article class="pd-compare-ranking-item">
+                <div class="pd-compare-ranking-item__top">
+                  <div>
+                    <h4 class="pd-compare-ranking-item__title">{{ item_label }}</h4>
+                    <div class="pd-compare-ranking-item__area">Área: {{ item_area }}</div>
+                  </div>
+                  <div class="pd-compare-ranking-item__metric">{{ item_value }}</div>
+                </div>
+                <div class="pd-compare-bar-track">
+                  <div class="pd-compare-bar-fill pd-compare-bar-fill--b-attention" style="width: {{ width_pct if width_pct <= 100 else 100 }}%;"></div>
+                </div>
+                <div class="pd-compare-ranking-item__desc">{{ item_description }}</div>
+                <div class="pd-compare-ranking-item__meta">
+                  <strong>Recorrências no grupo:</strong> {{ item_value }}
+                  {% if item_pct is not none %}· <strong>Percentual no grupo:</strong> {{ "%.2f"|format(item_pct) }}%{% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+          <div class="pd-compare-helper" style="margin-top:16px;">
+            <strong>Sugestão ao gestor:</strong>
+            trate esses itens como pontos de atenção para aprofundar leitura por rodada, setor e cargo. Eles não são problema isolado por si só; indicam áreas que merecem interpretação mais cuidadosa.
+          </div>
+        {% else %}
+          <div class="pd-compare-empty" style="margin-top:16px;">Bottom 3 indisponível no Lado B.</div>
+        {% endif %}
+      </section>
+
+    </div><!-- /.pd-compare-ranking-row -->
+
+    <!-- ── Row 3: Detail tables + Consolidated areas — 4-col, start ── -->
+    <div class="pd-compare-detail-row">
+
+      <!-- Tabela dimensional Lado A -->
+      <section class="pd-compare-side-card">
+        <div class="pd-compare-card-head">
+          <div>
+            <h3 class="pd-compare-card-title">Tabela dimensional</h3>
+            <p class="pd-compare-card-text">Detalhe por dimensão do Lado A.</p>
+          </div>
+        </div>
+        {% if left_dimension_rows %}
+          <div class="pd-compare-data-table-wrap">
+            <table class="pd-compare-data-table">
+              <colgroup>
+                <col style="width:44%;">
+                <col style="width:28%;">
+                <col style="width:16%;">
+                <col style="width:12%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Dimensão</th>
+                  <th>Área</th>
+                  <th style="text-align:center;">Média</th>
+                  <th style="text-align:center;">Detalhe</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in left_dimension_rows %}
+                  <tr
+                    data-dim="{{ row.label if row.label is defined else '' }}"
+                    data-area="{{ row.area if row.area is defined else '' }}"
+                    data-avg="{{ row.average_label if row.average_label is defined else (row.value if row.value is defined else '') }}"
+                    data-median="{{ row.median_label if row.median_label is defined else '' }}"
+                    data-band="{{ row.band if row.band is defined else '' }}"
+                    data-desc="{{ row.description if row.description is defined else '' }}"
+                  >
+                    <td style="font-weight:700;">{{ row.label if row.label is defined else "-" }}</td>
+                    <td>{{ row.area if row.area is defined else "-" }}</td>
+                    <td style="text-align:center;">{{ row.average_label if row.average_label is defined else row.value if row.value is defined else "-" }}</td>
+                    <td style="text-align:center;">
+                      <button type="button" class="pd-bi-expand-btn" onclick="pdBiOpenCompareDrawer(this.closest('tr'))" title="Ver leitura completa">&#8857;</button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="pd-compare-empty">Tabela dimensional indisponível no Lado A.</div>
+        {% endif %}
+      </section>
+
+      <!-- Áreas consolidadas Lado A -->
+      <section class="pd-compare-side-card">
+        <div class="pd-compare-card-head">
+          <div>
+            <h3 class="pd-compare-card-title">Áreas consolidadas</h3>
+            <p class="pd-compare-card-text">Resumo por macroárea do Lado A.</p>
+          </div>
+        </div>
+        {% if left_area_rows %}
+          <div class="pd-compare-area-list">
+            {% for row in left_area_rows %}
+              <div class="pd-compare-area-item">
+                <div class="pd-compare-area-item__top">
+                  <div class="pd-compare-area-item__title">{{ row.label if row.label is defined else "-" }}</div>
+                  <div class="pd-compare-area-item__value">{{ row.value if row.value is defined else "-" }}</div>
+                </div>
+                {% if row.description is defined and row.description %}
+                  <div class="pd-compare-area-item__desc">{{ row.description }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          {% set left_area_sorted = left_area_rows|sort(attribute='average_score', reverse=true) %}
+          {% set left_primary_area = left_area_sorted[0] if left_area_sorted else none %}
+          {% set left_secondary_area = left_area_sorted[1] if left_area_sorted|length > 1 else none %}
+          <div class="pd-compare-area-chart-card">
+            <h4 class="pd-compare-area-chart-card__title">Leitura visual das macroáreas</h4>
+            <p class="pd-compare-area-chart-card__text">
+              O gráfico em pizza resume a distribuição relativa das médias consolidadas do Lado A entre as macroáreas.
+            </p>
+            <div class="pd-compare-area-chart-box">
+              <canvas id="leftAreaPieChart"></canvas>
+            </div>
+            <div class="pd-compare-area-reading">
+              {% if left_primary_area %}
+                <strong>Destaque:</strong>
+                no Lado A, a macroárea com maior média consolidada é
+                <strong>{{ left_primary_area.label }}</strong>
+                ({{ left_primary_area.value }}).
+                {% if left_secondary_area %}
+                  Em seguida aparece <strong>{{ left_secondary_area.label }}</strong>
+                  ({{ left_secondary_area.value }}),
+                  o que ajuda a entender onde o grupo concentra maior força relativa.
+                {% else %}
+                  Este recorte mostra concentração principal nessa área.
+                {% endif %}
+              {% else %}
+                <strong>Destaque:</strong>
+                não há dados suficientes para leitura consolidada das áreas no Lado A.
+              {% endif %}
+            </div>
+          </div>
+        {% else %}
+          <div class="pd-compare-empty">Áreas consolidadas indisponíveis no Lado A.</div>
+        {% endif %}
+      </section>
+
+      <!-- Tabela dimensional Lado B -->
+      <section class="pd-compare-side-card">
+        <div class="pd-compare-card-head">
+          <div>
+            <h3 class="pd-compare-card-title">Tabela dimensional</h3>
+            <p class="pd-compare-card-text">Detalhe por dimensão do Lado B.</p>
+          </div>
+        </div>
+        {% if right_dimension_rows %}
+          <div class="pd-compare-data-table-wrap">
+            <table class="pd-compare-data-table">
+              <colgroup>
+                <col style="width:44%;">
+                <col style="width:28%;">
+                <col style="width:16%;">
+                <col style="width:12%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Dimensão</th>
+                  <th>Área</th>
+                  <th style="text-align:center;">Média</th>
+                  <th style="text-align:center;">Detalhe</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in right_dimension_rows %}
+                  <tr
+                    data-dim="{{ row.label if row.label is defined else '' }}"
+                    data-area="{{ row.area if row.area is defined else '' }}"
+                    data-avg="{{ row.average_label if row.average_label is defined else (row.value if row.value is defined else '') }}"
+                    data-median="{{ row.median_label if row.median_label is defined else '' }}"
+                    data-band="{{ row.band if row.band is defined else '' }}"
+                    data-desc="{{ row.description if row.description is defined else '' }}"
+                  >
+                    <td style="font-weight:700;">{{ row.label if row.label is defined else "-" }}</td>
+                    <td>{{ row.area if row.area is defined else "-" }}</td>
+                    <td style="text-align:center;">{{ row.average_label if row.average_label is defined else row.value if row.value is defined else "-" }}</td>
+                    <td style="text-align:center;">
+                      <button type="button" class="pd-bi-expand-btn" onclick="pdBiOpenCompareDrawer(this.closest('tr'))" title="Ver leitura completa">&#8857;</button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="pd-compare-empty">Tabela dimensional indisponível no Lado B.</div>
+        {% endif %}
+      </section>
+
+      <!-- Áreas consolidadas Lado B -->
+      <section class="pd-compare-side-card">
+        <div class="pd-compare-card-head">
+          <div>
+            <h3 class="pd-compare-card-title">Áreas consolidadas</h3>
+            <p class="pd-compare-card-text">Resumo por macroárea do Lado B.</p>
+          </div>
+        </div>
+        {% if right_area_rows %}
+          <div class="pd-compare-area-list">
+            {% for row in right_area_rows %}
+              <div class="pd-compare-area-item">
+                <div class="pd-compare-area-item__top">
+                  <div class="pd-compare-area-item__title">{{ row.label if row.label is defined else "-" }}</div>
+                  <div class="pd-compare-area-item__value">{{ row.value if row.value is defined else "-" }}</div>
+                </div>
+                {% if row.description is defined and row.description %}
+                  <div class="pd-compare-area-item__desc">{{ row.description }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          {% set right_area_sorted = right_area_rows|sort(attribute='average_score', reverse=true) %}
+          {% set right_primary_area = right_area_sorted[0] if right_area_sorted else none %}
+          {% set right_secondary_area = right_area_sorted[1] if right_area_sorted|length > 1 else none %}
+          <div class="pd-compare-area-chart-card">
+            <h4 class="pd-compare-area-chart-card__title">Leitura visual das macroáreas</h4>
+            <p class="pd-compare-area-chart-card__text">
+              O gráfico em pizza resume a distribuição relativa das médias consolidadas do Lado B entre as macroáreas.
+            </p>
+            <div class="pd-compare-area-chart-box">
+              <canvas id="rightAreaPieChart"></canvas>
+            </div>
+            <div class="pd-compare-area-reading">
+              {% if right_primary_area %}
+                <strong>Destaque:</strong>
+                no Lado B, a macroárea com maior média consolidada é
+                <strong>{{ right_primary_area.label }}</strong>
+                ({{ right_primary_area.value }}).
+                {% if right_secondary_area %}
+                  Em seguida aparece <strong>{{ right_secondary_area.label }}</strong>
+                  ({{ right_secondary_area.value }}),
+                  o que ajuda a entender onde o grupo concentra maior força relativa.
+                {% else %}
+                  Este recorte mostra concentração principal nessa área.
+                {% endif %}
+              {% else %}
+                <strong>Destaque:</strong>
+                não há dados suficientes para leitura consolidada das áreas no Lado B.
+              {% endif %}
+            </div>
+          </div>
+        {% else %}
+          <div class="pd-compare-empty">Áreas consolidadas indisponíveis no Lado B.</div>
+        {% endif %}
+      </section>
+
+    </div><!-- /.pd-compare-detail-row -->
+  </div>
+
+  <!-- ── Dimensional detail drawer ── -->
+  <div id="pd-bi-dimensao-drawer" class="pd-bi-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pd-bi-drawer-dim">
+    <div class="pd-bi-drawer__backdrop" onclick="pdBiCloseCompareDrawer()"></div>
+    <div class="pd-bi-drawer__inner">
+      <div class="pd-bi-drawer__head">
+        <h3 class="pd-bi-drawer__title" id="pd-bi-drawer-dim">—</h3>
+        <button type="button" class="pd-bi-drawer__close" onclick="pdBiCloseCompareDrawer()" aria-label="Fechar painel">✕</button>
+      </div>
+      <div class="pd-bi-drawer__body">
+        <dl class="pd-bi-drawer__meta">
+          <div class="pd-bi-drawer__row">
+            <dt>Área</dt>
+            <dd id="pd-bi-drawer-area">—</dd>
+          </div>
+          <div class="pd-bi-drawer__row">
+            <dt>Média</dt>
+            <dd id="pd-bi-drawer-avg">—</dd>
+          </div>
+          <div class="pd-bi-drawer__row">
+            <dt>Mediana</dt>
+            <dd id="pd-bi-drawer-median">—</dd>
+          </div>
+          <div class="pd-bi-drawer__row">
+            <dt>Faixa</dt>
+            <dd id="pd-bi-drawer-band">—</dd>
+          </div>
+        </dl>
+        <div class="pd-bi-drawer__desc-card">
+          <p class="pd-bi-drawer__desc-label">Leitura gerencial</p>
+          <p class="pd-bi-drawer__desc-text" id="pd-bi-drawer-desc">—</p>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}
@@ -1765,235 +2004,282 @@
 {% block extra_scripts %}
   {{ super() }}
   <script>
-    (() => {
-      const palette = {
-        dark: "#111827",
-        darkSoft: "#4b5563",
-        orange: "#f97316",
-        orangeSoft: "rgba(249, 115, 22, 0.18)",
-        border: "#dbe1ea",
-        grid: "rgba(17, 24, 39, 0.08)",
-        surface: "#ffffff"
+  (function () {
+    var palette = {
+      dark:       "#111827",
+      darkSoft:   "#4b5563",
+      orange:     "#f97316",
+      orangeSoft: "rgba(249, 115, 22, 0.20)",
+      graphite:   "#0f172a",
+      graphiteSoft: "rgba(15, 23, 42, 0.20)",
+      grid:       "rgba(17, 24, 39, 0.08)",
+      surface:    "#ffffff"
+    };
+
+    var defaultPiePalette = [
+      palette.dark, palette.orange, palette.darkSoft,
+      "#9ca3af", "#cbd5e1", "#fed7aa"
+    ];
+
+    var leftRadarChartData   = {{ left_radar_chart   | tojson }};
+    var rightRadarChartData  = {{ right_radar_chart  | tojson }};
+    var leftAreaRows         = {{ left_area_rows     | tojson }};
+    var rightAreaRows        = {{ right_area_rows    | tojson }};
+    var leftDimensionRowsData  = {{ left_dimension_rows  | tojson }};
+    var rightDimensionRowsData = {{ right_dimension_rows | tojson }};
+
+    function hasArray(v) { return Array.isArray(v) && v.length > 0; }
+
+    function toNumber(v) {
+      if (typeof v === "number" && isFinite(v)) return v;
+      if (typeof v === "string") {
+        var n = Number(v.replace(",", ".").replace(/[^\d.-]/g, ""));
+        return isFinite(n) ? n : 0;
+      }
+      return 0;
+    }
+
+    function buildPieColors(count) {
+      var c = [];
+      for (var i = 0; i < count; i++) c.push(defaultPiePalette[i % defaultPiePalette.length]);
+      return c;
+    }
+
+    function buildAreaDataset(rows) {
+      var clean = Array.isArray(rows)
+        ? rows.map(function (r) {
+            return {
+              label: r && (r.label || r.area) ? String(r.label || r.area) : "Área",
+              value: toNumber(r && (r.average_score != null ? r.average_score : (r.average != null ? r.average : r.value)))
+            };
+          }).filter(function (r) { return r.value > 0; })
+        : [];
+      return {
+        labels: clean.map(function (r) { return r.label; }),
+        values: clean.map(function (r) { return r.value; })
       };
+    }
 
-      const defaultPiePalette = [
-        palette.dark,
-        palette.orange,
-        palette.darkSoft,
-        "#9ca3af",
-        "#cbd5e1",
-        "#fed7aa"
-      ];
+    var commonPlugins = {
+      legend: { labels: { color: palette.darkSoft, font: { size: 12 } } },
+      tooltip: { backgroundColor: "#f97316", titleColor: "#fff", bodyColor: "#fff", padding: 10 }
+    };
 
-      const leftRadarChartData = {{ left_radar_chart | tojson }};
-      const rightRadarChartData = {{ right_radar_chart | tojson }};
-      const leftStatusChartData = {{ left_status_chart | tojson }};
-      const rightStatusChartData = {{ right_status_chart | tojson }};
-      const leftAreaRows = {{ left_area_rows | tojson }};
-      const rightAreaRows = {{ right_area_rows | tojson }};
+    /* ── Combined Radar Overlay (Lado A + Lado B) ── */
+    (function () {
+      var canvas = document.getElementById("combinedRadarChart");
+      if (!canvas || typeof Chart === "undefined") return;
 
-      function hasArray(value) {
-        return Array.isArray(value) && value.length > 0;
-      }
+      var leftR  = leftRadarChartData;
+      var rightR = rightRadarChartData;
+      var labels = (leftR && leftR.has_data && hasArray(leftR.labels))
+        ? leftR.labels
+        : (rightR && rightR.has_data && hasArray(rightR.labels) ? rightR.labels : []);
+      if (!labels.length) return;
 
-      function toNumber(value) {
-        if (typeof value === "number" && Number.isFinite(value)) return value;
-        if (typeof value === "string") {
-          const normalized = value.replace(",", ".").replace(/[^\d.-]/g, "");
-          const parsed = Number(normalized);
-          return Number.isFinite(parsed) ? parsed : 0;
-        }
-        return 0;
-      }
+      var leftDs  = leftR  && leftR.has_data  && hasArray(leftR.datasets)  ? leftR.datasets[0]  : null;
+      var rightDs = rightR && rightR.has_data && hasArray(rightR.datasets) ? rightR.datasets[0] : null;
+      var leftVals  = leftDs  && hasArray(leftDs.data)  ? leftDs.data  : [];
+      var rightVals = rightDs && hasArray(rightDs.data) ? rightDs.data : [];
 
-      function buildPieColors(count) {
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-          colors.push(defaultPiePalette[i % defaultPiePalette.length]);
-        }
-        return colors;
-      }
+      var scaleMax = Math.max(
+        leftR  && leftR.scale_max  != null ? leftR.scale_max  : 10,
+        rightR && rightR.scale_max != null ? rightR.scale_max : 10
+      );
 
-      function buildAreaDataset(rows) {
-        const cleanRows = Array.isArray(rows)
-          ? rows
-              .map((row) => ({
-                label: row && (row.label || row.area) ? String(row.label || row.area) : "Área",
-                value: toNumber(row && (row.average_score ?? row.average ?? row.value))
-              }))
-              .filter((row) => row.value > 0)
-          : [];
-
-        return {
-          labels: cleanRows.map((row) => row.label),
-          values: cleanRows.map((row) => row.value)
-        };
-      }
-
-      const commonPlugins = {
-        legend: {
-          labels: {
-            color: palette.darkSoft,
-            font: {
-              size: 12
+      new Chart(canvas, {
+        type: "radar",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Lado A",
+              data: leftVals,
+              borderColor: palette.orange,
+              backgroundColor: palette.orangeSoft,
+              pointBackgroundColor: palette.orange,
+              pointBorderColor: palette.orange,
+              pointRadius: 4,
+              borderWidth: 2.5
+            },
+            {
+              label: "Lado B",
+              data: rightVals,
+              borderColor: palette.graphite,
+              backgroundColor: palette.graphiteSoft,
+              pointBackgroundColor: palette.graphite,
+              pointBorderColor: palette.graphite,
+              pointRadius: 4,
+              borderWidth: 2.5
             }
-          }
+          ]
         },
-        tooltip: {
-          backgroundColor: "#f97316",
-          titleColor: "#ffffff",
-          bodyColor: "#ffffff",
-          padding: 10
-        }
-      };
-
-      function buildRadar(canvasId, chartData, emphasisColor) {
-        if (!chartData || !chartData.has_data) return;
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-
-        const labels = hasArray(chartData.labels) ? chartData.labels : [];
-        const dataset = hasArray(chartData.datasets) ? chartData.datasets[0] : null;
-        const values = dataset && hasArray(dataset.data) ? dataset.data : [];
-
-        new Chart(canvas, {
-          type: "radar",
-          data: {
-            labels,
-            datasets: [
-              {
-                label: dataset && dataset.label ? dataset.label : "Média por área",
-                data: values,
-                borderColor: emphasisColor,
-                backgroundColor: emphasisColor === palette.orange ? palette.orangeSoft : "rgba(17, 24, 39, 0.12)",
-                pointBackgroundColor: emphasisColor,
-                pointBorderColor: emphasisColor,
-                pointRadius: 3,
-                borderWidth: 2
-              }
-            ]
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              min: 0,
+              max: scaleMax,
+              ticks: { backdropColor: "transparent", color: palette.darkSoft, font: { size: 11 } },
+              grid: { color: palette.grid },
+              angleLines: { color: palette.grid },
+              pointLabels: { color: palette.dark, font: { size: 12, weight: "700" } }
+            }
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              r: {
-                min: chartData.scale_min !== undefined ? chartData.scale_min : 0,
-                max: chartData.scale_max !== undefined ? chartData.scale_max : 10,
-                ticks: {
-                  backdropColor: "transparent",
-                  color: palette.darkSoft
-                },
-                grid: {
-                  color: palette.grid
-                },
-                angleLines: {
-                  color: palette.grid
-                },
-                pointLabels: {
-                  color: palette.darkSoft,
-                  font: {
-                    size: 12
-                  }
-                }
+          plugins: {
+            legend: {
+              labels: { color: palette.darkSoft, font: { size: 12, weight: "700" }, padding: 16 }
+            },
+            tooltip: commonPlugins.tooltip
+          }
+        }
+      });
+    })();
+
+    /* ── Fit Behavioural Distribution — grouped vertical bar ── */
+    (function () {
+      var canvas = document.getElementById("fitComparisonBarChart");
+      if (!canvas || typeof Chart === "undefined") return;
+
+      var lH = 0, lM = 0, lL = 0;
+      (leftDimensionRowsData || []).forEach(function (r) {
+        lH += Number(r.high_count) || 0;
+        lM += Number(r.mid_count)  || 0;
+        lL += Number(r.low_count)  || 0;
+      });
+
+      var rH = 0, rM = 0, rL = 0;
+      (rightDimensionRowsData || []).forEach(function (r) {
+        rH += Number(r.high_count) || 0;
+        rM += Number(r.mid_count)  || 0;
+        rL += Number(r.low_count)  || 0;
+      });
+
+      new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: ["Alta Aderência (High Fit)", "Média Aderência (Mid Fit)", "Abaixo do Perfil (Atenção)"],
+          datasets: [
+            {
+              label: "Lado A",
+              data: [lH, lM, lL],
+              backgroundColor: "rgba(249, 115, 22, 0.78)",
+              borderColor: palette.orange,
+              borderWidth: 2,
+              borderRadius: 7
+            },
+            {
+              label: "Lado B",
+              data: [rH, rM, rL],
+              backgroundColor: "rgba(15, 23, 42, 0.75)",
+              borderColor: palette.graphite,
+              borderWidth: 2,
+              borderRadius: 7
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { color: palette.dark, font: { size: 12, weight: "700" } },
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { color: palette.darkSoft },
+              grid: { color: "rgba(17, 24, 39, 0.06)" }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: palette.darkSoft, font: { size: 12, weight: "700" }, padding: 16 }
+            },
+            tooltip: commonPlugins.tooltip
+          }
+        }
+      });
+    })();
+
+    /* ── Area Doughnut charts (left + right) ── */
+    function buildModernAreaPie(canvasId, rows) {
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      var ds = buildAreaDataset(rows);
+      if (!hasArray(ds.labels) || !hasArray(ds.values)) return;
+      new Chart(canvas, {
+        type: "doughnut",
+        data: {
+          labels: ds.labels,
+          datasets: [{
+            data: ds.values,
+            backgroundColor: buildPieColors(ds.values.length),
+            borderColor: palette.surface,
+            borderWidth: 3,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "46%",
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                color: palette.darkSoft,
+                usePointStyle: true,
+                pointStyle: "circle",
+                padding: 16,
+                font: { size: 12 }
               }
             },
-            plugins: commonPlugins
-          }
-        });
-      }
-
-      function buildPie(canvasId, chartData) {
-        if (!chartData || !chartData.has_data) return;
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-
-        const labels = hasArray(chartData.labels) ? chartData.labels : [];
-        const values = hasArray(chartData.values) ? chartData.values : [];
-
-        new Chart(canvas, {
-          type: "pie",
-          data: {
-            labels,
-            datasets: [
-              {
-                data: values,
-                backgroundColor: buildPieColors(values.length),
-                borderColor: palette.surface,
-                borderWidth: 2
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: commonPlugins
-          }
-        });
-      }
-
-      function buildModernAreaPie(canvasId, rows) {
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-
-        const dataset = buildAreaDataset(rows);
-        if (!hasArray(dataset.labels) || !hasArray(dataset.values)) return;
-
-        new Chart(canvas, {
-          type: "doughnut",
-          data: {
-            labels: dataset.labels,
-            datasets: [
-              {
-                data: dataset.values,
-                backgroundColor: buildPieColors(dataset.values.length),
-                borderColor: palette.surface,
-                borderWidth: 3,
-                hoverOffset: 8
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: "46%",
-            plugins: {
-              ...commonPlugins,
-              legend: {
-                position: "bottom",
-                labels: {
-                  color: palette.darkSoft,
-                  usePointStyle: true,
-                  pointStyle: "circle",
-                  padding: 16,
-                  font: {
-                    size: 12
-                  }
-                }
-              },
-              tooltip: {
-                ...commonPlugins.tooltip,
-                callbacks: {
-                  label: (context) => {
-                    const label = context.label || "Área";
-                    const value = context.parsed ?? 0;
-                    return `${label}: ${Number(value).toFixed(2)}`;
-                  }
+            tooltip: {
+              backgroundColor: "#f97316",
+              titleColor: "#fff",
+              bodyColor: "#fff",
+              padding: 10,
+              callbacks: {
+                label: function (ctx) {
+                  return (ctx.label || "Área") + ": " + Number(ctx.parsed || 0).toFixed(2);
                 }
               }
             }
           }
-        });
-      }
+        }
+      });
+    }
 
-      buildRadar("leftRadarAreaChart", leftRadarChartData, palette.orange);
-      buildRadar("rightRadarAreaChart", rightRadarChartData, palette.dark);
+    buildModernAreaPie("leftAreaPieChart",  leftAreaRows);
+    buildModernAreaPie("rightAreaPieChart", rightAreaRows);
+  })();
 
-      buildPie("leftStatusPieChart", leftStatusChartData);
-      buildPie("rightStatusPieChart", rightStatusChartData);
+  /* ── Dimensional drawer ── */
+  function pdBiOpenCompareDrawer(tr) {
+    if (!tr) return;
+    var drawer = document.getElementById("pd-bi-dimensao-drawer");
+    if (!drawer) return;
+    document.getElementById("pd-bi-drawer-dim").textContent    = tr.getAttribute("data-dim")    || "—";
+    document.getElementById("pd-bi-drawer-area").textContent   = tr.getAttribute("data-area")   || "—";
+    document.getElementById("pd-bi-drawer-avg").textContent    = tr.getAttribute("data-avg")    || "—";
+    document.getElementById("pd-bi-drawer-median").textContent = tr.getAttribute("data-median") || "—";
+    document.getElementById("pd-bi-drawer-band").textContent   = tr.getAttribute("data-band")   || "—";
+    document.getElementById("pd-bi-drawer-desc").textContent   = tr.getAttribute("data-desc")   || "—";
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+  }
 
-      buildModernAreaPie("leftAreaPieChart", leftAreaRows);
-      buildModernAreaPie("rightAreaPieChart", rightAreaRows);
-    })();
+  function pdBiCloseCompareDrawer() {
+    var drawer = document.getElementById("pd-bi-dimensao-drawer");
+    if (!drawer) return;
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") pdBiCloseCompareDrawer();
+  });
   </script>
 {% endblock %}

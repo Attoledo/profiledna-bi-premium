@@ -1109,6 +1109,86 @@
           width: 100% !important;
         }
       }
+
+      /* ── Premium filter bar (Rodadas) ── */
+      #pd-custom-filter-bar {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 16px;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          margin-bottom: 24px;
+          padding: 20px;
+          background: rgba(255, 255, 255, 0.45);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(15, 23, 42, 0.08);
+          border-radius: 16px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      }
+
+      @media (min-width: 640px) {
+          #pd-custom-filter-bar {
+              grid-template-columns: 1fr 1fr;
+          }
+      }
+
+      .pd-filter-field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          width: 100%;
+          box-sizing: border-box;
+      }
+
+      .pd-filter-field label {
+          font-size: 11px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+      }
+
+      .pd-filter-field input, .pd-filter-field select {
+          width: 100%;
+          height: 42px;
+          padding: 0 14px;
+          box-sizing: border-box;
+          background: #ffffff;
+          border: 1px solid rgba(15, 23, 42, 0.12);
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 500;
+          color: #1e293b;
+          outline: none;
+          transition: all 0.2s ease;
+          appearance: none;
+          -webkit-appearance: none;
+      }
+
+      .pd-filter-field select {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 14px center;
+          background-size: 16px;
+          padding-right: 40px;
+      }
+
+      .pd-filter-field input:focus, .pd-filter-field select:focus {
+          border-color: #f97316;
+          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+      }
+
+      .pd-link-card .grid {
+          gap: 12px !important;
+      }
+      .pd-link-card [class*="bg-"] {
+          background: #f8fafc !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 8px !important;
+          padding: 10px 14px !important;
+      }
     </style>
   </head>
   <body style="margin:0; background:#f3f5f9; color:#111827; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
@@ -1165,7 +1245,7 @@
               <a href="/admin/clientes" class="pd-cliente-btn pd-cliente-btn--nav pd-cliente-btn--nav-active">Clientes</a>
               <a href="/admin/bi/cliente/{{ cliente.id }}" class="pd-cliente-btn pd-cliente-btn--nav">BI — Visão Geral</a>
               <a href="/admin/bi/comparativo?left_cliente_id={{ cliente.id }}&right_cliente_id={{ cliente.id }}" class="pd-cliente-btn pd-cliente-btn--nav">BI — Comparativo</a>
-              <a href="/admin/ai/analysis-inteligente?cliente_id={{ cliente.id }}" class="pd-cliente-btn pd-cliente-btn--primary">DANA</a>
+              <a href="/admin/dashboard?open_dana=true&cliente_id={{ cliente.id }}" class="pd-cliente-btn pd-cliente-btn--primary">DANA</a>
             </div>
           </div>
 
@@ -1334,15 +1414,32 @@
                       Abra uma rodada para gerir convites e participantes.
                     </p>
                   </div>
-                  <div class="pd-card-chip" style="border-color:#e5e7eb; background:#f9fafb; color:#6b7280;">
-                    Total: {{ rodadas_count }}
-                  </div>
                 </div>
 
                 {% if rodadas %}
-                  <div class="pd-link-card-grid">
+                  <div id="pd-custom-filter-bar">
+                      <div class="pd-filter-field">
+                          <label>Selecionar Rodada</label>
+                          <select id="pd-round-filter-name" onchange="pdFilterClientRounds()">
+                              <option value="">✨ Todas as Rodadas</option>
+                              {% for r in rodadas %}
+                              <option value="{{ r.nome | lower }}">{{ r.nome }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                      <div class="pd-filter-field">
+                          <label>Filtrar por Data</label>
+                          <input type="date" id="pd-round-filter-date" onchange="pdFilterClientRounds()" class="pd-input">
+                      </div>
+                  </div>
+
+                  <div class="pd-link-card-grid" id="pd-rounds-grid">
                     {% for rodada in rodadas %}
-                      <div class="pd-link-card">
+                      <div
+                        class="pd-link-card"
+                        data-rodada-nome="{{ (rodada.nome if rodada.nome is defined and rodada.nome else '')|lower }}"
+                        data-rodada-data="{{ rodada.data_inicio if rodada.data_inicio is defined and rodada.data_inicio else '' }}"
+                      >
                         <div class="pd-link-card__top">
                           <div style="min-width:0;">
                             <div class="pd-link-card__title">
@@ -1377,56 +1474,23 @@
                           </div>
                         </div>
 
-                        <form method="post" action="/admin/rodadas/{{ rodada.id }}/editar#rodadas-setores">
-                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
-                          <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
-
-                          <div class="pd-form-two-col" style="grid-template-columns:minmax(260px, 1fr) 160px 160px auto;">
-                            <label class="pd-form-field">
-                              <span>Nome da rodada</span>
-                              <input
-                                type="text"
-                                name="nome"
-                                required
-                                value="{{ rodada.nome if rodada.nome is defined and rodada.nome else '' }}"
-                                class="pd-input"
-                              />
-                            </label>
-
-                            <label class="pd-form-field">
-                              <span>Data de início</span>
-                              <input
-                                type="text"
-                                name="data_inicio"
-                                required
-                                value="{{ rodada.data_inicio if rodada.data_inicio is defined and rodada.data_inicio else '' }}"
-                                class="pd-input"
-                              />
-                            </label>
-
-                            <label class="pd-form-field">
-                              <span>Data de encerramento</span>
-                              <input
-                                type="text"
-                                name="data_encerramento"
-                                value="{{ rodada.data_encerramento if rodada.data_encerramento is defined and rodada.data_encerramento else '' }}"
-                                class="pd-input"
-                              />
-                            </label>
-
-                            <div class="pd-form-actions" style="align-items:end;">
-                              <button type="submit" class="pd-cliente-btn pd-full-mobile">Salvar</button>
-                            </div>
-                          </div>
-                        </form>
-
-                        <form method="post" action="/admin/rodadas/{{ rodada.id }}/excluir#rodadas-setores" style="margin-top:10px;">
+                        <form method="post" action="/admin/rodadas/{{ rodada.id }}/excluir#rodadas-setores" style="margin-top:14px;">
                           <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
                           <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
                           <button type="submit" class="pd-cliente-btn pd-full-mobile">Excluir rodada</button>
                         </form>
                       </div>
                     {% endfor %}
+                  </div>
+
+                  <div class="pd-empty" id="pd-rounds-empty-filtered" style="display:none;">
+                    Nenhuma rodada encontrada para os filtros aplicados.
+                  </div>
+
+                  <div id="pd-rounds-pagination-ctrl" style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(15, 23, 42, 0.06);">
+                      <button type="button" onclick="pdChangeRoundPage(-1)" id="pd-round-prev-btn" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border: 1px solid rgba(15, 23, 42, 0.1); border-radius: 8px; background-color: #ffffff; color: #475569; cursor: pointer;">&lt; Anterior</button>
+                      <span id="pd-round-page-indicator" style="font-size: 12px; font-weight: 700; color: #1e293b; font-family: monospace;">1-5</span>
+                      <button type="button" onclick="pdChangeRoundPage(1)" id="pd-round-next-btn" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border: 1px solid rgba(15, 23, 42, 0.1); border-radius: 8px; background-color: #ffffff; color: #475569; cursor: pointer;">Próxima &gt;</button>
                   </div>
                 {% else %}
                   <div class="pd-empty">
@@ -1460,78 +1524,21 @@
                       />
                     </label>
 
+                    <div class="pd-filter-field" style="margin-top: 16px; margin-bottom: 16px;">
+                      <label>Setores Cadastrados</label>
+                      <select id="pd-client-registered-sectors">
+                        <option value="">📋 Visualizar setores cadastrados ({{ setores|length }} encontrados)</option>
+                        {% for s in setores %}
+                        <option value="{{ s.id }}">{{ s.nome }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
                     <div class="pd-form-actions">
                       <button type="submit" class="pd-cliente-btn pd-cliente-btn--primary pd-full-mobile">Criar setor</button>
                     </div>
                   </div>
                 </form>
-              </section>
-
-              <section class="pd-card">
-                <div class="pd-card-head">
-                  <div>
-                    <h2 class="pd-card-title">Setores do cliente</h2>
-                    <p class="pd-card-text">
-                      Estrutura organizacional disponível para convites e recortes.
-                    </p>
-                  </div>
-                  <div class="pd-card-chip" style="border-color:#e5e7eb; background:#f9fafb; color:#6b7280;">
-                    Total: {{ setores_count }}
-                  </div>
-                </div>
-
-                {% if setores %}
-                  <div class="pd-link-card-grid">
-                    {% for setor in setores %}
-                      <div class="pd-link-card">
-                        <div class="pd-link-card__top" style="margin-bottom:10px;">
-                          <div style="min-width:0;">
-                            <div class="pd-link-card__title">
-                              {{ setor.nome if setor.nome is defined and setor.nome else "-" }}
-                            </div>
-                            <div class="pd-wrap-anywhere" style="margin-top:5px; color:#6b7280; font-size:13px; line-height:1.45;">
-                              ID: {{ setor.id }}
-                            </div>
-                          </div>
-
-                          <span class="pd-card-chip">Setor</span>
-                        </div>
-
-                        <form method="post" action="/admin/setores/{{ setor.id }}/editar#rodadas-setores" style="margin-top:12px;">
-                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
-                          <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
-
-                          <div class="pd-form-two-col" style="grid-template-columns:minmax(260px, 1fr) auto;">
-                            <label class="pd-form-field">
-                              <span>Nome do setor</span>
-                              <input
-                                type="text"
-                                name="nome"
-                                required
-                                value="{{ setor.nome if setor.nome is defined and setor.nome else '' }}"
-                                class="pd-input"
-                              />
-                            </label>
-
-                            <div class="pd-form-actions" style="align-items:end;">
-                              <button type="submit" class="pd-cliente-btn pd-full-mobile">Salvar</button>
-                            </div>
-                          </div>
-                        </form>
-
-                        <form method="post" action="/admin/setores/{{ setor.id }}/excluir#rodadas-setores" style="margin-top:10px;">
-                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
-                          <input type="hidden" name="cliente_id" value="{{ cliente.id }}" />
-                          <button type="submit" class="pd-cliente-btn pd-full-mobile">Excluir setor</button>
-                        </form>
-                      </div>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  <div class="pd-empty">
-                    Nenhum setor cadastrado para este cliente.
-                  </div>
-                {% endif %}
               </section>
             </div>
 
@@ -2100,6 +2107,107 @@
             setState(areasCard, 'empty');
             setState(dimensionsCard, 'empty');
           });
+      })();
+    </script>
+    <script>
+      (function () {
+        const ITEMS_PER_PAGE = 5;
+        let currentPage = 1;
+
+        function getCards() {
+          var grid = document.getElementById('pd-rounds-grid');
+          return grid ? Array.prototype.slice.call(grid.querySelectorAll('.pd-link-card')) : [];
+        }
+
+        function getFilteredCards() {
+          var nameFilter = document.getElementById('pd-round-filter-name').value.trim().toLowerCase();
+          var dateInput = document.getElementById('pd-round-filter-date');
+          var dateTerm = dateInput ? dateInput.value : '';
+
+          var cards = getCards();
+          var visible = [];
+
+          cards.forEach(function (card) {
+            var nome = card.getAttribute('data-rodada-nome') || '';
+            var data = card.getAttribute('data-rodada-data') || '';
+            var matchesName = !nameFilter || nome === nameFilter;
+            var matchesDate = !dateTerm || data === dateTerm;
+            var isMatch = matchesName && matchesDate;
+            if (isMatch) visible.push(card);
+          });
+
+          return { cards: cards, visible: visible };
+        }
+
+        function render() {
+          var result = getFilteredCards();
+          var cards = result.cards;
+          var visible = result.visible;
+
+          if (!cards.length) return;
+
+          const filteredCount = visible.length;
+          const totalPages = Math.max(1, Math.ceil(filteredCount / ITEMS_PER_PAGE));
+          if (currentPage > totalPages) currentPage = totalPages;
+          if (currentPage < 1) currentPage = 1;
+
+          cards.forEach(function (card) { card.style.display = 'none'; });
+
+          var indicator = document.getElementById('pd-round-page-indicator');
+
+          if (filteredCount === 0) {
+            if (indicator) indicator.textContent = '0-0';
+          } else {
+            const startIdx = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+            const endIdx = Math.min(currentPage * ITEMS_PER_PAGE, filteredCount);
+
+            visible.slice(startIdx - 1, endIdx).forEach(function (card) { card.style.display = ''; });
+
+            if (indicator) indicator.textContent = `${startIdx}-${endIdx}`;
+          }
+
+          var emptyState = document.getElementById('pd-rounds-empty-filtered');
+          if (emptyState) emptyState.style.display = filteredCount === 0 ? '' : 'none';
+
+          var prevBtn = document.getElementById('pd-round-prev-btn');
+          var nextBtn = document.getElementById('pd-round-next-btn');
+          if (prevBtn) prevBtn.disabled = currentPage <= 1;
+          if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+        }
+
+        window.pdFilterClientRounds = function () {
+          currentPage = 1;
+          render();
+        };
+
+        window.pdChangeRoundPage = function (direction) {
+          currentPage += direction;
+          render();
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', render);
+        } else {
+          render();
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        var filterDateInput = document.getElementById('pd-round-filter-date');
+        if (!filterDateInput || typeof flatpickr === 'undefined') return;
+
+        flatpickr(filterDateInput, {
+          dateFormat: 'Y-m-d',
+          altInput: true,
+          altFormat: 'd/m/Y',
+          disableMobile: true,
+          onChange: function () {
+            if (typeof window.pdFilterClientRounds === 'function') {
+              window.pdFilterClientRounds();
+            }
+          },
+        });
       })();
     </script>
   </body>

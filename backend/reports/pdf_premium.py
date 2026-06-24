@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from pathlib import Path
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.models.result import PremiumReportSnapshot
+
+# Detecta a raiz do backend dinamicamente (substitui o "/app" fixo de Docker
+# por um caminho real do projeto local, evitando OSError em ambientes onde
+# "/app" não existe ou é somente leitura).
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 _LOCKS: dict[str, asyncio.Lock] = {}
@@ -24,14 +30,16 @@ def _rewrite_static_urls_for_pdf(html: str) -> str:
     """
     return html.replace(
         'href="/static/css/app.css"',
-        'href="file:///app/backend/static/css/app.css"',
+        f'href="file://{BASE_DIR}/static/css/app.css"',
     )
 
 
 async def ensure_premium_pdf_cached(
     session: AsyncSession,
     attempt_id: str,
-    reports_dir: str = "/app/volumes/reports/premium",
+    reports_dir: str = os.getenv(
+        "PREMIUM_REPORTS_DIR", str(BASE_DIR / "volumes" / "reports" / "premium")
+    ),
 ) -> str:
     """
     Geração lazy do PDF premium com persistência separada.
@@ -76,7 +84,8 @@ async def ensure_premium_pdf_cached(
         pdf_path = out_dir / pdf_filename
 
         html = _rewrite_static_urls_for_pdf(str(snap2.html_content))
-        HTML(string=html, base_url="file:///app/").write_pdf(str(pdf_path))
+        base_url = os.getenv("PDF_BASE_URL", f"file://{BASE_DIR}/")
+        HTML(string=html, base_url=base_url).write_pdf(str(pdf_path))
 
         snap2.pdf_path = str(pdf_path)
         session.add(snap2)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List, Tuple
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -91,40 +92,22 @@ def _format_assessment_datetime(value: Any) -> str:
 
 
 def _sanitize_executive_summary_text(text: str) -> str:
+    """
+    Remove qualquer prefixo de letra de dimensão residual no formato "X (Nome)" ou
+    "X — Nome" (ex.: "G (Ritmo de Execução)" -> "Ritmo de Execução"), deixando apenas
+    o nome de exibição da competência. Funciona para qualquer letra A..T, não apenas
+    para uma lista fixa, e suporta nomes com parênteses internos (ex.: "Obstinação
+    (Persistência/Firmeza)").
+    """
     cleaned = str(text or "").strip()
     if not cleaned:
         return ""
 
-    replacements = [
-        ("D (Liderança)", "Liderança"),
-        ("F (Decisão de Risco)", "Decisão de Risco"),
-        ("K (Obstinação (Persistência/Firmeza))", "Obstinação (Persistência/Firmeza)"),
-        ("N (Repressão Emocional (Autocontrole/Expressão))", "Repressão Emocional (Autocontrole/Expressão)"),
-        ("D — Liderança", "Liderança"),
-        ("F — Decisão de Risco", "Decisão de Risco"),
-        ("K — Obstinação (Persistência/Firmeza)", "Obstinação (Persistência/Firmeza)"),
-        ("N — Repressão Emocional (Autocontrole/Expressão)", "Repressão Emocional (Autocontrole/Expressão)"),
-        (" D ", " "),
-        (" F ", " "),
-        (" K ", " "),
-        (" N ", " "),
-    ]
+    # "X (Nome)" -> "Nome" — qualquer letra única seguida de "(" vira apenas o conteúdo.
+    cleaned = re.sub(r"\b[A-Z]\s*\(([^)]+)\)", r"\1", cleaned)
 
-    for old, new in replacements:
-        cleaned = cleaned.replace(old, new)
-
-    forbidden_inline = [
-        "D (",
-        "F (",
-        "K (",
-        "N (",
-        "D —",
-        "F —",
-        "K —",
-        "N —",
-    ]
-    for token in forbidden_inline:
-        cleaned = cleaned.replace(token, "")
+    # "X — Nome" / "X - Nome" (sem parênteses) -> "Nome"
+    cleaned = re.sub(r"\b[A-Z]\s*[—-]\s*", "", cleaned)
 
     return " ".join(cleaned.split())
 
@@ -676,6 +659,630 @@ COMPETENCY_COPY: Dict[str, Dict[str, Dict[str, Any]]] = {
             ],
         },
     },
+    "ritmo de execucao": {
+        "top": {
+            "impactos": "Acelera entregas, reduz tempo de resposta e mantém o time em movimento mesmo sob pressão de prazo, funcionando como motor de produtividade em contextos de alta demanda.",
+            "dificuldades": "Quando o ritmo não é calibrado, pode gerar atropelo de etapas críticas, comunicação apressada e desgaste da própria energia ou da equipe ao redor.",
+            "orientacao": "Potencializar o Ritmo de Execução é fundamental para transformar o senso de urgência nativo em uma alavanca estratégica, garantindo que a alta velocidade de entrega seja combinada com planejamento para evitar o esgotamento produtivo ou o atropelo de processos críticos.",
+            "tendencia": "Tende a priorizar velocidade e ação imediata, buscando destravar gargalos e entregar rápido mesmo quando o cenário pede mais cautela.",
+            "impacto_esperado": "O refino desta força consolida a capacidade do profissional de liderar projetos de alta pressão, mantendo a consistência tática e entregando resultados complexos em prazos agressivos sem perda de qualidade estrutural.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de ritmo com técnicas de priorização sob pressão e identificação de etapas não negociáveis.",
+                "Prática de planejamento rápido (sprint planning) para conciliar velocidade com checkpoints de qualidade.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Acompanhar se a velocidade de entrega está sendo acompanhada de qualidade estrutural ou se está gerando retrabalho.",
+                "Dar feedback sobre momentos em que a urgência ajudou o time e momentos em que atropelou etapas necessárias.",
+            ],
+            "metas_comportamentais": [
+                "Define, antes de acelerar, quais etapas do processo são inegociáveis e não podem ser puladas.",
+                "Comunica prazos agressivos de forma clara ao time, sem transferir pressão de forma desorganizada.",
+            ],
+            "indicador_evolucao": "Mais entregas rápidas sustentadas por planejamento prévio, com redução de retrabalho e de sinais de esgotamento no próprio ritmo de trabalho.",
+            "acoes_praticas": [
+                "Antes de iniciar uma entrega urgente, mapear em poucos minutos as etapas que não podem ser puladas mesmo sob pressão.",
+                "Negociar com o gestor um checkpoint intermediário em entregas de alta velocidade para validar qualidade antes do prazo final.",
+                "Registrar ao final de semanas de alta demanda o que funcionou e onde o ritmo gerou desgaste evitável.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a reduzir o tempo entre decisão e ação, aumentar a capacidade de resposta em cenários de urgência e ampliar a percepção de confiabilidade nas entregas com prazo.",
+            "dificuldades": "Baixa recorrência pode aparecer como demora para iniciar tarefas, excesso de planejamento antes de agir ou dificuldade de manter ritmo quando a pressão aumenta.",
+            "orientacao": "Desenvolver o Ritmo de Execução é importante para reduzir a hesitação na partida de tarefas e ampliar a capacidade de responder com agilidade a demandas que exigem decisão e movimento rápidos, sem depender de pressão externa para agir.",
+            "tendencia": "No cotidiano, tende a preferir avançar com calma e revisão extensa, mesmo em situações que pedem resposta mais rápida e decisão imediata.",
+            "impacto_esperado": "O fortalecimento desta competência tende a aumentar a velocidade de resposta em situações de prazo apertado, reduzindo atrasos por excesso de análise e ampliando a confiança do time na sua capacidade de entregar dentro do tempo necessário.",
+            "sugestoes_treinamento": [
+                "Exercícios de execução cronometrada para treinar tomada de ação mais rápida em tarefas de menor risco.",
+                "Prática de priorização ágil (matriz de urgência/impacto) para reduzir tempo de decisão antes de agir.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Atribuir tarefas com prazos curtos e acompanhar a evolução do tempo de resposta.",
+                "Dar feedback específico sobre o ganho de agilidade quando a entrega rápida foi bem-sucedida.",
+            ],
+            "metas_comportamentais": [
+                "Reduz o tempo entre o recebimento de uma demanda e o início da execução.",
+                "Assume entregas com prazo mais curto sem represar a tarefa por excesso de planejamento prévio.",
+            ],
+            "indicador_evolucao": "Redução do tempo médio de resposta a demandas urgentes, com mais evidências de entregas dentro do prazo sem necessidade de pressão externa contínua.",
+            "acoes_praticas": [
+                "Escolher uma tarefa da semana e definir um prazo deliberadamente mais curto do que o habitual para praticar execução ágil.",
+                "Limitar o tempo de planejamento de uma atividade simples antes de iniciar a ação.",
+                "Registrar o que mudou na qualidade da entrega ao reduzir o tempo de preparação antes de agir.",
+            ],
+        },
+    },
+    "necessidade de se comunicar": {
+        "top": {
+            "impactos": "Amplia alinhamento entre áreas, acelera a circulação de informação relevante e fortalece a capacidade de influenciar decisões por meio de comunicação clara e frequente.",
+            "dificuldades": "Quando o volume de comunicação não é calibrado, pode gerar excesso de informação, diluição de mensagens-chave ou cansaço comunicacional no time.",
+            "orientacao": "Aprimorar a Necessidade de se Comunicar permite canalizar a habilidade natural de articulação para uma comunicação mais assertiva e focada em resultados, transformando o volume de interações em ferramentas de alinhamento estratégico e influência executiva.",
+            "tendencia": "Tende a buscar contato frequente, compartilhar informação com facilidade e manter o entorno atualizado de forma espontânea.",
+            "impacto_esperado": "O fortalecimento intencional desta competência reduz drasticamente os ruídos internos na equipe, acelera a descentralização de informações críticas e aumenta o engajamento dos stakeholders por meio de narrativas claras e direcionadas.",
+            "sugestoes_treinamento": [
+                "Treino de comunicação executiva com foco em síntese e mensagem-chave.",
+                "Prática de storytelling estratégico para transformar informação em narrativa de influência.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar se a comunicação está sendo direcionada às mensagens mais relevantes ou se está dispersa em volume excessivo.",
+                "Dar feedback sobre o impacto da comunicação em momentos de alinhamento estratégico.",
+            ],
+            "metas_comportamentais": [
+                "Estrutura mensagens-chave antes de comunicar decisões ou atualizações relevantes.",
+                "Calibra a frequência de comunicação ao contexto e à audiência, evitando excesso de ruído.",
+            ],
+            "indicador_evolucao": "Mensagens mais objetivas e direcionadas, com evidências de maior engajamento e menor necessidade de repetição para garantir alinhamento.",
+            "acoes_praticas": [
+                "Antes de uma comunicação importante, definir em uma frase qual é a mensagem central a ser transmitida.",
+                "Reduzir o número de canais usados para uma mesma informação, concentrando-a em um ponto de referência claro.",
+                "Pedir feedback de um stakeholder sobre a clareza e objetividade de uma comunicação recente.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a reduzir ruídos por falta de informação, aumentar a visibilidade do trabalho realizado e fortalecer vínculos com áreas e pessoas que dependem de atualização frequente.",
+            "dificuldades": "Baixa recorrência pode aparecer como atualização tardia de informações relevantes, baixa visibilidade do progresso real do trabalho ou dependência de que outros perguntem para obter dados importantes.",
+            "orientacao": "Desenvolver a Necessidade de se Comunicar é relevante para reduzir o isolamento informacional, ampliar a visibilidade do próprio trabalho e garantir que decisões e avanços relevantes não fiquem represados por baixa frequência de troca com o entorno.",
+            "tendencia": "No cotidiano, tende a comunicar apenas quando estritamente necessário, podendo deixar o entorno sem contexto suficiente sobre o andamento real das atividades.",
+            "impacto_esperado": "O desenvolvimento desta competência tende a aumentar a circulação de informações importantes, reduzir mal-entendidos por falta de atualização e fortalecer a percepção de presença e contribuição ativa dentro da equipe.",
+            "sugestoes_treinamento": [
+                "Prática estruturada de comunicação proativa de status, com roteiro simples de atualização.",
+                "Treino de comunicação assertiva para reduzir o desconforto de compartilhar informação com mais frequência.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Criar momentos regulares e previsíveis para que a pessoa compartilhe atualizações de forma estruturada.",
+                "Reforçar positivamente quando a comunicação proativa evitar um problema ou acelerar uma decisão.",
+            ],
+            "metas_comportamentais": [
+                "Compartilha atualizações relevantes sem esperar ser questionado sobre o andamento do trabalho.",
+                "Amplia a frequência de comunicação com stakeholders-chave em momentos críticos do projeto.",
+            ],
+            "indicador_evolucao": "Mais episódios de comunicação proativa registrados, com redução de situações em que informação relevante chegou tarde ao time ou ao gestor.",
+            "acoes_praticas": [
+                "Definir um momento fixo na semana para compartilhar uma atualização breve de status com o time ou gestor.",
+                "Em uma situação real, comunicar um avanço ou bloqueio antes de ser perguntado sobre ele.",
+                "Registrar o efeito de uma comunicação proativa sobre a velocidade de resposta do time ao redor.",
+            ],
+        },
+    },
+    "autoexposicao presenca posicionamento": {
+        "top": {
+            "impactos": "Amplia capacidade de representar o time e os resultados em espaços de decisão, fortalece a percepção de autoridade técnica e facilita a abertura de portas em negociações e apresentações estratégicas.",
+            "dificuldades": "Quando pouco calibrada, a presença marcante pode concentrar atenção e crédito de forma desproporcional, reduzindo o espaço de visibilidade de outras pessoas do time.",
+            "orientacao": "Potencializar a Autoexposição é relevante para transformar a naturalidade em ocupar espaço e se posicionar em uma ferramenta consistente de influência, garantindo que a presença marcante se traduza em representatividade qualificada para o time e para os resultados entregues.",
+            "tendencia": "Tende a ocupar espaço com naturalidade em reuniões e apresentações, buscando visibilidade e reconhecimento pelo trabalho realizado.",
+            "impacto_esperado": "O fortalecimento desta competência tende a ampliar a capacidade de representar projetos e equipes com autoridade, consolidando a presença como uma alavanca de negociação e abertura de oportunidades estratégicas.",
+            "sugestoes_treinamento": [
+                "Treino de liderança representativa com foco em dar voz e crédito a outras pessoas do time.",
+                "Prática de comunicação estratégica para calibrar presença sem ofuscar contribuições coletivas.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar se a presença marcante está abrindo espaço também para outras pessoas do time ou concentrando holofotes.",
+                "Dar feedback sobre o equilíbrio entre autopromoção saudável e reconhecimento coletivo do trabalho.",
+            ],
+            "metas_comportamentais": [
+                "Compartilha crédito de entregas coletivas de forma explícita ao se posicionar em público.",
+                "Usa a própria visibilidade para abrir espaço de fala para outras pessoas do time em momentos estratégicos.",
+            ],
+            "indicador_evolucao": "Maior percepção de presença estratégica bem calibrada, com evidências de que a visibilidade pessoal também amplia o reconhecimento do time como um todo.",
+            "acoes_praticas": [
+                "Em uma apresentação relevante, reservar um momento explícito para reconhecer a contribuição de outras pessoas do time.",
+                "Usar a própria presença em uma reunião estratégica para defender um projeto ou ideia coletiva.",
+                "Registrar o efeito da própria visibilidade sobre a percepção de autoridade do time como um todo.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a ampliar a visibilidade do trabalho de alta qualidade já entregue, fortalecer a presença em espaços de decisão e aumentar a capacidade de influenciar resultados além da execução técnica.",
+            "dificuldades": "Baixa recorrência pode aparecer como entregas relevantes que passam despercebidas, dificuldade de defender ideias em grupo ou tendência a deixar que outros se posicionem por ela.",
+            "orientacao": "Desenvolver a Autoexposição é crucial para profissionais que realizam entregas brilhantes nos bastidores, mas enfrentam barreiras para defender suas ideias em fóruns de liderança, assegurando que seu valor técnico ganhe a visibilidade merecida no ecossistema.",
+            "tendencia": "No cotidiano, tende a preferir atuar nos bastidores, entregando com qualidade silenciosa mas evitando protagonismo em espaços de maior visibilidade.",
+            "impacto_esperado": "A evolução prática nesta dimensão resulta em um posicionamento mais maduro em reuniões estratégicas, maior capacidade de vender projetos internos e ganho de autoridade frente a clientes e diretores.",
+            "sugestoes_treinamento": [
+                "Treino de comunicação de impacto para apresentação de resultados e ideias em fóruns de liderança.",
+                "Prática de posicionamento estratégico em reuniões, com foco em defender propostas com segurança.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Criar oportunidades estruturadas para que a pessoa apresente seus próprios resultados em reuniões relevantes.",
+                "Reforçar publicamente contribuições técnicas de qualidade para ampliar visibilidade junto a outros stakeholders.",
+            ],
+            "metas_comportamentais": [
+                "Apresenta os próprios resultados e ideias diretamente em reuniões estratégicas, sem depender de intermediários.",
+                "Reduz a tendência de minimizar a própria contribuição em conversas com lideranças ou clientes.",
+            ],
+            "indicador_evolucao": "Mais episódios de apresentação direta de resultados e ideias em espaços de decisão, com evidências de reconhecimento mais imediato pelo trabalho entregue.",
+            "acoes_praticas": [
+                "Escolher uma entrega recente de qualidade e apresentá-la pessoalmente ao gestor ou cliente, em vez de deixar que seja relatada por terceiros.",
+                "Em uma próxima reunião relevante, preparar e defender um ponto de vista próprio sobre um tema técnico.",
+                "Registrar como a equipe ou liderança reagiu quando a pessoa se posicionou de forma mais visível.",
+            ],
+        },
+    },
+    "organizacao": {
+        "top": {
+            "impactos": "Amplia previsibilidade de entregas, fortalece a confiança do time em prazos e processos definidos, e cria uma base sólida de estrutura que pode ser replicada por outras pessoas da equipe.",
+            "dificuldades": "Quando em excesso, pode gerar rigidez frente a imprevistos, resistência a mudanças de rota ou dificuldade de adaptação quando o planejamento original precisa ser revisto rapidamente.",
+            "orientacao": "Potencializar a Organização é relevante para transformar a disciplina estrutural natural em uma referência de previsibilidade para o time, garantindo que processos bem estruturados sejam também replicáveis e ensináveis para outras pessoas da equipe.",
+            "tendencia": "Tende a estruturar a própria rotina com antecedência, manter processos claros e buscar previsibilidade mesmo em contextos de alta demanda.",
+            "impacto_esperado": "O fortalecimento desta competência tende a consolidar a pessoa como referência de processo dentro da área, ampliando a capacidade de estruturar fluxos de trabalho escaláveis e de apoiar outras pessoas na organização da própria rotina.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de processos com foco em flexibilidade controlada frente a imprevistos.",
+                "Prática de mentoria de organização para transferir métodos de planejamento a outras pessoas do time.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar se a estrutura criada está sendo usada de forma flexível quando o contexto muda.",
+                "Estimular que a pessoa compartilhe seus métodos de organização com colegas que têm mais dificuldade nesse ponto.",
+            ],
+            "metas_comportamentais": [
+                "Ajusta o planejamento original com agilidade quando o contexto exige mudança de rota.",
+                "Compartilha estrutura e métodos de organização com outras pessoas do time.",
+            ],
+            "indicador_evolucao": "Maior percepção de previsibilidade de processo pela equipe, com evidências de que os métodos de organização da pessoa estão sendo replicados por outros.",
+            "acoes_praticas": [
+                "Documentar um processo pessoal de organização e compartilhá-lo com um colega que enfrente dificuldade similar.",
+                "Em uma situação de mudança de prioridade, revisar o planejamento original de forma ágil sem resistência excessiva.",
+                "Registrar como a estrutura criada ajudou o time a manter previsibilidade mesmo sob pressão.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a ampliar previsibilidade de entregas, reduzir a sensação de sobrecarga constante e fortalecer a capacidade de planejar com antecedência mesmo em rotinas de alta demanda.",
+            "dificuldades": "Baixa recorrência pode aparecer como prioridades que mudam com frequência, prazos que se acumulam de forma desordenada e dependência de urgência para mobilizar a execução.",
+            "orientacao": "O desenvolvimento da Organização visa mitigar a dependência crônica do imediatismo e da gestão de crises, capacitando o profissional a antecipar cenários, estruturar fluxos previsíveis de trabalho e proteger sua própria carga de energia frente a mudanças de rota.",
+            "tendencia": "No cotidiano, tende a funcionar bem sob pressão imediata, mas pode sofrer quando o contexto exige planejamento antecipado e estruturação de rotina.",
+            "impacto_esperado": "A consolidação de rotinas organizadas gera maior previsibilidade nas entregas gerenciais, redução do retrabalho operacional sob estresse e melhor distribuição de prazos e recursos da área.",
+            "sugestoes_treinamento": [
+                "Treino prático de gestão do tempo e priorização estruturada de tarefas.",
+                "Workshop de planejamento antecipado com ferramentas simples de organização de fluxo de trabalho.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Apoiar a definição de prioridades com antecedência, antes que a urgência se torne o único critério de execução.",
+                "Reconhecer avanços em planejamento antecipado, mesmo quando pequenos, para reforçar o novo padrão.",
+            ],
+            "metas_comportamentais": [
+                "Planeja a semana com antecedência, definindo prioridades antes que se tornem urgentes.",
+                "Reduz a dependência de pressão de prazo para iniciar tarefas importantes.",
+            ],
+            "indicador_evolucao": "Mais evidências de planejamento antecipado, com redução de episódios de acúmulo desordenado de prazos e maior previsibilidade nas entregas da área.",
+            "acoes_praticas": [
+                "No início da semana, definir as três prioridades mais importantes antes que se tornem urgentes.",
+                "Reservar um bloco fixo de tempo para planejamento, separado da execução de tarefas imediatas.",
+                "Registrar ao final da semana onde o planejamento antecipado evitou uma situação de crise.",
+            ],
+        },
+    },
+    "controle": {
+        "top": {
+            "impactos": "Reduz surpresas de última hora em entregas críticas, aumenta a visibilidade sobre o andamento real dos projetos e fortalece a confiança da liderança na governança da área.",
+            "dificuldades": "Quando em excesso, o acompanhamento detalhado pode ser percebido como microgerenciamento, reduzindo a autonomia percebida pelo time e gerando dependência de validação constante.",
+            "orientacao": "Potencializar o Controle permite estruturar o acompanhamento de marcos críticos com precisão milimétrica, transformando a supervisão natural em governança tática e garantindo entregas previsíveis sem sufocar a autonomia das frentes executoras.",
+            "tendencia": "Tende a acompanhar de perto marcos e prazos, intervindo quando identifica desvio antes que ele se torne crítico.",
+            "impacto_esperado": "O refino desta força estabelece indicadores de progresso blindados, mitigando riscos operacionais de forma preventiva e elevando a maturidade processual da área.",
+            "sugestoes_treinamento": [
+                "Treino de governança ágil com definição de checkpoints sem microgerenciamento.",
+                "Workshop de indicadores de progresso (KPIs operacionais) para acompanhamento preventivo de risco.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar se o nível de supervisão está calibrado ao risco real de cada entrega, não aplicado de forma uniforme.",
+                "Reforçar momentos em que o controle preventivo evitou um problema maior.",
+            ],
+            "metas_comportamentais": [
+                "Define checkpoints de acompanhamento proporcionais ao risco e à criticidade de cada entrega.",
+                "Delega o acompanhamento de itens de menor risco, concentrando supervisão direta nos pontos mais críticos.",
+            ],
+            "indicador_evolucao": "Mais entregas com indicadores de progresso claros e menos intervenções de última hora, com evidências de que a supervisão preventiva reduziu riscos operacionais.",
+            "acoes_praticas": [
+                "Definir, antes do início de um projeto, quais marcos exigem acompanhamento direto e quais podem ser delegados.",
+                "Criar um indicador simples de progresso para uma entrega crítica e revisá-lo em intervalos regulares.",
+                "Registrar um caso em que o acompanhamento preventivo evitou um problema maior na entrega.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a reduzir surpresas de última hora, aumentar a previsibilidade das entregas e fortalecer a confiança do time em processos bem acompanhados.",
+            "dificuldades": "Baixa recorrência pode aparecer como desvios que só são percebidos tarde, falta de checkpoints intermediários ou dependência de que outros sinalizem problemas.",
+            "orientacao": "Desenvolver o Controle é vital para reduzir a oscilação na supervisão de processos, capacitando o profissional a estabelecer checkpoints claros e métricas de sucesso, evitando que a falta de acompanhamento gere retrabalho ou desalinhamento.",
+            "tendencia": "No cotidiano, tende a confiar que o processo seguirá o curso esperado sem necessidade de acompanhamento ativo, até que um problema se manifeste.",
+            "impacto_esperado": "A evolução nesta dimensão traz estabilidade operacional, garantindo consistência na qualidade das entregas e maior visibilidade sobre o andamento dos projetos.",
+            "sugestoes_treinamento": [
+                "Treino de definição de checkpoints e métricas simples de acompanhamento de processo.",
+                "Prática de revisão estruturada de progresso em intervalos regulares.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Definir junto com a pessoa marcos intermediários de revisão para projetos relevantes.",
+                "Reconhecer quando o acompanhamento ativo evitou um problema, reforçando o novo hábito.",
+            ],
+            "metas_comportamentais": [
+                "Estabelece ao menos um checkpoint intermediário em projetos de média ou alta complexidade.",
+                "Revisa o andamento de tarefas delegadas antes do prazo final, não apenas na entrega.",
+            ],
+            "indicador_evolucao": "Mais checkpoints intermediários registrados, com redução de surpresas e retrabalho identificado apenas na entrega final.",
+            "acoes_praticas": [
+                "Definir um checkpoint intermediário em um projeto atual e marcar uma data para revisão.",
+                "Criar uma métrica simples (ex.: percentual concluído) para acompanhar uma entrega em andamento.",
+                "Registrar um caso em que a ausência de acompanhamento gerou retrabalho e o que poderia ter evitado isso.",
+            ],
+        },
+    },
+    "apego as tecnicas processos metodologia": {
+        "top": {
+            "impactos": "Garante consistência entre execuções, reduz variabilidade de qualidade entre diferentes pessoas do time e cria uma base metodológica replicável para escalar processos.",
+            "dificuldades": "Quando em excesso, o apego ao método pode dificultar adaptações necessárias quando o contexto muda ou quando o processo padrão não serve mais ao objetivo real.",
+            "orientacao": "Potencializar o Apego às Técnicas maximiza a eficiência por meio da replicação rigorosa de métodos validados, transformando a disciplina metodológica em um padrão de excelência operacional e blindagem de conformidade.",
+            "tendencia": "Tende a seguir metodologias estabelecidas com rigor, buscando consistência e conformidade técnica em cada etapa do trabalho.",
+            "impacto_esperado": "O uso intencional desta força zera desvios técnicos, reduz o tempo de onboarding de novos processos e consolida uma base sólida para automações estáveis.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de processos com foco em quando flexibilizar metodologia sem perder padrão de qualidade.",
+                "Workshop de documentação de processos para transformar conhecimento tácito em metodologia replicável.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar se a aderência ao processo está sendo usada com julgamento de quando adaptar.",
+                "Estimular que a pessoa documente e compartilhe metodologias bem-sucedidas com o time.",
+            ],
+            "metas_comportamentais": [
+                "Documenta metodologias validadas para que possam ser replicadas por outras pessoas do time.",
+                "Reconhece e comunica quando um processo padrão precisa ser ajustado ao contexto específico.",
+            ],
+            "indicador_evolucao": "Mais processos documentados e replicáveis, com evidências de redução de variabilidade de qualidade entre diferentes execuções do time.",
+            "acoes_praticas": [
+                "Documentar um processo que domina bem, de forma que outra pessoa consiga replicá-lo com qualidade similar.",
+                "Identificar uma situação em que o método padrão precisou de ajuste e registrar o critério usado para essa decisão.",
+                "Revisar com o time um processo metodológico e propor um refinamento baseado na experiência prática.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a aumentar a consistência das entregas, reduzir erros por execução informal e facilitar a transferência de conhecimento para outras pessoas do time.",
+            "dificuldades": "Baixa recorrência pode aparecer como execução baseada apenas em intuição, dificuldade de documentar o próprio processo ou resultados que variam de execução para execução.",
+            "orientacao": "Desenvolver o Apego às Técnicas visa mitigar a tendência à execução puramente intuitiva ou informal, estruturando a rotina sob fluxos de trabalho documentados e padrões técnicos que garantam a repetibilidade do sucesso.",
+            "tendencia": "No cotidiano, tende a resolver problemas de forma intuitiva e informal, sem necessariamente seguir ou registrar um método estruturado.",
+            "impacto_esperado": "A consolidação desta competência reduz erros por variabilidade comportamental e assegura que as entregas sigam os critérios de qualidade institucionais estabelecidos.",
+            "sugestoes_treinamento": [
+                "Treino de estruturação de processos com modelos simples de documentação.",
+                "Prática guiada de padronização de rotina a partir de tarefas já dominadas intuitivamente.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Pedir que a pessoa documente um processo que já executa bem intuitivamente.",
+                "Reconhecer ganhos de consistência quando um método estruturado é seguido com sucesso.",
+            ],
+            "metas_comportamentais": [
+                "Segue um checklist ou roteiro estruturado em tarefas recorrentes de maior criticidade.",
+                "Documenta ao menos um processo próprio para reduzir dependência de execução puramente intuitiva.",
+            ],
+            "indicador_evolucao": "Mais tarefas executadas a partir de um roteiro ou checklist estruturado, com redução de variabilidade de resultado entre execuções.",
+            "acoes_praticas": [
+                "Escolher uma tarefa recorrente e criar um checklist simples para guiar sua execução.",
+                "Antes de repetir uma tarefa complexa, revisar como ela foi feita da última vez e o que funcionou.",
+                "Pedir a um colega para revisar e validar um processo recém-documentado.",
+            ],
+        },
+    },
+    "atitude analitica": {
+        "top": {
+            "impactos": "Fortalece a qualidade das decisões com base em evidência, reduz a margem de erro em diagnósticos complexos e aumenta a credibilidade técnica das propostas apresentadas.",
+            "dificuldades": "Quando em excesso, a análise pode se estender além do necessário, retardando decisões em contextos que pedem ação mais rápida do que análise completa.",
+            "orientacao": "Potencializar a Atitude Analítica transforma dados brutos e padrões comportamentais em inteligência preditiva profunda, refinando a capacidade de diagnosticar cenários complexos antes que se convertam em problemas operacionais.",
+            "tendencia": "Tende a buscar dados e padrões antes de decidir, preferindo diagnóstico estruturado a julgamento baseado apenas em intuição.",
+            "impacto_esperado": "O fortalecimento desta competência eleva o embasamento técnico de propostas, blindando defesas estratégicas com evidências estruturadas e reduzindo o empirismo nas escolhas da área.",
+            "sugestoes_treinamento": [
+                "Treino de análise preditiva aplicada a cenários de negócio reais.",
+                "Workshop de comunicação de dados para tornar diagnósticos complexos acessíveis a públicos não técnicos.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar se o tempo de análise está proporcional à criticidade da decisão.",
+                "Estimular que a pessoa compartilhe diagnósticos analíticos como subsídio para decisões coletivas.",
+            ],
+            "metas_comportamentais": [
+                "Define um limite de tempo para análise proporcional à urgência da decisão.",
+                "Comunica diagnósticos analíticos de forma acessível para públicos não especialistas.",
+            ],
+            "indicador_evolucao": "Mais decisões da área embasadas em diagnóstico estruturado, com evidências de redução de erros por escolhas puramente empíricas.",
+            "acoes_praticas": [
+                "Diante de uma decisão relevante, estruturar um diagnóstico rápido com os três dados mais importantes antes de decidir.",
+                "Definir previamente um prazo máximo de análise para não estender diagnóstico além do necessário.",
+                "Apresentar um diagnóstico técnico de forma simplificada para um público não analítico.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a aumentar a precisão das decisões, reduzir a influência de vieses cognitivos e fortalecer a credibilidade técnica das escolhas feitas sob pressão.",
+            "dificuldades": "Baixa recorrência pode aparecer como decisões baseadas predominantemente em intuição, dificuldade de justificar escolhas com dados ou inconsistência de critério entre situações similares.",
+            "orientacao": "Desenvolver a Atitude Analítica é necessário para transitar da tomada de ação reativa e puramente baseada em feeling para um modelo de diagnóstico factual, exercitando a quebra de problemas complexos em evidências quantificáveis.",
+            "tendencia": "No cotidiano, tende a decidir com base em percepção imediata, sem necessariamente buscar dados estruturados que sustentem a escolha.",
+            "impacto_esperado": "A evolução prática nesta frente traz maior precisão argumentativa, racionalidade sob pressão e blindagem contra vieses cognitivos na resolução de impasses.",
+            "sugestoes_treinamento": [
+                "Treino de raciocínio estruturado para quebra de problemas complexos em partes quantificáveis.",
+                "Prática de tomada de decisão baseada em dados, com revisão de casos reais da rotina.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Pedir que a pessoa traga ao menos um dado objetivo antes de uma decisão relevante.",
+                "Revisar com a pessoa o racional usado em uma decisão recente, identificando onde dados poderiam ter ajudado.",
+            ],
+            "metas_comportamentais": [
+                "Busca ao menos um dado objetivo antes de tomar decisões de impacto moderado a alto.",
+                "Estrutura o racional de uma decisão em etapas antes de comunicá-la.",
+            ],
+            "indicador_evolucao": "Mais decisões acompanhadas de racional estruturado e dados objetivos, com redução de escolhas justificadas apenas por intuição.",
+            "acoes_praticas": [
+                "Antes de uma decisão relevante, listar três dados ou evidências que sustentem a escolha.",
+                "Revisar uma decisão recente tomada por intuição e identificar que dado teria ajudado a validá-la.",
+                "Praticar a quebra de um problema complexo em partes menores e mais objetivas antes de buscar solução.",
+            ],
+        },
+    },
+    "detalhismo": {
+        "top": {
+            "impactos": "Eleva o padrão de qualidade percebido pelo cliente, reduz falhas que só seriam descobertas tarde e fortalece a reputação de precisão técnica da área.",
+            "dificuldades": "Quando em excesso, o foco em minúcias pode atrasar entregas ao buscar um nível de perfeição desproporcional à criticidade real do item revisado.",
+            "orientacao": "Potencializar o Detalhismo eleva o refino e o acabamento das entregas ao nível premium, utilizando o foco cirúrgico em minúcias para identificar inconsistências ocultas em contratos, relatórios e produtos que passariam despercebidas ao mercado.",
+            "tendencia": "Tende a revisar entregas com atenção minuciosa, identificando inconsistências que outras pessoas frequentemente não percebem.",
+            "impacto_esperado": "O refino desta força blinda a empresa contra passivos técnicos e operacionais, estabelecendo uma assinatura de precisão extrema em todos os artefatos gerados.",
+            "sugestoes_treinamento": [
+                "Treino de revisão técnica de alto nível com foco em itens de maior risco e visibilidade.",
+                "Workshop de priorização de revisão, calibrando profundidade de detalhe à criticidade do entregável.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar se o nível de detalhe aplicado está proporcional ao risco e à visibilidade de cada entrega.",
+                "Reconhecer publicamente quando uma revisão minuciosa evitou um problema relevante.",
+            ],
+            "metas_comportamentais": [
+                "Calibra a profundidade de revisão à criticidade real de cada entrega.",
+                "Compartilha com o time padrões de revisão que ajudam a elevar a qualidade coletiva.",
+            ],
+            "indicador_evolucao": "Mais inconsistências críticas identificadas antes da entrega final, com evidências de que o tempo de revisão está proporcional ao risco de cada item.",
+            "acoes_praticas": [
+                "Definir, antes de revisar um entregável, qual o nível de detalhe proporcional à sua criticidade.",
+                "Criar um checklist de revisão para um tipo de entrega recorrente de alto risco.",
+                "Registrar um caso em que a atenção a um detalhe evitou um problema relevante para o cliente ou para a empresa.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a reduzir erros pontuais que geram retrabalho, aumentar a confiabilidade das entregas e elevar a percepção de qualidade técnica do trabalho realizado.",
+            "dificuldades": "Baixa recorrência pode aparecer como erros pequenos que passam despercebidos, entregas que precisam de correção posterior ou dificuldade de revisar o próprio trabalho com profundidade.",
+            "orientacao": "Desenvolver o Detalhismo é mandatório para equilibrar visões macro com a execução micro, capacitando o profissional a realizar revisões estruturadas e checklists de segurança para capturar erros pontuais antes da homologação final.",
+            "tendencia": "No cotidiano, tende a priorizar a visão geral da entrega, podendo deixar passar inconsistências pontuais que só aparecem em revisão mais minuciosa.",
+            "impacto_esperado": "Reduz drasticamente o retrabalho causado por falhas de atenção periférica e eleva o rigor estético e técnico dos entregáveis operacionais.",
+            "sugestoes_treinamento": [
+                "Treino de revisão estruturada com checklist de qualidade aplicado a entregas recorrentes.",
+                "Prática de revisão cruzada com colegas para capturar erros que passam despercebidos na autorrevisão.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Disponibilizar um checklist padrão de revisão para entregas críticas.",
+                "Reconhecer avanços quando uma revisão detalhada evitar retrabalho.",
+            ],
+            "metas_comportamentais": [
+                "Usa um checklist estruturado antes de considerar uma entrega finalizada.",
+                "Reserva um tempo específico de revisão minuciosa antes de submeter entregas críticas.",
+            ],
+            "indicador_evolucao": "Redução de erros pontuais identificados após a entrega, com mais evidências de revisão estruturada antes da finalização do trabalho.",
+            "acoes_praticas": [
+                "Criar um checklist simples de revisão para um tipo de entrega recorrente.",
+                "Antes de finalizar uma entrega importante, reservar um tempo específico só para revisão de detalhes.",
+                "Pedir a um colega para revisar um item crítico antes da entrega final.",
+            ],
+        },
+    },
+    "sociabilidade": {
+        "top": {
+            "impactos": "Fortalece pontes entre áreas, facilita a resolução colaborativa de impasses e amplia a rede de apoio disponível para destravar projetos complexos.",
+            "dificuldades": "Quando em excesso, o foco em manter boas relações pode adiar conversas difíceis ou gerar dispersão de tempo em interações de baixo retorno estratégico.",
+            "orientacao": "Potencializar a Sociabilidade expande de forma estratégica o ecossistema de conexões profissionais, utilizando a facilidade de trânsito relacional para abrir canais com diferentes áreas, clientes e parceiros de negócios.",
+            "tendencia": "Tende a se conectar com facilidade a diferentes pessoas e áreas, construindo rede de relacionamento de forma natural e contínua.",
+            "impacto_esperado": "Amplia a capilaridade da marca corporativa, acelera parcerias internas de cross-functional e facilita a diplomacia organizacional em projetos de alto impacto.",
+            "sugestoes_treinamento": [
+                "Treino de networking estratégico com foco em conexões de alto valor para os objetivos da área.",
+                "Workshop de diplomacia organizacional para mediar interesses entre diferentes áreas.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Direcionar a energia relacional para conexões estratégicas alinhadas a objetivos prioritários da área.",
+                "Reconhecer quando uma conexão construída destravou um projeto relevante.",
+            ],
+            "metas_comportamentais": [
+                "Direciona parte do tempo relacional para conexões com potencial estratégico claro para a área.",
+                "Usa a rede de relacionamento construída para destravar gargalos de outros times.",
+            ],
+            "indicador_evolucao": "Mais parcerias cross-functional viabilizadas através de conexões pessoais, com evidências de ganho estratégico real para a área.",
+            "acoes_praticas": [
+                "Mapear uma conexão estratégica ainda não explorada e iniciar uma aproximação profissional.",
+                "Usar uma relação já construída para destravar um gargalo específico de outro time.",
+                "Registrar um caso em que uma conexão pessoal trouxe ganho real para um projeto da área.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a reduzir o isolamento relacional, ampliar o acesso a apoio informal e facilitar a colaboração espontânea com outras pessoas e áreas.",
+            "dificuldades": "Baixa recorrência pode aparecer como pouca interação espontânea com colegas, dependência de canais formais para resolver questões simples ou isolamento em relação a outras áreas.",
+            "orientacao": "Desenvolver a Sociabilidade visa transitar de uma postura excessivamente reservada ou focada estritamente na tarefa técnica para uma atuação mais conectada, estimulando a iniciativa de integração e o cultivo de redes de cooperação.",
+            "tendencia": "No cotidiano, tende a se concentrar na tarefa técnica e interagir pouco além do estritamente necessário para a execução do trabalho.",
+            "impacto_esperado": "Gera maior fluidez nas interações diárias, quebra silos de comunicação e facilita o acesso a suportes informais necessários para destravar gargalos da rotina.",
+            "sugestoes_treinamento": [
+                "Treino de habilidades sociais aplicadas ao ambiente corporativo, com foco em iniciativa de aproximação.",
+                "Prática guiada de construção de rede de apoio informal dentro da própria organização.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Criar oportunidades estruturadas de interação com outras áreas ou colegas.",
+                "Reconhecer iniciativas de aproximação espontânea, mesmo pequenas.",
+            ],
+            "metas_comportamentais": [
+                "Inicia ao menos uma interação espontânea por semana com colegas de outras áreas.",
+                "Busca apoio informal de colegas antes de recorrer apenas a canais formais.",
+            ],
+            "indicador_evolucao": "Mais interações espontâneas registradas com colegas e outras áreas, com evidências de acesso mais fácil a apoio informal na rotina.",
+            "acoes_praticas": [
+                "Iniciar uma conversa informal com um colega de outra área que ainda não conhece bem.",
+                "Em uma dificuldade da rotina, buscar apoio informal de um colega antes de abrir um canal formal.",
+                "Participar de um momento de integração da equipe com presença ativa.",
+            ],
+        },
+    },
+    "relacao com autoridade": {
+        "top": {
+            "impactos": "Fortalece a confiança da liderança, melhora a velocidade de execução de diretrizes estratégicas e consolida a pessoa como ponto de confiança entre a operação e a alta gestão.",
+            "dificuldades": "Quando em excesso, pode gerar dependência excessiva de validação superior, reduzindo a iniciativa autônoma em decisões de menor porte.",
+            "orientacao": "Potencializar a Relação com Autoridade consolida um alinhamento vertical estratégico e simbiótico, transformando o respeito por hierarquias e diretrizes em uma ponte para antecipar demandas da liderança e atuar como um braço de confiança executiva.",
+            "tendencia": "Tende a respeitar e seguir diretrizes de liderança com disciplina, buscando alinhamento claro antes de agir em temas estratégicos.",
+            "impacto_esperado": "Otimiza o tempo de resposta a orientações da diretoria, aumenta a previsibilidade na governança corporativa e assegura a execução fidedigna da visão estratégica do negócio.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de stakeholders executivos com foco em antecipação de demandas da liderança.",
+                "Workshop de autonomia decisória para equilibrar alinhamento vertical com iniciativa própria.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Delegar decisões de menor porte para estimular autonomia sem reduzir o alinhamento estratégico.",
+                "Reconhecer quando a antecipação de uma demanda da liderança gerou ganho de tempo relevante.",
+            ],
+            "metas_comportamentais": [
+                "Antecipa demandas previsíveis da liderança antes de serem formalmente solicitadas.",
+                "Assume autonomia em decisões de menor porte sem depender de validação prévia em todos os casos.",
+            ],
+            "indicador_evolucao": "Mais demandas da liderança antecipadas com sucesso, com evidências de maior autonomia em decisões de menor impacto.",
+            "acoes_praticas": [
+                "Antecipar uma demanda previsível da liderança antes que ela seja formalmente solicitada.",
+                "Em uma decisão de menor porte, assumir a escolha sem buscar validação prévia, comunicando depois o racional.",
+                "Registrar um caso em que o alinhamento com a liderança acelerou a execução de uma diretriz estratégica.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a reduzir fricções na interlocução com lideranças, aumentar a clareza de expectativas mútuas e fortalecer a confiança na relação vertical.",
+            "dificuldades": "Baixa recorrência pode aparecer como desalinhamento de expectativas com a liderança, dificuldade de receber feedback ou comunicação reativa em momentos de orientação superior.",
+            "orientacao": "Desenvolver a Relação com Autoridade equilibra a postura frente a lideranças, mitigando tanto a dependência excessiva de validação quanto o desalinhamento reativo, construindo uma comunicação baseada em autonomia responsável e feedback bidirecional.",
+            "tendencia": "No cotidiano, pode reagir de forma defensiva a orientações de liderança ou, no extremo oposto, depender excessivamente de validação antes de qualquer ação.",
+            "impacto_esperado": "Promove maturidade na interlocução vertical, permitindo posicionamentos maduros e alinhamento de expectativas sem fricções desnecessárias.",
+            "sugestoes_treinamento": [
+                "Treino de comunicação assertiva para interlocução com lideranças, com foco em feedback bidirecional.",
+                "Prática de alinhamento de expectativas em conversas estruturadas com o gestor.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Criar momentos regulares de alinhamento de expectativas com a pessoa.",
+                "Dar feedback de forma clara e específica, verificando o entendimento da pessoa sobre a orientação recebida.",
+            ],
+            "metas_comportamentais": [
+                "Busca esclarecer expectativas com a liderança antes de assumir que está alinhado.",
+                "Recebe feedback de liderança sem postura defensiva, buscando entender o racional por trás da orientação.",
+            ],
+            "indicador_evolucao": "Mais momentos de alinhamento de expectativas registrados, com redução de fricções ou desalinhamentos na interlocução vertical.",
+            "acoes_praticas": [
+                "Em uma próxima orientação recebida, parafrasear o entendimento para confirmar alinhamento com a liderança.",
+                "Agendar uma conversa de alinhamento de expectativas com o gestor sobre um projeto em andamento.",
+                "Registrar um caso de feedback recebido e como ele foi incorporado na prática.",
+            ],
+        },
+    },
+    "inquietacao fisica energia movimento": {
+        "top": {
+            "impactos": "Acelera a adaptação do time a mudanças de contexto, mantém o ritmo de trabalho elevado em períodos de transição e contagia o ambiente com energia produtiva.",
+            "dificuldades": "Quando em excesso, a energia constante pode gerar dispersão entre múltiplas frentes simultâneas ou dificuldade de sustentar foco em tarefas de execução mais lenta.",
+            "orientacao": "Potencializar a Inquietação Física canaliza a alta voltagem dinâmica e a resistência operacional nativa para a aceleração de transições e ciclos de mudança, atuando como o motor de ignição que tira o ecossistema da inércia.",
+            "tendencia": "Tende a se manter em movimento constante, buscando novas frentes de ação e evitando períodos prolongados de rotina estática.",
+            "impacto_esperado": "Aumenta a velocidade de resposta tática do setor, otimiza o dinamismo em rotinas de alta mobilidade e estabelece um ritmo dinâmico contagiante no ambiente de trabalho.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de energia aplicada a múltiplas frentes simultâneas sem perda de foco.",
+                "Prática de canalização de energia para ciclos de mudança e transição organizacional.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Direcionar a energia disponível para momentos de transição em que o dinamismo é mais necessário.",
+                "Observar se a dispersão entre frentes está gerando perda de profundidade em alguma delas.",
+            ],
+            "metas_comportamentais": [
+                "Concentra energia nas frentes de maior necessidade de dinamismo em cada momento.",
+                "Reserva períodos de foco mais estático quando a tarefa exige profundidade em vez de velocidade.",
+            ],
+            "indicador_evolucao": "Maior aproveitamento da energia disponível em momentos de transição, com evidências de foco mantido em tarefas que exigem profundidade.",
+            "acoes_praticas": [
+                "Identificar a frente de trabalho que mais precisa de dinamismo nesta semana e direcionar energia para ela.",
+                "Em uma tarefa que exige foco prolongado, definir blocos de tempo protegidos sem alternância entre frentes.",
+                "Registrar um momento de transição em que a energia disponível acelerou a adaptação do time.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a aumentar a constância de energia ao longo de tarefas longas, reduzir a sensação de inquietação e fortalecer a conclusão integral de ciclos de trabalho.",
+            "dificuldades": "Baixa recorrência pode aparecer como necessidade frequente de pausa, dificuldade de sustentar energia em tarefas longas ou inquietação diante de rotinas pouco dinâmicas.",
+            "orientacao": "Desenvolver a Inquietação Física foca em converter o dinamismo motor e o imediatismo em foco concentrado e perenidade de execução, mitigando a dispersão de energia ou a perda de tração antes da conclusão dos ciclos.",
+            "tendencia": "No cotidiano, pode preferir alternar entre tarefas curtas e dinâmicas, evitando se aprofundar em atividades de execução mais longa e estática.",
+            "impacto_esperado": "Aumenta a capacidade de foco sustentado em tarefas analíticas de longa duração e reduz a sensação de ansiedade ou pressa excessiva na rotina.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de energia para sustentar foco em tarefas de longa duração.",
+                "Prática de técnicas de concentração progressiva, com aumento gradual do tempo de foco contínuo.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Quebrar tarefas longas em blocos menores com entregas intermediárias visíveis.",
+                "Reconhecer avanços quando uma tarefa longa for concluída com foco sustentado.",
+            ],
+            "metas_comportamentais": [
+                "Sustenta foco em uma tarefa por blocos de tempo cada vez mais longos antes de alternar de atividade.",
+                "Conclui ciclos de trabalho até o fim antes de iniciar uma nova frente, quando possível.",
+            ],
+            "indicador_evolucao": "Mais tarefas longas concluídas integralmente, com evidências de blocos de foco sustentado cada vez maiores.",
+            "acoes_praticas": [
+                "Definir um bloco de tempo protegido para uma tarefa longa, sem alternância para outras frentes.",
+                "Antes de iniciar uma nova atividade, verificar se a anterior está realmente concluída ou apenas parcialmente avançada.",
+                "Registrar a sensação de inquietação quando ela aparecer e o que ajudou a sustentar o foco mesmo assim.",
+            ],
+        },
+    },
+    "esforco no trabalho disciplina entrega": {
+        "top": {
+            "impactos": "Sustenta um volume elevado de entregas de qualidade, eleva o padrão de produtividade percebido pelo time e fortalece a resiliência da área frente a períodos de alta demanda.",
+            "dificuldades": "Quando em excesso, a disciplina de entrega pode evoluir para sobrecarga voluntária, reduzindo tempo de recuperação e aumentando o risco de esgotamento no médio prazo.",
+            "orientacao": "Potencializar o Esforço no Trabalho maximiza o foco obstinado em produtividade contínua e superação de metas, transformando a disciplina em uma vantagem competitiva sustentável para vencer mercados altamente agressivos.",
+            "tendencia": "Tende a manter ritmo de produtividade elevado e constante, buscando superar metas mesmo em contextos de alta exigência.",
+            "impacto_esperado": "Garante um volume constante de entregas de alta performance, eleva a barra de resiliência produtiva do time e blinda o setor contra oscilações de mercado.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de energia produtiva com foco em sustentabilidade de longo prazo.",
+                "Workshop de definição de metas desafiadoras com proteção contra sobrecarga voluntária.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Observar sinais de sobrecarga voluntária antes que afetem a saúde produtiva da pessoa.",
+                "Reconhecer a disciplina de entrega como referência, equilibrando com incentivo a pausas de recuperação.",
+            ],
+            "metas_comportamentais": [
+                "Mantém volume elevado de entregas sem abrir mão de pausas de recuperação programadas.",
+                "Compartilha com o time práticas de disciplina produtiva que sustentam alta performance sem esgotamento.",
+            ],
+            "indicador_evolucao": "Volume de entregas mantido em alta performance, com evidências de pausas de recuperação programadas e ausência de sinais de esgotamento.",
+            "acoes_praticas": [
+                "Definir uma meta desafiadora para a semana e também programar um momento de recuperação após o esforço intenso.",
+                "Compartilhar com um colega uma prática pessoal de disciplina que sustenta alta produtividade.",
+                "Registrar sinais de cansaço acumulado e ajustar o ritmo antes que se tornem esgotamento.",
+            ],
+        },
+        "bottom": {
+            "impactos": "Seu desenvolvimento tende a estabilizar o volume de entregas ao longo do tempo, reduzir picos de sobrecarga no fim de ciclos e aumentar a previsibilidade da capacidade produtiva.",
+            "dificuldades": "Baixa recorrência pode aparecer como esforço concentrado apenas perto do prazo final, picos erráticos de produtividade ou acúmulo de demandas que geram pressão evitável.",
+            "orientacao": "Desenvolver o Esforço no Trabalho atua na estruturação da disciplina de entrega sustentável, substituindo picos erráticos de esforço por uma metodologia de constância prática, protegendo os prazos contra procrastinação ou sobrecargas táticas.",
+            "tendencia": "No cotidiano, tende a distribuir o esforço de forma irregular, com picos de produtividade concentrados próximos aos prazos finais.",
+            "impacto_esperado": "Estabiliza o volume produtivo mensal, promove previsibilidade de capacidade de entrega e mitiga gargalos causados por acúmulo de demandas no fim de ciclos.",
+            "sugestoes_treinamento": [
+                "Treino de gestão de constância produtiva, com técnicas de distribuição de esforço ao longo do ciclo.",
+                "Prática de planejamento de entregas parciais para evitar concentração de esforço no fim do prazo.",
+            ],
+            "sugestoes_acompanhamento_gestor": [
+                "Definir entregas parciais intermediárias para distribuir o esforço ao longo do ciclo.",
+                "Reconhecer avanços quando o esforço for distribuído de forma mais constante, não apenas no fim do prazo.",
+            ],
+            "metas_comportamentais": [
+                "Distribui o esforço de forma mais constante ao longo do ciclo, evitando concentração apenas no fim do prazo.",
+                "Entrega partes intermediárias do trabalho antes da data final, reduzindo acúmulo de demanda.",
+            ],
+            "indicador_evolucao": "Volume produtivo mais distribuído ao longo do ciclo, com redução de picos de sobrecarga próximos aos prazos finais.",
+            "acoes_praticas": [
+                "Dividir uma entrega de prazo longo em partes menores com datas intermediárias de progresso.",
+                "Reservar um bloco fixo de tempo produtivo no início do ciclo, em vez de concentrar esforço apenas no fim.",
+                "Registrar o que mudou na qualidade da entrega ao distribuir o esforço de forma mais constante.",
+            ],
+        },
+    },
 }
 
 PDI_TITLE_BY_NAME: Dict[str, Dict[str, str]] = {
@@ -728,6 +1335,9 @@ def _copy_key(letter: str, name: str) -> str:
 
 
 def _fallback_copy(*, name: str, area_label: str, eixo: str) -> Dict[str, Any]:
+    name = str(name or "").strip() or "esta competência"
+    area_label = str(area_label or "").strip() or "avaliada"
+
     if eixo == "POTENCIALIZAR":
         return {
             "impactos": f"Quando bem utilizada, {name} tende a ampliar consistência de desempenho e gerar valor mais claro dentro da área {area_label}.",
@@ -815,6 +1425,7 @@ def _build_card(
 
 
 def _build_pdi_title(*, letter: str, name: str, eixo: str) -> str:
+    name = str(name or "").strip() or "esta competência"
     key = _copy_key(letter, name)
     title_map = PDI_TITLE_BY_NAME.get(key, {})
     title = title_map.get("top" if eixo == "POTENCIALIZAR" else "bottom")
@@ -828,19 +1439,24 @@ def _build_pdi_title(*, letter: str, name: str, eixo: str) -> str:
 
 def _build_pdi_item(card: Dict[str, Any], eixo: str) -> Dict[str, Any]:
     copy_block = card["pdi_copy"]
+
+    if eixo == "POTENCIALIZAR":
+        desc_texto = "representa uma força já presente no perfil e pode ser usada com mais consciência e consistência."
+    else:
+        desc_texto = "aparece como prioridade objetiva de desenvolvimento e tende a influenciar a qualidade da resposta profissional."
+
+    texto_final = (
+        f"{_build_pdi_title(letter=card['letter'], name=card['name'], eixo=eixo)} é relevante porque "
+        f"{desc_texto} {card['base_text']}"
+    )
+
     return {
         "titulo": _build_pdi_title(letter=card["letter"], name=card["name"], eixo=eixo),
         "eixo": eixo,
         "area": card["area"],
         "competencia_letra": card["letter"],
         "competencia_nome": card["name"],
-        "porque_relevante": (
-            f"{_build_pdi_title(letter=card['letter'], name=card['name'], eixo=eixo)} é relevante porque "
-            f"{'representa uma força já presente no perfil e pode ser usada com mais consciência e consistência.'
-            if eixo == 'POTENCIALIZAR'
-            else 'aparece como prioridade objetiva de desenvolvimento e tende a influenciar a qualidade da resposta profissional.'} "
-            f"{card['base_text']}"
-        ),
+        "porque_relevante": texto_final,
         "impacto_esperado": copy_block["impacto_esperado"],
         "acoes_praticas": list(copy_block["acoes_praticas"]),
         "sugestoes_treinamento": list(copy_block["sugestoes_treinamento"]),
@@ -1022,7 +1638,7 @@ async def build_premium_report_context(
         "assessment_datetime_display": _format_assessment_datetime(
             attempt_payload.get("data_conclusao") or attempt_payload.get("data_inicio")
         ),
-        "brand_logo_path": "backend/static/img/dna-logo.png",
+        "brand_logo_path": "static/img/official_logo.png",
         "paineis_area": paineis_area,
         "top5_cards": top5_cards,
         "bottom3_cards": bottom3_cards,

@@ -32,6 +32,7 @@
 {% set _primary_action_label = primary_action_label if primary_action_label is defined else "" %}
 {% set _secondary_action_href = secondary_action_href if secondary_action_href is defined else "" %}
 {% set _secondary_action_label = secondary_action_label if secondary_action_label is defined else "" %}
+{% set _dana_dashboard_href = "/admin/dashboard?open_dana=true" ~ ("&cliente_id=" ~ _cliente_id if _cliente_id else "") %}
 
 {% macro nav_link(href, label, key, icon="") -%}
   {% set is_active = (_active_nav == key) or (_request_path.startswith(href) if href != "#" else false) %}
@@ -83,11 +84,7 @@
         {{ nav_link("/admin/clientes", "Clientes", "clientes", "⊞") }}
         {{ nav_link("/admin/bi/overview", "BI · Visão Geral", "bi_overview", "◔") }}
         {{ nav_link("/admin/bi/comparativo", "BI · Comparativo", "bi_comparativo", "⇄") }}
-        {% if _cliente_id %}
-          {{ nav_link("/admin/ai/analysis-inteligente?cliente_id=" ~ _cliente_id, "DANA", "dana", "✦") }}
-        {% else %}
-          {{ nav_link("/admin/ai/analysis-inteligente", "DANA", "dana", "✦") }}
-        {% endif %}
+        {{ nav_link(_dana_dashboard_href, "DANA", "dana", "✦") }}
       </nav>
 
       <div class="pd-admin-topbar__meta">

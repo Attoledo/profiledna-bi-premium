@@ -4,11 +4,13 @@
 {% set _data_display = assessment_datetime_display if assessment_datetime_display else "Não informados" %}
 
 <section class="premium-section">
-  {% if brand_logo_path %}
-    <img src="{{ brand_logo_path }}" alt="DNA Agência" class="premium-logo">
-  {% endif %}
+  <div class="header-container">
+    {% if brand_logo_path %}
+      <img src="{{ brand_logo_path }}" alt="Profile DNA" class="brand-logo">
+    {% endif %}
+    <span class="report-badge">Teste de Perfil</span>
+  </div>
 
-  <div class="premium-kicker">DNA Agência</div>
   <h1 class="premium-title">Teste de Perfil - Profile DNA</h1>
 
   <div class="premium-meta-grid">

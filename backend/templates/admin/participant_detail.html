@@ -780,11 +780,8 @@
     </div>
 
     <div class="pd-participant-hero__actions">
-      {% if pdf_url is defined and pdf_url %}
-        <a href="{{ pdf_url }}" class="pd-participant-btn pd-participant-btn--primary">Baixar PDF</a>
-      {% endif %}
       {% if premium_pdf_href %}
-        <a href="{{ premium_pdf_href }}" class="pd-participant-btn pd-participant-btn--primary">Baixar PDF — Profile DNA</a>
+        <a href="{{ premium_pdf_href }}" class="pd-participant-btn pd-participant-btn--primary">Baixar PDF do Participante</a>
       {% endif %}
     </div>
   </div>
@@ -1094,19 +1091,11 @@
         <div class="pd-participant-card-chip">Navegação</div>
       </div>
 
-      {% if (pdf_url is defined and pdf_url) or premium_pdf_href %}
+      {% if premium_pdf_href %}
         <div class="pd-participant-actions-primary">
-          {% if pdf_url is defined and pdf_url %}
-            <a href="{{ pdf_url }}" class="pd-participant-action-link pd-participant-action-link--primary">
-              Baixar PDF do participante
-            </a>
-          {% endif %}
-
-          {% if premium_pdf_href %}
-            <a href="{{ premium_pdf_href }}" class="pd-participant-action-link pd-participant-action-link--primary">
-              Baixar PDF Teste de Perfil - Profile DNA
-            </a>
-          {% endif %}
+          <a href="{{ premium_pdf_href }}" class="pd-participant-action-link pd-participant-action-link--primary">
+            Baixar PDF do Participante
+          </a>
         </div>
       {% endif %}
 

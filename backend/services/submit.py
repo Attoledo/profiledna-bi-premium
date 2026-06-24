@@ -491,6 +491,10 @@ def _build_sintese_executiva_payload(
     tipo = _normalize_tipo_aplicacao(participant_payload.get("tipo_aplicacao"))
     tipo_label = tipo if tipo else "perfil avaliado"
 
+    # Concordância de gênero dinâmica do artigo ("na empresa" vs. "no ambiente",
+    # "no perfil avaliado", "no profissional", "no corporativo"/"na corporativa").
+    artigo = "na" if str(tipo_label).strip().lower().endswith("a") else "no"
+
     top3_labels = ", ".join(
         f"{letter} ({_get_dim_name(letter, interpretations, dims)})"
         for letter in top3[:3]
@@ -513,7 +517,7 @@ def _build_sintese_executiva_payload(
 
     texto_base = (
         f"{nome or 'O participante'} apresenta como destaques principais "
-        f"{top3_labels or 'dimensões de maior expressão'}, indicando padrões predominantes observáveis no {tipo_label}. "
+        f"{top3_labels or 'dimensões de maior expressão'}, indicando padrões predominantes observáveis {artigo} {tipo_label}. "
         f"{risco_tipico} {recomendacao_objetiva}"
     )
 
