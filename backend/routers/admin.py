@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import asyncio
 import csv
 import io
+import json
 import re
+import time
 import unicodedata
 import uuid
+from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
@@ -34,7 +38,25 @@ from backend.bi.services import (
 from backend.database import get_db
 from backend.models.attempt import Attempt, Participant
 from backend.models.result import ComputedResult, ReportSnapshot
-from backend.repositories.admin_user import get_admin_by_id, get_admin_by_username
+from backend.repositories.admin_user import (
+    create_admin,
+    get_admin_by_id,
+    get_admin_by_username,
+    list_admins,
+    set_admin_ativo,
+    set_admin_requires_reset,
+    update_admin_password_hash,
+    update_admin_role_and_permissions,
+)
+from backend.models.admin_user import (
+    PERMISSION_LEVEL_RANK,
+    PERMISSION_LEVEL_READ,
+    PERMISSION_LEVEL_TOTAL,
+    PERMISSION_MODULES,
+    ROLE_ADMIN,
+    ROLE_ANALISTA,
+    has_module_permission,
+)
 from backend.repositories.cliente import (
     create_cliente,
     create_rodada,
@@ -64,6 +86,7 @@ from backend.services.auth_admin import (
     CSRF_COOKIE_NAME,
     create_access_token,
     decode_access_token,
+    hash_password,
     new_csrf_token,
     verify_password,
 )
@@ -1818,6 +1841,9 @@ def _build_xlsx_bytes(rows: list[dict[str, str]]) -> bytes:
     return buffer.getvalue()
 
 
+_FORCE_RESET_EXEMPT_PATHS = {"/admin/trocar-senha", "/admin/logout"}
+
+
 async def get_current_admin(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -1834,6 +1860,20 @@ async def get_current_admin(
     if not admin or not admin.ativo:
         return _redirect_login()
 
+    # Expõe o admin carregado em request.state — qualquer template que
+    # receba 'request' no contexto (todos recebem) pode ler
+    # 'request.state.admin' para exibir nome/role reais na topbar, sem
+    # exigir que cada rota individual passe 'admin' explicitamente.
+    request.state.admin = admin
+
+    # Troca de senha obrigatória no primeiro acesso: qualquer requisição
+    # autenticada com 'requires_reset=True' é redirecionada imediatamente
+    # para /admin/trocar-senha, exceto a própria página de troca e o
+    # logout (caso contrário, o admin nunca conseguiria sair dali).
+    request_path = request.url.path if request and request.url else ""
+    if bool(getattr(admin, "requires_reset", False)) and request_path not in _FORCE_RESET_EXEMPT_PATHS:
+        return RedirectResponse(url="/admin/trocar-senha", status_code=303)
+
     return admin
 
 
@@ -1845,6 +1885,29 @@ async def admin_login_get(request: Request):
     )
 
 
+# ===== Rate limiting / throttling do login (mitigação de força bruta) =====
+# Armazenamento em memória do processo (não distribuído entre workers) —
+# suficiente como mitigação temporária local. Chave por (IP, username) para
+# que múltiplos administradores distintos em 'admin_users' nunca compartilhem
+# o mesmo contador nem se bloqueiem mutuamente.
+_LOGIN_ATTEMPTS: dict[str, list[float]] = defaultdict(list)
+_LOGIN_MAX_ATTEMPTS = 5
+_LOGIN_WINDOW_SECONDS = 300.0
+_LOGIN_FAIL_DELAY_SECONDS = 0.6
+
+
+def _login_rate_limit_key(request: Request, username: str) -> str:
+    client_ip = request.client.host if request.client else "unknown"
+    return f"{client_ip}:{username.strip().lower()}"
+
+
+def _login_attempts_in_window(key: str) -> list[float]:
+    now = time.monotonic()
+    attempts = _LOGIN_ATTEMPTS[key]
+    attempts[:] = [t for t in attempts if now - t < _LOGIN_WINDOW_SECONDS]
+    return attempts
+
+
 @router.post("/login")
 async def admin_login_post(
     request: Request,
@@ -1852,14 +1915,32 @@ async def admin_login_post(
     password: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
+    rate_key = _login_rate_limit_key(request, username)
+    attempts = _login_attempts_in_window(rate_key)
+
+    if len(attempts) >= _LOGIN_MAX_ATTEMPTS:
+        await asyncio.sleep(_LOGIN_FAIL_DELAY_SECONDS)
+        return templates.TemplateResponse(
+            "admin/login.html",
+            {
+                "request": request,
+                "error": "Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.",
+            },
+            status_code=429,
+        )
+
     admin = await get_admin_by_username(db, username)
 
     if not admin or not verify_password(password, admin.password_hash) or not admin.ativo:
+        attempts.append(time.monotonic())
+        await asyncio.sleep(_LOGIN_FAIL_DELAY_SECONDS)
         return templates.TemplateResponse(
             "admin/login.html",
             {"request": request, "error": "Credenciais inválidas."},
             status_code=401,
         )
+
+    attempts.clear()
 
     token = create_access_token(subject=str(admin.id))
     csrf = new_csrf_token()
@@ -1892,6 +1973,377 @@ async def admin_logout():
     resp = RedirectResponse(url="/admin/login", status_code=303)
     resp.delete_cookie(key=ACCESS_COOKIE_NAME, path="/admin")
     resp.delete_cookie(key=CSRF_COOKIE_NAME, path="/admin")
+    return resp
+
+
+# ===== Gestão de Usuários (admin_users) — UI visual, sem CLI ===== #
+
+async def _require_admin_json(
+    request: Request,
+    admin,
+) -> tuple[bool, JSONResponse | None]:
+    """
+    Variante de '_require_admin_post' para endpoints consumidos via fetch
+    (JSON), em vez de form POST com redirect. Continua dependendo de
+    'Depends(get_current_admin)' no endpoint chamador — aqui só traduzimos o
+    sentinel de RedirectResponse (não autenticado) e a falha de CSRF em
+    respostas JSON adequadas para um client AJAX.
+    """
+    if isinstance(admin, RedirectResponse):
+        return False, JSONResponse({"detail": "Não autenticado."}, status_code=401)
+    if not await _validate_csrf(request):
+        return False, JSONResponse({"detail": "CSRF inválido ou ausente."}, status_code=403)
+    return True, None
+
+
+def _is_analista(admin) -> bool:
+    return str(getattr(admin, "role", ROLE_ADMIN) or ROLE_ADMIN) == ROLE_ANALISTA
+
+
+def _block_analista_html() -> HTMLResponse:
+    return _build_admin_error_html(
+        "Acesso restrito a administradores. Perfis Analista não podem gerenciar usuários.",
+        status_code=403,
+    )
+
+
+def _block_analista_json() -> JSONResponse:
+    return JSONResponse(
+        {"detail": "Acesso restrito a administradores. Perfis Analista não podem gerenciar usuários."},
+        status_code=403,
+    )
+
+
+def _parse_permissions_payload(raw: str | None) -> dict[str, str]:
+    """
+    Recebe o JSON serializado pelo formulário ('permissions') e devolve um
+    mapa só com os módulos conhecidos (PERMISSION_MODULES) e níveis válidos
+    (PERMISSION_LEVEL_RANK) — entradas desconhecidas/inválidas são
+    descartadas silenciosamente, módulos ausentes ficam em "none".
+    """
+    parsed: dict[str, Any] = {}
+    if raw:
+        try:
+            parsed = json.loads(raw)
+        except (TypeError, ValueError):
+            parsed = {}
+
+    result: dict[str, str] = {}
+    for module in PERMISSION_MODULES:
+        level = str(parsed.get(module, "none")) if isinstance(parsed, dict) else "none"
+        result[module] = level if level in PERMISSION_LEVEL_RANK else "none"
+    return result
+
+
+def _serialize_admin_user(admin: "AdminUser") -> dict[str, Any]:
+    return {
+        "id": _safe_str(admin.id),
+        "username": admin.username,
+        "nome": admin.nome,
+        "ativo": bool(admin.ativo),
+        "role": str(getattr(admin, "role", ROLE_ADMIN) or ROLE_ADMIN),
+        "requires_reset": bool(getattr(admin, "requires_reset", False)),
+        "permissions": dict(getattr(admin, "permissions", None) or {}),
+    }
+
+
+@router.get("/usuarios", response_class=HTMLResponse)
+async def admin_usuarios_page(
+    request: Request,
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    if isinstance(admin, RedirectResponse):
+        return admin
+
+    # Analistas agora podem abrir a página — o template é quem decide o
+    # que renderizar (tabela/criação master só para 'admin'; card de
+    # autogestão de senha para 'analista'). A lista completa de admins só
+    # é buscada quando quem está olhando de fato é um 'admin' — um
+    # analista nunca recebe os dados de terceiros no HTML, nem para
+    # ocultação puramente visual.
+    is_admin_role = not _is_analista(admin)
+    admins = await list_admins(db) if is_admin_role else []
+
+    return templates.TemplateResponse(
+        "admin/users.html",
+        {
+            "request": request,
+            "admins": admins,
+            "current_admin": admin,
+            "current_admin_id": _safe_str(admin.id),
+            "csrf_token": request.cookies.get(CSRF_COOKIE_NAME),
+            "role_admin": ROLE_ADMIN,
+            "role_analista": ROLE_ANALISTA,
+            "permission_modules": list(PERMISSION_MODULES),
+            "permission_level_read": PERMISSION_LEVEL_READ,
+            "permission_level_total": PERMISSION_LEVEL_TOTAL,
+        },
+    )
+
+
+@router.post("/usuarios/create")
+async def admin_usuarios_create(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+    nome: str = Form(...),
+    role: str = Form(ROLE_ADMIN),
+    permissions: str | None = Form(None),
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    allowed, response = await _require_admin_json(request, admin)
+    if not allowed:
+        return response
+    if _is_analista(admin):
+        return _block_analista_json()
+
+    username_clean = str(username or "").strip()
+    nome_clean = str(nome or "").strip()
+    password_clean = str(password or "")
+    role_clean = str(role or ROLE_ADMIN).strip().lower()
+    if role_clean not in (ROLE_ADMIN, ROLE_ANALISTA):
+        role_clean = ROLE_ADMIN
+
+    if not username_clean or not nome_clean:
+        return JSONResponse({"detail": "Usuário e nome são obrigatórios."}, status_code=422)
+    if len(password_clean) < 8:
+        return JSONResponse({"detail": "A senha deve ter ao menos 8 caracteres."}, status_code=422)
+
+    existing = await get_admin_by_username(db, username_clean)
+    if existing:
+        return JSONResponse({"detail": "Já existe um usuário com esse login."}, status_code=409)
+
+    permissions_clean = (
+        _parse_permissions_payload(permissions) if role_clean == ROLE_ANALISTA else {}
+    )
+
+    new_admin = await create_admin(
+        db,
+        username=username_clean,
+        password_hash=hash_password(password_clean),
+        nome=nome_clean,
+        ativo=True,
+        role=role_clean,
+        requires_reset=True,
+        permissions=permissions_clean,
+    )
+    await db.commit()
+
+    return JSONResponse({"ok": True, "admin": _serialize_admin_user(new_admin)}, status_code=201)
+
+
+@router.post("/usuarios/{admin_id}/toggle-status")
+async def admin_usuarios_toggle_status(
+    request: Request,
+    admin_id: str,
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    allowed, response = await _require_admin_json(request, admin)
+    if not allowed:
+        return response
+    if _is_analista(admin):
+        return _block_analista_json()
+
+    target_pk = _safe_uuid(admin_id) or admin_id
+
+    # Nunca permite que o admin autenticado desative a própria conta por
+    # esta UI — isso derrubaria a sessão ativa no próximo request, já que
+    # 'get_current_admin' checa 'admin.ativo' a cada chamada.
+    if _safe_str(target_pk) == _safe_str(admin.id) or admin_id == _safe_str(admin.id):
+        return JSONResponse(
+            {"detail": "Você não pode desativar a própria conta enquanto estiver logado."},
+            status_code=400,
+        )
+
+    target = await get_admin_by_id(db, target_pk)
+    if not target:
+        return JSONResponse({"detail": "Usuário não encontrado."}, status_code=404)
+
+    updated = await set_admin_ativo(db, target.id, not bool(target.ativo))
+    await db.commit()
+
+    return JSONResponse({"ok": True, "admin": _serialize_admin_user(updated)})
+
+
+@router.post("/usuarios/{admin_id}/reset-password")
+async def admin_usuarios_reset_password(
+    request: Request,
+    admin_id: str,
+    new_password: str = Form(...),
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    allowed, response = await _require_admin_json(request, admin)
+    if not allowed:
+        return response
+    if _is_analista(admin):
+        return _block_analista_json()
+
+    new_password_clean = str(new_password or "")
+    if len(new_password_clean) < 8:
+        return JSONResponse({"detail": "A senha deve ter ao menos 8 caracteres."}, status_code=422)
+
+    target_pk = _safe_uuid(admin_id) or admin_id
+    target = await get_admin_by_id(db, target_pk)
+    if not target:
+        return JSONResponse({"detail": "Usuário não encontrado."}, status_code=404)
+
+    await update_admin_password_hash(db, target.id, hash_password(new_password_clean))
+    # Reset feito por um admin gestor força o destinatário a trocar de novo
+    # no próximo login — mesma política de "primeiro acesso" da criação.
+    await set_admin_requires_reset(db, target.id, True)
+    await db.commit()
+
+    # Resetar a senha não invalida o JWT já emitido (a sessão não guarda a
+    # senha) — a sessão ativa do admin autenticado permanece intacta, mesmo
+    # que ele tenha resetado a própria senha por esta tela.
+    return JSONResponse({"ok": True})
+
+
+@router.post("/usuarios/{admin_id}/permissions")
+async def admin_usuarios_update_permissions(
+    request: Request,
+    admin_id: str,
+    role: str = Form(...),
+    permissions: str | None = Form(None),
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Edita o perfil (role) e a matriz de permissões por módulo de um usuário
+    já existente. Estritamente admin-only — analistas nunca alcançam esta
+    rota (bloqueio duplo: get_current_admin + _is_analista).
+    """
+    allowed, response = await _require_admin_json(request, admin)
+    if not allowed:
+        return response
+    if _is_analista(admin):
+        return _block_analista_json()
+
+    role_clean = str(role or ROLE_ADMIN).strip().lower()
+    if role_clean not in (ROLE_ADMIN, ROLE_ANALISTA):
+        return JSONResponse({"detail": "Perfil inválido."}, status_code=422)
+
+    target_pk = _safe_uuid(admin_id) or admin_id
+
+    # Nunca permite que o admin autenticado altere o próprio perfil/matriz
+    # de permissões por esta UI — evita autodegradar-se para "analista" e
+    # perder acesso a /admin/usuarios na própria sessão ativa.
+    if _safe_str(target_pk) == _safe_str(admin.id) or admin_id == _safe_str(admin.id):
+        return JSONResponse(
+            {"detail": "Você não pode alterar as próprias permissões enquanto estiver logado."},
+            status_code=400,
+        )
+
+    target = await get_admin_by_id(db, target_pk)
+    if not target:
+        return JSONResponse({"detail": "Usuário não encontrado."}, status_code=404)
+
+    permissions_clean = (
+        _parse_permissions_payload(permissions) if role_clean == ROLE_ANALISTA else {}
+    )
+
+    updated = await update_admin_role_and_permissions(
+        db,
+        target.id,
+        role=role_clean,
+        permissions=permissions_clean,
+    )
+    await db.commit()
+
+    return JSONResponse({"ok": True, "admin": _serialize_admin_user(updated)})
+
+
+# ===== Primeiro acesso / troca obrigatória de senha ===== #
+
+@router.get("/trocar-senha", response_class=HTMLResponse)
+async def admin_trocar_senha_get(
+    request: Request,
+    admin=Depends(get_current_admin),
+):
+    if isinstance(admin, RedirectResponse):
+        return admin
+
+    return templates.TemplateResponse(
+        "admin/change_password.html",
+        {
+            "request": request,
+            "error": None,
+            "admin_nome": getattr(admin, "nome", None) or getattr(admin, "username", ""),
+            "csrf_token": request.cookies.get(CSRF_COOKIE_NAME),
+        },
+    )
+
+
+@router.post("/trocar-senha")
+async def admin_trocar_senha_post(
+    request: Request,
+    current_password: str = Form(...),
+    new_password: str = Form(...),
+    confirm_password: str = Form(...),
+    admin=Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    if isinstance(admin, RedirectResponse):
+        return admin
+
+    def _error(message: str, status_code: int = 422):
+        return templates.TemplateResponse(
+            "admin/change_password.html",
+            {
+                "request": request,
+                "error": message,
+                "admin_nome": getattr(admin, "nome", None) or getattr(admin, "username", ""),
+                "csrf_token": request.cookies.get(CSRF_COOKIE_NAME),
+            },
+            status_code=status_code,
+        )
+
+    if not await _validate_csrf(request):
+        return _error("CSRF inválido ou ausente.", status_code=403)
+
+    if not verify_password(current_password, admin.password_hash):
+        return _error("Senha atual incorreta.", status_code=401)
+
+    new_password_clean = str(new_password or "")
+    if len(new_password_clean) < 8:
+        return _error("A nova senha deve ter ao menos 8 caracteres.")
+    if new_password_clean != str(confirm_password or ""):
+        return _error("A confirmação não corresponde à nova senha.")
+    if verify_password(new_password_clean, admin.password_hash):
+        return _error("A nova senha deve ser diferente da senha atual.")
+
+    await update_admin_password_hash(db, admin.id, hash_password(new_password_clean))
+    await set_admin_requires_reset(db, admin.id, False)
+    await db.commit()
+
+    # Libera um cookie de sessão "unificado" novo (mesmo par access/csrf do
+    # login normal) — a troca de senha por si não derruba a sessão, apenas
+    # a renova, e a flag requires_reset já foi limpa no banco.
+    token = create_access_token(subject=str(admin.id))
+    csrf = new_csrf_token()
+    is_https = request.url.scheme == "https"
+
+    resp = RedirectResponse(url="/admin/dashboard", status_code=303)
+    resp.set_cookie(
+        key=ACCESS_COOKIE_NAME,
+        value=token,
+        httponly=True,
+        secure=is_https,
+        samesite="lax",
+        path="/admin",
+    )
+    resp.set_cookie(
+        key=CSRF_COOKIE_NAME,
+        value=csrf,
+        httponly=False,
+        secure=is_https,
+        samesite="lax",
+        path="/admin",
+    )
     return resp
 
 
@@ -1967,6 +2419,8 @@ async def admin_dashboard(
 ):
     if isinstance(admin, RedirectResponse):
         return admin
+    if not has_module_permission(admin, "dashboard", PERMISSION_LEVEL_READ):
+        return _build_admin_error_html("Você não tem permissão para acessar o Dashboard.", status_code=403)
 
     clientes = await list_clientes(db)
 
@@ -2048,6 +2502,8 @@ async def admin_bi_overview(
 ):
     if isinstance(admin, RedirectResponse):
         return admin
+    if not has_module_permission(admin, "bi", PERMISSION_LEVEL_READ):
+        return _build_admin_error_html("Você não tem permissão para acessar o BI.", status_code=403)
 
     filters = _build_bi_service_filters(
         cliente_id=cliente_id,
@@ -2169,6 +2625,8 @@ async def admin_bi_comparativo(
 ):
     if isinstance(admin, RedirectResponse):
         return admin
+    if not has_module_permission(admin, "bi", PERMISSION_LEVEL_READ):
+        return _build_admin_error_html("Você não tem permissão para acessar o BI.", status_code=403)
 
     left_cliente_id_clean = _clean_optional_text(left_cliente_id)
     right_cliente_id_clean = _clean_optional_text(right_cliente_id)
@@ -2574,6 +3032,8 @@ async def admin_clientes_list(
 ):
     if isinstance(admin, RedirectResponse):
         return admin
+    if not has_module_permission(admin, "clientes", PERMISSION_LEVEL_READ):
+        return _build_admin_error_html("Você não tem permissão para acessar Clientes.", status_code=403)
 
     clientes = await list_clientes(db)
 

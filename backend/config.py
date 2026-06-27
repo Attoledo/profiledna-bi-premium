@@ -1,21 +1,51 @@
 from __future__ import annotations
 
+import os
 from functools import lru_cache
+from pathlib import Path
 from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# ===== Resolução resiliente do arquivo de ambiente =====
+# Em produção, o .env vive em /srv/profiledna/runtime/.env (não versionado).
+# Em desenvolvimento local, esse diretório não existe — então caímos para um
+# .env local, testando dois locais plausíveis de "raiz do projeto":
+#   1) backend/.. -> .../profiledna/.env (raiz do app)
+#   2) backend/../.. -> .../ProfileDNA_WORKING_COPY_20260610/.env (raiz do
+#      workspace, um nível acima de profiledna/ — onde o .env local desta
+#      sessão de desenvolvimento foi efetivamente criado)
+# Se nenhum existir, mantemos o path de produção como valor padrão:
+# pydantic-settings simplesmente ignora um env_file ausente, então isso não
+# quebra o boot — as env vars já exportadas no processo continuam valendo.
+_PROD_ENV_FILE = "/srv/profiledna/runtime/.env"
+_APP_ROOT = Path(__file__).resolve().parent.parent
+_LOCAL_ENV_CANDIDATES = (
+    _APP_ROOT / ".env",
+    _APP_ROOT.parent / ".env",
+)
+
+
+def _resolve_env_file() -> str:
+    if os.path.exists(_PROD_ENV_FILE):
+        return _PROD_ENV_FILE
+    for candidate in _LOCAL_ENV_CANDIDATES:
+        if os.path.exists(candidate):
+            return str(candidate)
+    return _PROD_ENV_FILE
 
 
 class Settings(BaseSettings):
     """
     Settings estritamente alinhadas às env vars referenciadas no SSOT_PROFILEDNA_v2_0.md.
 
-    Fonte: runtime/.env em produção (não versionado).
+    Fonte: runtime/.env em produção (não versionado), com fallback para um
+    .env na raiz do projeto em ambientes de desenvolvimento local.
     """
 
     model_config = SettingsConfigDict(
-        env_file="/srv/profiledna/runtime/.env",
+        env_file=_resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",

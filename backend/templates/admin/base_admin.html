@@ -25,7 +25,15 @@
 {% set _active_nav = active_nav if active_nav is defined and active_nav else "" %}
 {% set _page_title = page_title if page_title is defined and page_title else "Painel Administrativo" %}
 {% set _page_subtitle = page_subtitle if page_subtitle is defined else "" %}
-{% set _admin_name = admin.nome if admin is defined and admin and admin.nome is defined and admin.nome else (admin.username if admin is defined and admin and admin.username is defined and admin.username else "Administrador") %}
+{# Fonte primária do admin da sessão: 'request.state.admin', populado por
+   'get_current_admin' em backend/routers/admin.py em toda requisição
+   autenticada — funciona em qualquer página que estenda este shell, sem
+   exigir que cada rota passe 'admin'/'current_admin' manualmente no
+   contexto. Mantemos 'admin'/'current_admin' (se presentes no contexto da
+   página) como fallback, e a string estática como último recurso. #}
+{% set _session_admin = request.state.admin if request and request.state and request.state.admin is defined else None %}
+{% set _context_admin = _session_admin or (current_admin if current_admin is defined and current_admin else (admin if admin is defined and admin else None)) %}
+{% set _admin_name = _context_admin.nome if _context_admin and _context_admin.nome else (_context_admin.username if _context_admin and _context_admin.username else "Administrador") %}
 {% set _cliente_name = cliente.nome if cliente is defined and cliente and cliente.nome is defined and cliente.nome else (cliente.razao_social if cliente is defined and cliente and cliente.razao_social is defined and cliente.razao_social else "") %}
 {% set _cliente_id = cliente.id if cliente is defined and cliente and cliente.id is defined and cliente.id else (cliente_id if cliente_id is defined and cliente_id else request.query_params.get("cliente_id") if request and request.query_params else "") %}
 {% set _primary_action_href = primary_action_href if primary_action_href is defined else "" %}
@@ -84,6 +92,7 @@
         {{ nav_link("/admin/clientes", "Clientes", "clientes", "⊞") }}
         {{ nav_link("/admin/bi/overview", "BI · Visão Geral", "bi_overview", "◔") }}
         {{ nav_link("/admin/bi/comparativo", "BI · Comparativo", "bi_comparativo", "⇄") }}
+        {{ nav_link("/admin/usuarios", "Usuários", "usuarios", "◑") }}
         {{ nav_link(_dana_dashboard_href, "DANA", "dana", "✦") }}
       </nav>
 

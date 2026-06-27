@@ -10,6 +10,7 @@
 {% set setor_options = setor_options if setor_options is defined and setor_options else [] %}
 {% set rodada_options = rodada_options if rodada_options is defined and rodada_options else [] %}
 {% set participant_options = participant_options if participant_options is defined and participant_options else [] %}
+{% set page_subtitle = "Gestão operacional de clientes, rodadas, setores, convites, participantes e BI analítico." %}
 
 {% block title %}ProfileDNA — Dashboard Admin{% endblock %}
 
@@ -748,16 +749,6 @@
       .pd-dana-fab__label { display: none; }
     }
   </style>
-
-  <div class="pd-admin-page-head">
-    <div class="pd-admin-page-head__content">
-      <div class="pd-admin-page-head__eyebrow">Admin • Operação central</div>
-      <h1 class="pd-admin-page-head__title">Painel Admin</h1>
-      <p class="pd-admin-page-head__subtitle">
-        Gestão operacional de clientes, rodadas, setores, convites, participantes e BI analítico.
-      </p>
-    </div>
-  </div>
 
   <!-- ═══ Barra de filtros de contexto — única fonte de verdade do escopo
        de análise para todo o Dashboard, incluindo o Drawer da DANA.

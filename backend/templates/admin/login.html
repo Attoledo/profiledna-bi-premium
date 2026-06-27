@@ -9,9 +9,10 @@
     .pd-login-page {
       min-height: 100vh;
       background:
-        radial-gradient(circle at top right, rgba(243, 156, 74, 0.18), transparent 28%),
-        radial-gradient(circle at bottom left, rgba(229, 75, 75, 0.10), transparent 30%),
+        radial-gradient(circle at top right, rgba(251, 146, 60, 0.16), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(239, 68, 68, 0.10), transparent 30%),
         linear-gradient(180deg, #fcfcfd 0%, #f6f7fb 100%);
+      font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
     }
 
     .pd-login-shell {
@@ -23,15 +24,14 @@
     .pd-login-brand-panel {
       position: relative;
       overflow: hidden;
-      background:
-        radial-gradient(circle at top right, rgba(243, 156, 74, 0.22), transparent 28%),
-        radial-gradient(circle at bottom left, rgba(229, 75, 75, 0.18), transparent 30%),
-        linear-gradient(180deg, #111827 0%, #182033 100%);
-      color: #ffffff;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 48px;
+      background:
+        radial-gradient(circle at top right, rgba(251, 146, 60, 0.24), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(239, 68, 68, 0.18), transparent 30%),
+        linear-gradient(180deg, #111827 0%, #182033 100%);
+      color: #ffffff;
+      padding: 56px;
       isolation: isolate;
     }
 
@@ -43,7 +43,7 @@
       width: 420px;
       height: 420px;
       border-radius: 999px;
-      background: linear-gradient(135deg, rgba(243, 156, 74, 0.20), rgba(229, 75, 75, 0.14));
+      background: linear-gradient(135deg, rgba(251, 146, 60, 0.22), rgba(239, 68, 68, 0.16));
       filter: blur(28px);
       z-index: -1;
     }
@@ -56,66 +56,77 @@
       width: 320px;
       height: 320px;
       border-radius: 999px;
-      background: linear-gradient(135deg, rgba(243, 156, 74, 0.18), rgba(229, 75, 75, 0.10));
+      background: linear-gradient(135deg, rgba(251, 146, 60, 0.18), rgba(239, 68, 68, 0.12));
       filter: blur(28px);
       z-index: -1;
     }
 
     .pd-login-brand-top {
+      flex: 0 0 auto;
       display: flex;
       align-items: flex-start;
       justify-content: flex-start;
     }
 
-    .pd-login-brand-badge {
+    /* ── Halo de luz: garante legibilidade absoluta dos elementos escuros
+       da logo (tipografia "PROFILE" e traços cinza-escuro da impressão
+       digital) contra o degradê escuro do painel — sem recriar a caixa
+       sólida/quadrado branco. O brilho é radial, com bordas totalmente
+       dissolvidas, então não se lê como um "card": ele apenas eleva o
+       contraste local atrás da marca. A cor laranja do ícone já tem
+       contraste próprio e não depende deste halo. ── */
+    .pd-login-brand-logo-wrap {
+      position: relative;
       display: inline-flex;
-      align-items: center;
-      gap: 14px;
-      padding: 16px 20px;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.94);
-      box-shadow: 0 18px 42px rgba(17, 24, 39, 0.16);
+      padding: 24px 28px;
     }
 
-    .pd-login-brand-badge img {
-      height: 72px !important;
-      max-height: 76px !important;
-      width: auto !important;
-      max-width: 140px !important;
-      object-fit: contain !important;
+    .pd-login-brand-logo-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -18%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.26) 0%,
+        rgba(255, 255, 255, 0.12) 38%,
+        rgba(255, 255, 255, 0.04) 60%,
+        rgba(255, 255, 255, 0) 78%
+      );
+      filter: blur(8px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .pd-login-brand-logo {
+      position: relative;
+      z-index: 1;
       display: block;
+      max-width: 224px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15))
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))
+        brightness(1.05);
+    }
+
+    /* ── Bloco central: ocupa o espaço flexível entre logo e rodapé,
+       centralizado verticalmente — mesma lógica de centragem do card do
+       formulário à direita, garantindo simetria entre os dois painéis. ── */
+    .pd-login-brand-middle {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      min-height: 0;
     }
 
     .pd-login-brand-copy {
       max-width: 560px;
     }
 
-    .pd-login-brand-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.10);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: rgba(255, 255, 255, 0.92);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      backdrop-filter: blur(8px);
-    }
-
-    .pd-login-brand-chip__dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #f39c4a, #e54b4b);
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
-    }
-
     .pd-login-brand-title {
-      margin: 20px 0 0;
+      margin: 0;
       font-size: clamp(34px, 4vw, 52px);
       line-height: 1.05;
       letter-spacing: -0.04em;
@@ -124,7 +135,7 @@
     }
 
     .pd-login-brand-title .pd-login-brand-highlight {
-      background: linear-gradient(90deg, #f39c4a 0%, #e54b4b 100%);
+      background: linear-gradient(90deg, #fb923c 0%, #ef4444 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -139,6 +150,7 @@
     }
 
     .pd-login-brand-footer {
+      flex: 0 0 auto;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.04em;
@@ -150,51 +162,57 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px 28px;
+      padding: 48px 32px;
     }
 
-    .pd-login-form-wrap {
+    .pd-login-form-card {
       width: 100%;
       max-width: 420px;
+      border-radius: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
+      padding: 40px 36px;
     }
 
     .pd-login-mobile-brand {
       display: none;
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
 
     .pd-login-mobile-brand img {
-      height: 72px !important;
-      max-height: 76px !important;
-      width: auto !important;
-      max-width: 140px !important;
-      object-fit: contain !important;
+      max-width: 160px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
       display: block;
     }
 
     .pd-login-title {
       margin: 0;
-      font-size: 34px;
-      line-height: 1.08;
+      font-size: 30px;
+      line-height: 1.1;
       letter-spacing: -0.03em;
       font-weight: 900;
-      color: #111827;
+      color: #1d1d1f;
     }
 
     .pd-login-subtitle {
-      margin: 10px 0 0;
-      font-size: 15px;
+      margin: 8px 0 0;
+      font-size: 14.5px;
       line-height: 1.65;
-      color: #6b7280;
+      color: #6e6e73;
     }
 
     .pd-login-form {
-      margin-top: 30px;
+      margin-top: 32px;
     }
 
     .pd-login-fieldset {
       display: grid;
-      gap: 18px;
+      gap: 16px;
       border: 0;
       margin: 0;
       padding: 0;
@@ -208,9 +226,10 @@
 
     .pd-login-label {
       display: block;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
-      color: #111827;
+      letter-spacing: 0.01em;
+      color: #1d1d1f;
     }
 
     .pd-login-input-wrap {
@@ -235,12 +254,12 @@
 
     .pd-login-input {
       width: 100%;
-      height: 52px;
+      height: 50px;
       padding: 0 16px 0 46px;
       border-radius: 14px;
-      border: 1px solid #dbe1ea;
-      background: #ffffff;
-      color: #111827;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: rgba(255, 255, 255, 0.92);
+      color: #1d1d1f;
       font-size: 15px;
       outline: none;
       transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
@@ -252,8 +271,8 @@
     }
 
     .pd-login-input:focus {
-      border-color: rgba(243, 156, 74, 0.72);
-      box-shadow: 0 0 0 4px rgba(243, 156, 74, 0.14);
+      border-color: rgba(251, 146, 60, 0.65);
+      box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.14);
       background: #ffffff;
     }
 
@@ -269,8 +288,8 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      font-size: 14px;
-      color: #6b7280;
+      font-size: 13.5px;
+      color: #6e6e73;
       cursor: pointer;
       user-select: none;
     }
@@ -279,12 +298,12 @@
       width: 16px;
       height: 16px;
       margin: 0;
-      accent-color: #111827;
+      accent-color: #ef4444;
     }
 
     .pd-login-link {
-      color: #111827;
-      font-size: 14px;
+      color: #1d1d1f;
+      font-size: 13.5px;
       font-weight: 700;
       text-decoration: none;
     }
@@ -294,15 +313,39 @@
     }
 
     .pd-login-alert {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
       border-radius: 16px;
       border: 1px solid #fecaca;
       background: #fff5f5;
       color: #991b1b;
       padding: 14px 16px;
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.55;
       font-weight: 700;
+      animation: pd-login-alert-in .22s ease;
+    }
+
+    .pd-login-alert__icon {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      margin-top: 1px;
+    }
+
+    @keyframes pd-login-alert-in {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .pd-login-submit {
@@ -312,40 +355,45 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      height: 52px;
+      height: 50px;
       padding: 0 20px;
       border: 0;
       border-radius: 14px;
       cursor: pointer;
-      background: linear-gradient(90deg, #f39c4a 0%, #e54b4b 100%);
+      background: linear-gradient(135deg, #fb923c, #ef4444);
       color: #ffffff;
       font-size: 15px;
       font-weight: 900;
       letter-spacing: 0.01em;
-      box-shadow: 0 18px 36px rgba(229, 75, 75, 0.24);
-      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      box-shadow: 0 14px 32px rgba(239, 68, 68, 0.26), 0 4px 12px rgba(249, 115, 22, 0.18);
+      transition: transform .18s cubic-bezier(.32,.72,0,1), box-shadow .18s ease;
     }
 
     .pd-login-submit:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 22px 40px rgba(229, 75, 75, 0.28);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 18px 38px rgba(239, 68, 68, 0.32), 0 6px 16px rgba(249, 115, 22, 0.24);
     }
 
     .pd-login-submit:active {
-      transform: translateY(0);
+      transform: translateY(0) scale(0.99);
     }
 
     .pd-login-submit__arrow {
       font-size: 16px;
       line-height: 1;
+      transition: transform .18s ease;
+    }
+
+    .pd-login-submit:hover .pd-login-submit__arrow {
+      transform: translateX(2px);
     }
 
     .pd-login-note {
-      margin: 22px 0 0;
+      margin: 24px 0 0;
       text-align: center;
-      font-size: 12px;
+      font-size: 11.5px;
       line-height: 1.6;
-      color: #6b7280;
+      color: #9ca3af;
       font-weight: 600;
     }
 
@@ -360,21 +408,26 @@
 
       .pd-login-form-panel {
         min-height: 100vh;
-        padding: 28px 20px;
+        padding: 32px 20px;
       }
 
       .pd-login-mobile-brand {
         display: block;
       }
 
-      .pd-login-form-wrap {
+      .pd-login-form-card {
         max-width: 460px;
       }
     }
 
     @media (max-width: 640px) {
+      .pd-login-form-card {
+        padding: 28px 22px;
+        border-radius: 22px;
+      }
+
       .pd-login-title {
-        font-size: 30px;
+        font-size: 26px;
       }
 
       .pd-login-form-panel {
@@ -395,37 +448,35 @@
   <div class="pd-login-shell">
     <section class="pd-login-brand-panel" aria-label="Apresentação do painel">
       <div class="pd-login-brand-top">
-        <div class="pd-login-brand-badge">
+        <div class="pd-login-brand-logo-wrap">
           <img
             src="/static/img/official_logo.png"
             alt="Profile DNA"
+            class="pd-login-brand-logo"
             onerror="this.src='/static/img/dna-logo.png';"
           />
         </div>
       </div>
 
-      <div class="pd-login-brand-copy">
-        <div class="pd-login-brand-chip">
-          <span class="pd-login-brand-chip__dot" aria-hidden="true"></span>
-          <span>ProfileDNA · Painel do operador</span>
+      <div class="pd-login-brand-middle">
+        <div class="pd-login-brand-copy">
+          <h1 class="pd-login-brand-title">
+            Mapeie o <span class="pd-login-brand-highlight">comportamento</span> de equipes inteiras com profundidade científica.
+          </h1>
+
+          <p class="pd-login-brand-text">
+            Acompanhe testes em tempo real, leia o resultado individual, analise o grupo no BI e use a DANA para transformar dados em ação.
+          </p>
         </div>
-
-        <h1 class="pd-login-brand-title">
-          Mapeie o <span class="pd-login-brand-highlight">comportamento</span> de equipes inteiras com profundidade científica.
-        </h1>
-
-        <p class="pd-login-brand-text">
-          Acompanhe testes em tempo real, leia o resultado individual, analise o grupo no BI e use a DANA para transformar dados em ação.
-        </p>
       </div>
 
       <div class="pd-login-brand-footer">
-        Profile DNA · v2.0
+        TODOS OS DIREITOS RESERVADOS A PROFILE DNA BY HARGOS HUMAN @2026
       </div>
     </section>
 
     <section class="pd-login-form-panel">
-      <div class="pd-login-form-wrap">
+      <div class="pd-login-form-card">
         <div class="pd-login-mobile-brand">
           <img
             src="/static/img/official_logo.png"
@@ -448,7 +499,8 @@
 
           {% if error is defined and error %}
             <div class="pd-login-alert" role="alert">
-              {{ error }}
+              <span class="pd-login-alert__icon" aria-hidden="true">!</span>
+              <span>{{ error }}</span>
             </div>
           {% endif %}
 
@@ -462,7 +514,7 @@
                   type="text"
                   name="username"
                   value="{{ username if username is defined and username else '' }}"
-                  placeholder="operador@dnaagencia.com.br"
+                  placeholder="seu.email@empresa.com"
                   autocomplete="username"
                   required
                 />

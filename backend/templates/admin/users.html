@@ -1,0 +1,969 @@
+{% extends "admin/base_admin.html" %}
+
+{% set active_nav = "usuarios" %}
+{% set page_title = "Gestão de Usuários" %}
+{% set current_admin = current_admin if current_admin is defined else None %}
+{% set role_admin = role_admin if role_admin is defined and role_admin else "admin" %}
+{% set role_analista = role_analista if role_analista is defined and role_analista else "analista" %}
+{% set _is_admin_viewer = current_admin and current_admin.role == role_admin %}
+{% set page_subtitle = "Crie, desative, resete o acesso e defina permissões por módulo — sem precisar de scripts CLI." if _is_admin_viewer else "Autogestão de acesso — altere sua própria senha." %}
+{% set admins = admins if admins is defined and admins else [] %}
+{% set current_admin_id = current_admin_id if current_admin_id is defined else "" %}
+{% set permission_modules = permission_modules if permission_modules is defined and permission_modules else ["dashboard", "clientes", "bi", "bi_comparativo", "dana"] %}
+{% set module_labels = {
+  "dashboard": "Dashboard",
+  "clientes": "Clientes",
+  "bi": "BI · Visão Geral",
+  "bi_comparativo": "BI · Comparativo",
+  "dana": "DANA"
+} %}
+
+{% block title %}ProfileDNA — Gestão de Usuários{% endblock %}
+
+{% macro permission_matrix(namespace, current_permissions) %}
+  <div class="pd-perm-matrix" data-role="permission-matrix">
+    <div class="pd-perm-matrix__label">Matriz de permissões (perfil Analista)</div>
+
+    <div class="pd-perm-row pd-perm-row--head" aria-hidden="true">
+      <span class="pd-perm-col pd-perm-col--head">Módulo</span>
+      <span class="pd-perm-col pd-perm-col--head pd-perm-col--center">Somente leitura</span>
+      <span class="pd-perm-col pd-perm-col--head pd-perm-col--center">Total</span>
+    </div>
+
+    {% for module in permission_modules %}
+      {% set current_level = (current_permissions.get(module) if current_permissions else None) or "read" %}
+      <div class="pd-perm-row" data-module="{{ module }}">
+        <span class="pd-perm-col pd-perm-row__label">{{ module_labels.get(module, module) }}</span>
+        <span class="pd-perm-col pd-perm-col--center">
+          <input
+            type="radio"
+            class="pd-perm-radio-input"
+            name="{{ namespace }}-{{ module }}"
+            data-module="{{ module }}"
+            value="read"
+            title="Somente leitura"
+            aria-label="{{ module_labels.get(module, module) }} — somente leitura"
+            {% if current_level == 'read' %}checked{% endif %}
+          />
+        </span>
+        <span class="pd-perm-col pd-perm-col--center">
+          <input
+            type="radio"
+            class="pd-perm-radio-input"
+            name="{{ namespace }}-{{ module }}"
+            data-module="{{ module }}"
+            value="total"
+            title="Total"
+            aria-label="{{ module_labels.get(module, module) }} — total"
+            {% if current_level == 'total' %}checked{% endif %}
+          />
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% block admin_content %}
+  <style>
+    .pd-users-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .pd-users-card {
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 12px 36px rgba(17, 24, 39, 0.07);
+      padding: 24px;
+    }
+
+    .pd-users-card__title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #1d1d1f;
+      margin-bottom: 4px;
+    }
+
+    .pd-users-card__subtitle {
+      font-size: 13px;
+      color: #6e6e73;
+      margin-bottom: 20px;
+    }
+
+    /* ── Card de autogestão (perfil Analista) ── */
+    .pd-users-selfservice {
+      display: flex;
+      justify-content: center;
+    }
+
+    .pd-users-selfservice .pd-users-card {
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .pd-users-selfservice-feedback {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-radius: 16px;
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      color: #991b1b;
+      padding: 14px 16px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    /* ── Lista de usuários ── */
+    .pd-users-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .pd-user-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      background: rgba(255, 255, 255, 0.7);
+      transition: box-shadow .18s ease, transform .18s ease;
+    }
+
+    .pd-user-row.is-updating {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .pd-user-row.pd-flash {
+      box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.25);
+    }
+
+    .pd-user-row__identity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .pd-user-row__avatar {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fb923c, #ef4444);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .pd-user-row__meta { min-width: 0; }
+
+    .pd-user-row__nome {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1d1d1f;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-user-row__username {
+      font-size: 12.5px;
+      color: #6e6e73;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-user-row__permsummary {
+      font-size: 11.5px;
+      color: #9ca3af;
+      margin-top: 2px;
+      overflow-wrap: anywhere;
+    }
+
+    .pd-user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex: 0 0 auto;
+    }
+
+    .pd-user-badge--ativo {
+      background: rgba(22, 163, 74, 0.10);
+      color: #16a34a;
+    }
+
+    .pd-user-badge--inativo {
+      background: rgba(107, 114, 128, 0.12);
+      color: #6b7280;
+    }
+
+    .pd-user-badge--role-admin {
+      background: rgba(99, 102, 241, 0.10);
+      color: #4f46e5;
+    }
+
+    .pd-user-badge--role-analista {
+      background: rgba(249, 115, 22, 0.10);
+      color: #c2410c;
+    }
+
+    .pd-user-row__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .pd-user-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: rgba(255, 255, 255, 0.9);
+      color: #374151;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .pd-user-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+
+    .pd-user-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .pd-user-btn--danger {
+      color: #b91c1c;
+      border-color: rgba(252, 165, 165, 0.7);
+      background: rgba(254, 242, 242, 0.7);
+    }
+
+    .pd-user-btn--reset {
+      color: #c2410c;
+      border-color: rgba(249, 115, 22, 0.35);
+      background: rgba(255, 247, 237, 0.85);
+    }
+
+    .pd-user-btn--perm {
+      color: #4f46e5;
+      border-color: rgba(99, 102, 241, 0.35);
+      background: rgba(238, 242, 255, 0.85);
+    }
+
+    .pd-user-row__panel {
+      display: none;
+      width: 100%;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #e5e7eb;
+      gap: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .pd-user-row__panel.is-open {
+      display: flex;
+    }
+
+    .pd-user-row__reset-input {
+      flex: 1 1 200px;
+      min-width: 0;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: #ffffff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .pd-user-row__reset-input:focus {
+      border-color: rgba(251, 146, 60, 0.65);
+      box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.14);
+    }
+
+    .pd-user-row__feedback {
+      width: 100%;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .pd-user-row__feedback--ok { color: #16a34a; }
+    .pd-user-row__feedback--err { color: #b91c1c; }
+
+    .pd-users-empty {
+      padding: 20px;
+      text-align: center;
+      color: #6e6e73;
+      font-size: 13px;
+      border: 1px dashed #d1d5db;
+      border-radius: 14px;
+    }
+
+    /* ── Seletor de perfil + matriz de permissões (compartilhado: form de
+       criação e painel de edição inline de cada linha). Grid rígido de 3
+       colunas — módulo | somente leitura | total. Cada linha tem
+       estritamente 3 filhos diretos: o nome do módulo e dois círculos de
+       rádio "nus" (sem texto visível ao lado), já que o cabeçalho
+       '.pd-perm-row--head' é quem nomeia as colunas. ── */
+    .pd-perm-role-select {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: #ffffff;
+      font-size: 14px;
+      color: #1d1d1f;
+      outline: none;
+    }
+
+    .pd-perm-role-select:focus {
+      border-color: rgba(251, 146, 60, 0.65);
+      box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.14);
+    }
+
+    .pd-perm-matrix {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      margin-top: 16px;
+      border-radius: 16px;
+      background: rgba(249, 250, 251, 0.9);
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+    }
+
+    .pd-perm-matrix.is-visible {
+      display: flex;
+    }
+
+    .pd-perm-matrix__label {
+      padding: 12px 16px 8px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9ca3af;
+    }
+
+    /* Linha-grid rígida: 1fr (módulo) + 140px (somente leitura) + 100px
+       (total) — toda linha (cabeçalho e dados) usa exatamente esse molde,
+       garantindo alinhamento vertical perfeito entre as 3 colunas. */
+    .pd-perm-row {
+      display: grid;
+      grid-template-columns: 1fr 140px 100px;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .pd-perm-row:last-child {
+      border-bottom: none;
+    }
+
+    .pd-perm-row--head {
+      padding-top: 4px;
+      padding-bottom: 8px;
+    }
+
+    .pd-perm-col {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .pd-perm-col--center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .pd-perm-col--head {
+      font-size: 10.5px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+
+    .pd-perm-row__label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1d1d1f;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 12px;
+    }
+
+    /* Círculo de rádio puro: sem label de texto adjacente — a coluna já é
+       identificada pelo cabeçalho da matriz. */
+    .pd-perm-radio-input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      flex: 0 0 auto;
+      accent-color: #ef4444;
+      cursor: pointer;
+    }
+
+    /* ── Formulário "criar novo usuário" / autogestão de senha ── */
+    .pd-users-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .pd-users-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .pd-users-label {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #1d1d1f;
+    }
+
+    .pd-users-input {
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      background: #ffffff;
+      font-size: 14px;
+      color: #1d1d1f;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .pd-users-input:focus {
+      border-color: rgba(251, 146, 60, 0.65);
+      box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.14);
+    }
+
+    .pd-users-submit {
+      margin-top: 4px;
+      height: 46px;
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #fb923c, #ef4444);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(239, 68, 68, 0.24), 0 4px 12px rgba(249, 115, 22, 0.16);
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+
+    .pd-users-submit:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 34px rgba(239, 68, 68, 0.3), 0 6px 14px rgba(249, 115, 22, 0.2);
+    }
+
+    .pd-users-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .pd-users-form-feedback {
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: none;
+    }
+
+    .pd-users-form-feedback.is-visible { display: block; }
+
+    .pd-users-form-feedback--ok {
+      background: rgba(22, 163, 74, 0.08);
+      color: #16a34a;
+    }
+
+    .pd-users-form-feedback--err {
+      background: #fff5f5;
+      color: #991b1b;
+    }
+
+    @media (max-width: 980px) {
+      .pd-users-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 460px) {
+      .pd-perm-row {
+        grid-template-columns: 1fr 64px 64px;
+      }
+    }
+  </style>
+
+  {% if _is_admin_viewer %}
+    <div class="pd-users-grid">
+      <section class="pd-users-card">
+        <div class="pd-users-card__title">Administradores cadastrados</div>
+        <div class="pd-users-card__subtitle">{{ admins|length }} usuário(s) na tabela <code>admin_users</code>.</div>
+
+        <div id="pd-users-list" class="pd-users-list">
+          {% if admins %}
+            {% for a in admins %}
+              {% set a_is_self = current_admin_id and a.id|string == current_admin_id %}
+              {% set a_permissions = a.permissions or {} %}
+              <article
+                class="pd-user-row"
+                data-admin-id="{{ a.id }}"
+                data-admin-ativo="{{ 'true' if a.ativo else 'false' }}"
+                data-admin-role="{{ a.role }}"
+                data-admin-permissions='{{ a_permissions | tojson }}'
+                data-is-self="{{ 'true' if a_is_self else 'false' }}"
+              >
+                <div class="pd-user-row__identity">
+                  <span class="pd-user-row__avatar">{{ (a.nome or a.username or '?')[0] }}</span>
+                  <div class="pd-user-row__meta">
+                    <div class="pd-user-row__nome">{{ a.nome }}</div>
+                    <div class="pd-user-row__username">{{ a.username }}</div>
+                    {% if a.role == role_analista %}
+                      <div class="pd-user-row__permsummary" data-role="perm-summary">
+                        {% for module in permission_modules %}{{ module_labels.get(module, module) }}: {{ 'Total' if a_permissions.get(module) == 'total' else ('Leitura' if a_permissions.get(module) == 'read' else 'Sem acesso') }}{% if not loop.last %} · {% endif %}{% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="pd-user-row__actions">
+                  <span class="pd-user-badge pd-user-badge--{{ 'ativo' if a.ativo else 'inativo' }}" data-role="status-badge">
+                    {{ 'Ativo' if a.ativo else 'Inativo' }}
+                  </span>
+
+                  <span class="pd-user-badge pd-user-badge--role-{{ a.role }}" data-role="role-badge">
+                    {{ 'Analista' if a.role == role_analista else 'Admin' }}
+                  </span>
+
+                  <button type="button" class="pd-user-btn pd-user-btn--perm" data-action="toggle-perm-panel" {% if a_is_self %}disabled title="Você não pode alterar as próprias permissões."{% endif %}>
+                    Editar permissões
+                  </button>
+
+                  <button type="button" class="pd-user-btn pd-user-btn--reset" data-action="toggle-reset-panel">
+                    Resetar senha
+                  </button>
+
+                  <button
+                    type="button"
+                    class="pd-user-btn{% if a.ativo %} pd-user-btn--danger{% endif %}"
+                    data-action="toggle-status"
+                    {% if a_is_self %}disabled title="Você não pode desativar a própria conta."{% endif %}
+                  >
+                    {{ 'Desativar' if a.ativo else 'Ativar' }}
+                  </button>
+                </div>
+
+                <div class="pd-user-row__panel" data-role="perm-panel">
+                  <div class="pd-users-field" style="flex: 1 1 100%;">
+                    <label class="pd-users-label">Perfil</label>
+                    <select class="pd-perm-role-select" data-role="perm-role-select">
+                      <option value="{{ role_admin }}" {% if a.role == role_admin %}selected{% endif %}>Administrador</option>
+                      <option value="{{ role_analista }}" {% if a.role == role_analista %}selected{% endif %}>Analista</option>
+                    </select>
+                  </div>
+                  {{ permission_matrix('row-' ~ a.id, a_permissions) }}
+                  <div style="width:100%; display:flex; gap:8px; margin-top: 8px;">
+                    <button type="button" class="pd-user-btn pd-user-btn--perm" data-action="confirm-perm">Salvar permissões</button>
+                    <button type="button" class="pd-user-btn" data-action="cancel-perm">Cancelar</button>
+                  </div>
+                </div>
+
+                <div class="pd-user-row__panel" data-role="reset-panel">
+                  <input
+                    type="password"
+                    class="pd-user-row__reset-input"
+                    data-role="reset-input"
+                    placeholder="Nova senha (mín. 8 caracteres)"
+                    autocomplete="new-password"
+                  />
+                  <button type="button" class="pd-user-btn pd-user-btn--reset" data-action="confirm-reset">Confirmar</button>
+                  <button type="button" class="pd-user-btn" data-action="cancel-reset">Cancelar</button>
+                </div>
+
+                <div class="pd-user-row__feedback" data-role="feedback"></div>
+              </article>
+            {% endfor %}
+          {% else %}
+            <div class="pd-users-empty">Nenhum administrador cadastrado ainda.</div>
+          {% endif %}
+        </div>
+      </section>
+
+      <section class="pd-users-card">
+        <div class="pd-users-card__title">Criar novo usuário</div>
+        <div class="pd-users-card__subtitle">
+          O usuário entra ativo e precisa trocar a senha inicial no primeiro login.
+        </div>
+
+        <form id="pd-users-create-form" class="pd-users-form" autocomplete="off">
+          <div class="pd-users-field">
+            <label class="pd-users-label" for="pd-users-nome">Nome</label>
+            <input id="pd-users-nome" name="nome" class="pd-users-input" type="text" placeholder="Nome completo" required />
+          </div>
+
+          <div class="pd-users-field">
+            <label class="pd-users-label" for="pd-users-username">Login (e-mail ou usuário)</label>
+            <input id="pd-users-username" name="username" class="pd-users-input" type="text" placeholder="usuario@empresa.com" autocomplete="username" required />
+          </div>
+
+          <div class="pd-users-field">
+            <label class="pd-users-label" for="pd-users-password">Senha inicial</label>
+            <input id="pd-users-password" name="password" class="pd-users-input" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="new-password" required minlength="8" />
+          </div>
+
+          <div class="pd-users-field">
+            <label class="pd-users-label" for="pd-users-role">Perfil</label>
+            <select id="pd-users-role" class="pd-perm-role-select" data-role="create-role-select">
+              <option value="{{ role_admin }}" selected>Administrador (acesso total)</option>
+              <option value="{{ role_analista }}">Analista (acesso por módulo)</option>
+            </select>
+          </div>
+
+          {{ permission_matrix('create', {}) }}
+
+          <button type="submit" class="pd-users-submit" id="pd-users-submit-btn">Criar usuário</button>
+
+          <div class="pd-users-form-feedback" id="pd-users-form-feedback"></div>
+        </form>
+      </section>
+    </div>
+  {% else %}
+    {# Perfil Analista: nenhum dado de terceiros chega a este branch (o
+       backend só popula 'admins' quando quem requisita é 'admin'). Único
+       card visível é a autogestão da própria senha, que reaproveita
+       literalmente a mesma rota/lógica segura de /admin/trocar-senha — sem
+       nenhum endpoint novo, sem fetch/JSON, só um form HTML padrão. #}
+    <div class="pd-users-selfservice">
+      <section class="pd-users-card">
+        <div class="pd-users-card__title">Alterar minha senha</div>
+        <div class="pd-users-card__subtitle">
+          Como perfil Analista, você só pode gerenciar a própria senha por aqui. O gerenciamento de outros usuários é restrito a administradores.
+        </div>
+
+        <form method="post" action="/admin/trocar-senha" class="pd-users-form">
+          {% if csrf_token is defined and csrf_token %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          {% endif %}
+
+          <div class="pd-users-field">
+            <label class="pd-users-label" for="pd-self-current">Senha atual</label>
+            <input
+              id="pd-self-current"
+              name="current_password"
+              class="pd-users-input"
+              type="password"
+              placeholder="Digite sua senha atual"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <div class="pd-users-field">
+            <label class="pd-users-label" for="pd-self-new">Nova senha</label>
+            <input
+              id="pd-self-new"
+              name="new_password"
+              class="pd-users-input"
+              type="password"
+              placeholder="Mínimo de 8 caracteres"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            />
+          </div>
+
+          <div class="pd-users-field">
+            <label class="pd-users-label" for="pd-self-confirm">Confirmar nova senha</label>
+            <input
+              id="pd-self-confirm"
+              name="confirm_password"
+              class="pd-users-input"
+              type="password"
+              placeholder="Repita a nova senha"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            />
+          </div>
+
+          <button type="submit" class="pd-users-submit">Salvar nova senha</button>
+        </form>
+      </section>
+    </div>
+  {% endif %}
+
+  <script>
+  (function () {
+    function getCsrfToken() {
+      var match = document.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    async function postJson(url, formLikeObject) {
+      var body = new URLSearchParams();
+      Object.keys(formLikeObject || {}).forEach(function (key) {
+        body.append(key, formLikeObject[key]);
+      });
+      var res = await fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRF-Token': getCsrfToken()
+        },
+        body: body.toString()
+      });
+      var data = null;
+      try { data = await res.json(); } catch (e) { data = null; }
+      return { ok: res.ok, status: res.status, data: data };
+    }
+
+    function showRowFeedback(row, message, isError) {
+      var feedbackEl = row.querySelector('[data-role="feedback"]');
+      if (!feedbackEl) return;
+      feedbackEl.textContent = message;
+      feedbackEl.className = 'pd-user-row__feedback ' + (isError ? 'pd-user-row__feedback--err' : 'pd-user-row__feedback--ok');
+      setTimeout(function () {
+        feedbackEl.textContent = '';
+        feedbackEl.className = 'pd-user-row__feedback';
+      }, 4000);
+    }
+
+    function flashRow(row) {
+      row.classList.add('pd-flash');
+      setTimeout(function () { row.classList.remove('pd-flash'); }, 600);
+    }
+
+    function readMatrix(matrixEl) {
+      var result = {};
+      if (!matrixEl) return result;
+      matrixEl.querySelectorAll('input[type="radio"]:checked').forEach(function (input) {
+        var module = input.getAttribute('data-module');
+        if (module) result[module] = input.value;
+      });
+      return result;
+    }
+
+    function toggleMatrixVisibility(roleSelect, matrixEl) {
+      if (!roleSelect || !matrixEl) return;
+      var isAnalista = roleSelect.value === '{{ role_analista }}';
+      matrixEl.classList.toggle('is-visible', isAnalista);
+    }
+
+    /* ── Form de criação: role select liga/desliga a matriz ── */
+    var createRoleSelect = document.querySelector('[data-role="create-role-select"]');
+    var createMatrix = createRoleSelect
+      ? createRoleSelect.closest('form').querySelector('[data-role="permission-matrix"]')
+      : null;
+    if (createRoleSelect) {
+      toggleMatrixVisibility(createRoleSelect, createMatrix);
+      createRoleSelect.addEventListener('change', function () {
+        toggleMatrixVisibility(createRoleSelect, createMatrix);
+      });
+    }
+
+    var list = document.getElementById('pd-users-list');
+    if (list) {
+      /* Liga/desliga a matriz de cada painel de edição inline conforme o
+         próprio select de perfil daquele painel muda. */
+      list.querySelectorAll('[data-role="perm-role-select"]').forEach(function (sel) {
+        var matrix = sel.closest('[data-role="perm-panel"]').querySelector('[data-role="permission-matrix"]');
+        toggleMatrixVisibility(sel, matrix);
+        sel.addEventListener('change', function () { toggleMatrixVisibility(sel, matrix); });
+      });
+
+      list.addEventListener('click', async function (e) {
+        var row = e.target.closest('.pd-user-row');
+        if (!row) return;
+        var adminId = row.getAttribute('data-admin-id');
+        var action = e.target.getAttribute('data-action');
+        if (!action) return;
+
+        if (action === 'toggle-reset-panel' || action === 'cancel-reset') {
+          var panel = row.querySelector('[data-role="reset-panel"]');
+          if (action === 'toggle-reset-panel' && panel) panel.classList.add('is-open');
+          if (action === 'cancel-reset' && panel) {
+            panel.classList.remove('is-open');
+            var input = row.querySelector('[data-role="reset-input"]');
+            if (input) input.value = '';
+          }
+          return;
+        }
+
+        if (action === 'toggle-perm-panel' || action === 'cancel-perm') {
+          var permPanel = row.querySelector('[data-role="perm-panel"]');
+          if (action === 'toggle-perm-panel' && permPanel) permPanel.classList.add('is-open');
+          if (action === 'cancel-perm' && permPanel) permPanel.classList.remove('is-open');
+          return;
+        }
+
+        if (action === 'confirm-reset') {
+          var resetInput = row.querySelector('[data-role="reset-input"]');
+          var newPassword = resetInput ? resetInput.value : '';
+          if (!newPassword || newPassword.length < 8) {
+            showRowFeedback(row, 'A senha deve ter ao menos 8 caracteres.', true);
+            return;
+          }
+          row.classList.add('is-updating');
+          var result = await postJson('/admin/usuarios/' + adminId + '/reset-password', { new_password: newPassword });
+          row.classList.remove('is-updating');
+          if (result.ok) {
+            showRowFeedback(row, 'Senha redefinida com sucesso. O usuário deverá trocá-la no próximo login.', false);
+            flashRow(row);
+            var panel2 = row.querySelector('[data-role="reset-panel"]');
+            if (panel2) panel2.classList.remove('is-open');
+            if (resetInput) resetInput.value = '';
+          } else {
+            showRowFeedback(row, (result.data && result.data.detail) || 'Não foi possível redefinir a senha.', true);
+          }
+          return;
+        }
+
+        if (action === 'confirm-perm') {
+          var permPanel2 = row.querySelector('[data-role="perm-panel"]');
+          var roleSelect = permPanel2.querySelector('[data-role="perm-role-select"]');
+          var matrixEl = permPanel2.querySelector('[data-role="permission-matrix"]');
+          var roleValue = roleSelect ? roleSelect.value : '{{ role_admin }}';
+          var permsValue = roleValue === '{{ role_analista }}' ? readMatrix(matrixEl) : {};
+
+          row.classList.add('is-updating');
+          var permResult = await postJson('/admin/usuarios/' + adminId + '/permissions', {
+            role: roleValue,
+            permissions: JSON.stringify(permsValue)
+          });
+          row.classList.remove('is-updating');
+
+          if (permResult.ok && permResult.data && permResult.data.admin) {
+            var updatedAdmin = permResult.data.admin;
+            row.setAttribute('data-admin-role', updatedAdmin.role);
+            row.setAttribute('data-admin-permissions', JSON.stringify(updatedAdmin.permissions || {}));
+
+            var roleBadge = row.querySelector('[data-role="role-badge"]');
+            if (roleBadge) {
+              var isAnalistaNow = updatedAdmin.role === '{{ role_analista }}';
+              roleBadge.textContent = isAnalistaNow ? 'Analista' : 'Admin';
+              roleBadge.className = 'pd-user-badge pd-user-badge--role-' + updatedAdmin.role;
+            }
+
+            permPanel2.classList.remove('is-open');
+            showRowFeedback(row, 'Permissões atualizadas com sucesso.', false);
+            flashRow(row);
+          } else {
+            showRowFeedback(row, (permResult.data && permResult.data.detail) || 'Não foi possível atualizar as permissões.', true);
+          }
+          return;
+        }
+
+        if (action === 'toggle-status') {
+          row.classList.add('is-updating');
+          var toggleResult = await postJson('/admin/usuarios/' + adminId + '/toggle-status', {});
+          row.classList.remove('is-updating');
+          if (toggleResult.ok && toggleResult.data && toggleResult.data.admin) {
+            var ativo = !!toggleResult.data.admin.ativo;
+            row.setAttribute('data-admin-ativo', ativo ? 'true' : 'false');
+
+            var badge = row.querySelector('[data-role="status-badge"]');
+            if (badge) {
+              badge.textContent = ativo ? 'Ativo' : 'Inativo';
+              badge.className = 'pd-user-badge pd-user-badge--' + (ativo ? 'ativo' : 'inativo');
+            }
+
+            var statusBtn = row.querySelector('[data-action="toggle-status"]');
+            if (statusBtn) {
+              statusBtn.textContent = ativo ? 'Desativar' : 'Ativar';
+              statusBtn.classList.toggle('pd-user-btn--danger', ativo);
+            }
+
+            flashRow(row);
+          } else {
+            showRowFeedback(row, (toggleResult.data && toggleResult.data.detail) || 'Não foi possível atualizar o status.', true);
+          }
+        }
+      });
+    }
+
+    var createForm = document.getElementById('pd-users-create-form');
+    var submitBtn = document.getElementById('pd-users-submit-btn');
+    var formFeedback = document.getElementById('pd-users-form-feedback');
+
+    function setFormFeedback(message, isError) {
+      if (!formFeedback) return;
+      formFeedback.textContent = message;
+      formFeedback.className = 'pd-users-form-feedback is-visible ' + (isError ? 'pd-users-form-feedback--err' : 'pd-users-form-feedback--ok');
+    }
+
+    if (createForm) {
+      createForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var nome = document.getElementById('pd-users-nome').value.trim();
+        var username = document.getElementById('pd-users-username').value.trim();
+        var password = document.getElementById('pd-users-password').value;
+        var roleValue = createRoleSelect ? createRoleSelect.value : '{{ role_admin }}';
+        var permsValue = roleValue === '{{ role_analista }}' ? readMatrix(createMatrix) : {};
+
+        if (!nome || !username || password.length < 8) {
+          setFormFeedback('Preencha nome, login e uma senha com ao menos 8 caracteres.', true);
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Criando...';
+
+        var result = await postJson('/admin/usuarios/create', {
+          nome: nome,
+          username: username,
+          password: password,
+          role: roleValue,
+          permissions: JSON.stringify(permsValue)
+        });
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Criar usuário';
+
+        if (result.ok && result.data && result.data.admin) {
+          setFormFeedback('Usuário "' + result.data.admin.username + '" criado com sucesso. Atualizando lista...', false);
+          createForm.reset();
+          if (createMatrix) createMatrix.classList.remove('is-visible');
+          setTimeout(function () { window.location.reload(); }, 900);
+        } else {
+          setFormFeedback((result.data && result.data.detail) || 'Não foi possível criar o usuário.', true);
+        }
+      });
+    }
+  })();
+  </script>
+{% endblock %}
